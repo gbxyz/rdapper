@@ -126,12 +126,14 @@ my $host;
 my $type = 'domain';
 my $query;
 my $raw;
+my $tls;
 GetOptions(
 	'help'		=> \$help,
 	'host=s'	=> \$host,
 	'type:s'	=> \$type,
 	'query:s'	=> \$query,
 	'raw'		=> \$raw,
+	'tls'		=> \$tls,
 );
 $type = lc($type);
 $query = $ARGV[0] if ($query eq '' && $ARGV[0] ne '');
@@ -141,7 +143,7 @@ help() if ($host eq '' || $query eq '' || $help);
 #
 # send HTTP request:
 #
-my $uri = sprintf('http://%s/%s/%s', $host, $type, $query);
+my $uri = sprintf('%s://%s/%s/%s', ($tls ? 'https' : 'http'), $host, $type, $query);
 
 my $ua = LWP::UserAgent->new;
 $ua->agent("$NAME/$VERSION");
@@ -219,6 +221,7 @@ Options:
   --host=HOST           Set server hostname
   --type=TYPE           Set query type (default: domain)
   --raw			Show raw JSON response
+  --tls			Use SSL/TLS
 END
 	exit;
 }

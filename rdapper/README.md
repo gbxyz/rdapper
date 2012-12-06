@@ -3,13 +3,14 @@ See http://datatracker.ietf.org/wg/weirds/charter/ for further info.
 
 ## Usage
 
-rdapper --host=HOST [--type=TYPE] QUERY
+	rdapper --host=HOST [--type=TYPE] QUERY
 
-Options:
-  --help                Show this help
-  --host=HOST           Set server hostname
-  --type=TYPE           Set query type (default: domain)
-  --raw			Show raw JSON response
+	Options:
+	  --help                Show this help
+	  --host=HOST           Set server hostname
+	  --type=TYPE           Set query type (default: domain)
+	  --raw			Show raw JSON response
+	  --tls			Use SSL/TLS
 
 ## Dependencies
 
