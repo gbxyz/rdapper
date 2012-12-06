@@ -1,0 +1,360 @@
+#!/usr/bin/perl
+# Copyright (c) 2012 CentralNic Ltd. All rights reserved. This program is
+# free software; you can redistribute it and/or modify it under the same
+# terms as Perl itself.
+use LWP;
+use HTTP::Request::Common;
+use JSON;
+use Getopt::Long;
+use Data::Dumper;
+use POSIX;
+use strict;
+
+my $NAME = 'rdapper';
+my $VERSION = '0.01';
+
+#
+# determines the order in which fields appear in output:
+#
+my $order = {
+	'handle'		=> 99999,
+	'name'			=> 88888,
+	'names'			=> 88887,
+	'variants'		=> 77777,
+	'status'		=> 66666,
+	'sponsoredBy'		=> 66333,
+	'registrationDate'	=> 55555,
+	'registrationBy'	=> 44444,
+	'expirationDate'	=> 33333,
+	'lastChangedDate'	=> 22222,
+	'lastChangedBy'		=> 11111,
+	'transferDate'		=> 11110,
+	'entities'		=> 11109,
+	'nameServers'		=> 11108,
+	'delegationKeys'	=> 11107,
+
+	'postalAddress'		=> 11106,
+	'phones'		=> 11105,
+	'emails'		=> 11104,
+
+	'keyTag'		=> 11103,
+	'algorithm'		=> 11102,
+	'digestType'		=> 11101,
+	'digest'		=> 11100,
+};
+
+#
+# English names for keys:
+#
+my $name = {
+	'algorithm'		=> 'Algorithm',
+	'country'		=> 'Country',
+	'delegationKeys'	=> 'DNSSEC Key',
+	'description'		=> 'Description',
+	'digest'		=> 'Digest',
+	'digestType'		=> 'Digest Type',
+	'emails'		=> 'Email Address',
+	'endAddress'		=> 'End Address',
+	'endAutnum'		=> 'End AS',
+	'entities'		=> 'Contact',
+	'errorCode'		=> 'Error Code',
+	'expirationDate'	=> 'Expiration Date',
+	'fax'			=> 'Fax',
+	'handle'		=> 'Handle',
+	'ipAddresses'		=> 'IP Address',
+	'ipVersion'		=> 'IP Version',
+	'keyTag'		=> 'Key Tag',
+	'lang'			=> 'Language',
+	'lastChangedBy'		=> 'Last Changed Up',
+	'lastChangedDate'	=> 'Last Changed',
+	'links'			=> 'Link',
+	'name'			=> 'Name',
+	'names'			=> 'Name',
+	'nameServers'		=> 'Nameserver',
+	'notices'		=> 'Notice',
+	'parentHandle'		=> 'Parent',
+	'phones'		=> 'Telephone',
+	'port43'		=> 'Port 43 Whois',
+	'postalAddress'		=> 'Postal Address',
+	'rdapConformance'	=> 'RDAP Conformance',
+	'registrationBy'	=> 'Registered By',
+	'registrationDate'	=> 'Registered',
+	'remarks'		=> 'Remarks',
+	'resoldBy'		=> 'Resold By',
+	'roles'			=> 'Role',
+	'sponsoredBy'		=> 'Sponsored By',
+	'startAddress'		=> 'Start Address',
+	'startAutnum'		=> 'Start AS',
+	'status'		=> 'Status',
+	'title'			=> 'Title',
+	'transferDate'		=> 'Transferred',
+	'type'			=> 'Type',
+	'variants'		=> 'Variant',
+};
+
+#
+# handlers for specific data types:
+#
+my $handler = {
+	'delegationKeys'	=> \&handle_delegationKeys,
+	'emails'		=> \&handle_emails,
+	'entities'		=> \&handle_entities,
+	'ipAddresses'		=> \&handle_ipAddresses,
+#	'links'			=> \&handle_links,
+	'lang'			=> \&handle_language,
+	'names'			=> \&handle_names,
+	'nameServers'		=> \&handle_nameServers,
+	'notices'		=> \&handle_notices,
+	'phones'		=> \&handle_phones,
+	'postalAddress'		=> \&handle_postalAddress,
+#	'remarks',		=> \&handle_remarks,
+	'rdapConformance'	=> \&handle_rdapConformance,
+	'status'		=> \&handle_status,
+#	'variants'		=> \&handle_variants,
+};
+
+#
+# entity roles:
+#
+my @roles = qw(registrant admin tech billing);
+
+#
+# command line options:
+#
+my $help = 0;
+my $host;
+my $type = 'domain';
+my $query;
+my $raw;
+GetOptions(
+	'help'		=> \$help,
+	'host=s'	=> \$host,
+	'type:s'	=> \$type,
+	'query:s'	=> \$query,
+	'raw'		=> \$raw,
+);
+$type = lc($type);
+$query = $ARGV[0] if ($query eq '' && $ARGV[0] ne '');
+
+help() if ($host eq '' || $query eq '' || $help);
+
+#
+# send HTTP request:
+#
+my $uri = sprintf('http://%s/%s/%s', $host, $type, $query);
+
+my $ua = LWP::UserAgent->new;
+$ua->agent("$NAME/$VERSION");
+
+my $req = GET($uri);
+
+my $res = $ua->request($req);
+
+my $prefix;
+my @rows;
+my @notices;
+
+#
+# handle response:
+#
+if ($res->is_error) {
+	printf(STDERR "Error: %s\n", $res->status_line);
+	exit(1);
+
+} elsif ($res->header('Content-Type') ne 'application/rdap+json') {
+	printf(STDERR "Don't know what to do with %s\n", $res->header('Content-Type'));
+	exit(1);
+
+} else {
+	my $json = new JSON;
+	my $data = $json->decode($res->content);
+
+	if ($raw) {
+		print $json->pretty->encode($data);
+
+	} else {
+		handle_generic($data);
+
+	}
+}
+
+#
+# output response:
+#
+my $max = 0;
+map { $max = length($_->[0]) if (length($_->[0]) > $max) } @rows;
+
+foreach my $row (@rows) {
+	print	$row->[0] .
+		' ' x ($max -length($row->[0])) .
+		' : ' .
+		$row->[1] .
+		"\n";
+}
+
+foreach my $notice (@notices) {
+	my $bar = '=' x (38 - (POSIX::floor(length($notice->{'notice'}->{'title'}))/2));
+	print "\n".$bar.' '.$notice->{'notice'}->{'title'}.' '.$bar."\n\n";
+	map { print $_."\n" } @{$notice->{'notice'}->{'description'}};
+	print "\n";
+	print "URI: ".$notice->{'notice'}->{'uri'}."\n" if (defined($notice->{'notice'}->{'uri'}));
+}
+
+print "\n";
+
+#
+# END:
+#
+exit(0);
+
+#
+# helper functions:
+#
+sub help {
+	print <<"END";
+$NAME version $VERSION. Copyright 2012 CentralNic Ltd.
+Usage: $NAME --host=HOST [--type=TYPE] QUERY
+Options:
+  --help                Show this help
+  --host=HOST           Set server hostname
+  --type=TYPE           Set query type (default: domain)
+  --raw			Show raw JSON response
+END
+	exit;
+}
+
+sub name {
+	my $key = shift;
+	return ($name->{$key} || $key);
+}
+
+sub append_row {
+	my $row = shift;
+	$row->[0] = $prefix.' '.$row->[0] if ($prefix ne '');
+	push(@rows, $row);
+}
+
+sub handle_delegationKeys {
+	my $keys = shift;
+
+	foreach my $key (@{$keys}) {
+		$prefix = name('delegationKeys');
+		handle_generic($key);
+		$prefix = '';
+	}
+}
+
+sub handle_entities {
+	my $entities = shift;
+
+	my $roles = {};
+	foreach my $entity (@{$entities}) {
+		next if (!defined($entity->{'roles'}));
+
+		foreach my $role (@{$entity->{'roles'}}) {
+			$roles->{$role} = $entity;
+		}
+		delete($entity->{'roles'});
+	}
+
+	foreach my $role (@roles) {
+		next if (!defined($roles->{$role}));
+		$prefix = sprintf('%s Contact', ucfirst($role));
+		handle_generic($roles->{$role});
+		$prefix = '';
+	}
+}
+
+sub handle_emails {
+	my $addrs = shift;
+
+	foreach my $addrs (@{$addrs}) {
+		append_row([$name->{'emails'}, $addrs]);
+	}
+}
+
+sub handle_generic {
+	my ($data, $prefix) = @_;
+
+	foreach my $key (reverse sort { $order->{$a} <=> $order->{$b} } keys(%{$data})) {
+		if (defined($handler->{$key})) {
+			&{$handler->{$key}}($data->{$key});
+
+		} elsif (ref($data->{$key}) eq '') {
+			append_row([name($key), $data->{$key}]);
+
+		} else {
+			append_row([name($key), encode_json({$key => $data->{$key}})]);
+
+		}
+	}
+}
+
+sub handle_ipAddresses {
+	my $addrs = shift;
+
+	foreach my $addrs (@{$addrs}) {
+		append_row([$name->{'ipAddresses'}, $addrs]);
+	}
+}
+
+sub handle_language {
+	# do nothing
+}
+
+sub handle_names {
+	my $names = shift;
+
+	append_row([$name->{'names'}, sort(join(', ', grep { $_ ne '' } @{$names}))]);
+}
+
+sub handle_nameServers {
+	my $ns = shift;
+
+	foreach my $host (sort { $a->{'name'} cmp $b->{'name'} } @{$ns}) {
+		append_row([$name->{'nameServers'}, $host->{'name'}]);
+	}
+}
+
+sub handle_phones {
+	my $phones = shift;
+
+	foreach my $type (keys(%{$phones})) {
+		if ($type eq 'fax') {
+			append_row([$name->{'fax'}, $phones->{$type}]);
+
+		} else {
+			append_row([sprintf('%s (%s)', $name->{'phones'}, $type), $phones->{$type}]);
+
+		}
+	}
+}
+
+sub handle_postalAddress {
+	my $address = shift;
+
+	foreach my $line (@{$address}) {
+		append_row([$name->{'postalAddress'}, $line]);
+	}
+
+}
+
+sub handle_rdapConformance {
+	# do nothing
+}
+
+sub handle_status {
+	my $codes = shift;
+
+	foreach my $code (@{$codes}) {
+		append_row([$name->{'status'}, $code]);
+	}
+}
+
+sub handle_notices {
+	my $notices = shift;
+
+	foreach my $notice (@{$notices}) {
+		push(@notices, $notice);
+	}
+}
