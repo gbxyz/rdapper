@@ -9,8 +9,6 @@ use Getopt::Long;
 use POSIX;
 use strict;
 
-package rdapper;
-
 my $NAME = 'rdapper';
 our $VERSION = '0.01';
 
