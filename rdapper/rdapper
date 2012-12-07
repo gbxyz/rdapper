@@ -6,12 +6,13 @@ use LWP;
 use HTTP::Request::Common;
 use JSON;
 use Getopt::Long;
-use Data::Dumper;
 use POSIX;
 use strict;
 
+package rdapper;
+
 my $NAME = 'rdapper';
-my $VERSION = '0.01';
+our $VERSION = '0.01';
 
 #
 # determines the order in which fields appear in output:
@@ -361,3 +362,64 @@ sub handle_notices {
 		push(@notices, $notice);
 	}
 }
+
+__END__
+=pod
+
+=head1 NAME
+
+rdapper
+
+=head1 DESCRIPTION
+
+rdapper is a command-line client for the Registration Data Access Protocol
+(RDAP), the successor protocol to Whois (RFC 3912). RDAP is currently being
+developed by the WEIRDS IETF working group, and has not yet been finalized.
+
+This tool will send an RDAP query to an RDAP server over HTTP or HTTPS, parse
+the JSON response, and display it in human-readable form.
+
+=head1 USAGE
+
+    rdapper --host=HOST [--type=TYPE] [--tls] [--raw] QUERY
+
+=head1 OPTIONS
+
+=over
+
+=item --host=HOST
+
+Specify the host to query
+
+=item --TYPE=TYPE (default: domain)
+
+Specify the type of object being queried. Possible values are: domain, entity,
+nameserver, autnum, ip.
+
+=item --tls
+
+Force use of TLS.
+
+=item --raw
+
+Causes rdapper to emit pretty-printed JSON rather than text output.
+
+=back
+
+=head1 SEE ALSO
+
+=over
+
+=item L<http://tools.ietf.org/wg/weirds/>
+
+=item L<https://www.centralnic.com/>
+
+=back
+
+=head1 COPYRIGHT
+
+rdapper is Copyright 2012 CentralNic Ltd. All rights reserved. This program is
+free software; you can redistribute it and/or modify it under the same terms as
+Perl itself.
+
+=cut

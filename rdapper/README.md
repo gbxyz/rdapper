@@ -1,25 +1,46 @@
-rdapper is a command line client to the RDAP protocol (also known as WEIRDS).
-See http://datatracker.ietf.org/wg/weirds/charter/ for further info.
+# NAME
 
-## Usage
+rdapper
 
-	rdapper --host=HOST [--type=TYPE] QUERY
+# DESCRIPTION
 
-	Options:
-	  --help                Show this help
-	  --host=HOST           Set server hostname
-	  --type=TYPE           Set query type (default: domain)
-	  --raw			Show raw JSON response
-	  --tls			Use SSL/TLS
+rdapper is a command-line client for the Registration Data Access Protocol
+(RDAP), the successor protocol to Whois (RFC 3912). RDAP is currently being
+developed by the WEIRDS IETF working group, and has not yet been finalized.
 
-## Dependencies
+This tool will send an RDAP query to an RDAP server over HTTP or HTTPS, parse
+the JSON response, and display it in human-readable form.
 
-* LWP
-* JSON
+# USAGE
 
-Both can be trivially installed from your upstream software vendor or CPAN
+    rdapper --host=HOST [--type=TYPE] [--tls] [--raw] QUERY
 
-## License
+# OPTIONS
 
-rdapper is free software; you can redistribute it and/or modify it under the
-same terms as Perl itself.
+- \--host=HOST
+
+    Specify the host to query
+
+- \--TYPE=TYPE (default: domain)
+
+    Specify the type of object being queried. Possible values are: domain, entity,
+    nameserver, autnum, ip.
+
+- \--tls
+
+    Force use of TLS.
+
+- \--raw
+
+    Causes rdapper to emit pretty-printed JSON rather than text output.
+
+# SEE ALSO
+
+- [http://tools.ietf.org/wg/weirds/](http://tools.ietf.org/wg/weirds/)
+- [https://www.centralnic.com/](https://www.centralnic.com/)
+
+# COPYRIGHT
+
+rdapper is Copyright 2012 CentralNic Ltd. All rights reserved. This program is
+free software; you can redistribute it and/or modify it under the same terms as
+Perl itself.
