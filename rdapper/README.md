@@ -11,7 +11,7 @@ developed by the WEIRDS IETF working group, and has not yet been finalized.
 This tool will send an RDAP query to an RDAP server over HTTP or HTTPS, parse
 the JSON response, and display it in human-readable form.
 
-\# INSTALLING
+# INSTALLING
 
 To install this program type the following commands in the source directory:
 
