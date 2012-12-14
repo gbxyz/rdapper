@@ -37,14 +37,14 @@ the JSON response, and display it in human-readable form.
 - lang=LANGUAGE
 
     Specify a language. This is sent to the server using the `Accept-Language`
-    header. If unset, the language will be taken from your $LANG environment
-    variable (or "en" if that is not defined).
+    header. If unset, the language will be taken from your `$LANG` environment
+    variable (or "`en`" if that is not defined).
 
-- encoding=encoding
+- encoding=ENCODING
 
     Specify an encoding. This is sent to the server using the `Accept-Encoding`
-    header. If unset, the encoding will be taken from your $LANG environment
-    variable (or "UTF-8" if that is not defined).
+    header. If unset, the encoding will be taken from your `$LANG` environment
+    variable (or "`UTF-8`" if that is not defined).
 
 # SEE ALSO
 

@@ -445,14 +445,14 @@ Causes rdapper to emit pretty-printed JSON rather than text output.
 =item lang=LANGUAGE
 
 Specify a language. This is sent to the server using the C<Accept-Language>
-header. If unset, the language will be taken from your $LANG environment
-variable (or "en" if that is not defined).
+header. If unset, the language will be taken from your C<$LANG> environment
+variable (or "C<en>" if that is not defined).
 
-=item encoding=encoding
+=item encoding=ENCODING
 
 Specify an encoding. This is sent to the server using the C<Accept-Encoding>
-header. If unset, the encoding will be taken from your $LANG environment
-variable (or "UTF-8" if that is not defined).
+header. If unset, the encoding will be taken from your C<$LANG> environment
+variable (or "C<UTF-8>" if that is not defined).
 
 =back
 
