@@ -10,10 +10,11 @@ use POSIX;
 use strict;
 
 my $NAME = 'rdapper';
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 #
-# determines the order in which fields appear in output:
+# determines the order in which fields appear in output. The higher the number,
+# the closer to the top the field appears:
 #
 my $order = {
 	'handle'		=> 99999,
@@ -31,11 +32,9 @@ my $order = {
 	'entities'		=> 11109,
 	'nameServers'		=> 11108,
 	'delegationKeys'	=> 11107,
-
 	'postalAddress'		=> 11106,
 	'phones'		=> 11105,
 	'emails'		=> 11104,
-
 	'keyTag'		=> 11103,
 	'algorithm'		=> 11102,
 	'digestType'		=> 11101,
@@ -43,7 +42,7 @@ my $order = {
 };
 
 #
-# English names for keys:
+# English names for keys. These need to be internationalised at some point:
 #
 my $name = {
 	'algorithm'		=> 'Algorithm',
@@ -120,12 +119,14 @@ my @roles = qw(registrant admin tech billing);
 #
 # command line options:
 #
-my $help = 0;
+my $help;
 my $host;
 my $type = 'domain';
 my $query;
 my $raw;
 my $tls;
+my $lang;
+my $encoding;
 GetOptions(
 	'help'		=> \$help,
 	'host=s'	=> \$host,
@@ -133,26 +134,55 @@ GetOptions(
 	'query:s'	=> \$query,
 	'raw'		=> \$raw,
 	'tls'		=> \$tls,
+	'lang:s'	=> \$lang,
+	'encoding:s'	=> \$encoding,
 );
 $type = lc($type);
 $query = $ARGV[0] if ($query eq '' && $ARGV[0] ne '');
 
+if ($lang eq '') {
+	if (defined($ENV{'LANG'})) {
+		($lang, $encoding) = split(/\./, $ENV{'LANG'}, 2);
+		$lang =~ s/_/-/;
+
+	} else {
+		$lang = 'en';
+
+	}
+}
+
+$encoding = 'UTF-8' if ($encoding eq '');
+
 help() if ($host eq '' || $query eq '' || $help);
 
 #
-# send HTTP request:
+# prepare the UA:
 #
 my $uri = sprintf('%s://%s/%s/%s', ($tls ? 'https' : 'http'), $host, $type, $query);
 
 my $ua = LWP::UserAgent->new;
 $ua->agent("$NAME/$VERSION");
 
+#
+# prepare request:
+#
 my $req = GET($uri);
+$req->header('Accept-Language',	$lang);
+$req->header('Accept-Encoding',	$encoding);
+$req->header('Accept',		'application/json');
 
+#
+# send request:
+#
 my $res = $ua->request($req);
 
+# this is used to prepend information to a key name:
 my $prefix;
+
+# output rows go in here:
 my @rows;
+
+# notices go in here:
 my @notices;
 
 #
@@ -193,6 +223,9 @@ foreach my $row (@rows) {
 		"\n";
 }
 
+#
+# display notices:
+#
 foreach my $notice (@notices) {
 	my $bar = '=' x (38 - (POSIX::floor(length($notice->{'notice'}->{'title'}))/2));
 	print "\n".$bar.' '.$notice->{'notice'}->{'title'}.' '.$bar."\n\n";
@@ -208,9 +241,7 @@ print "\n";
 #
 exit(0);
 
-#
-# helper functions:
-#
+# display help:
 sub help {
 	print <<"END";
 $NAME version $VERSION. Copyright 2012 CentralNic Ltd.
@@ -221,20 +252,46 @@ Options:
   --type=TYPE           Set query type (default: domain)
   --raw			Show raw JSON response
   --tls			Use SSL/TLS
+  --lang		Set language (default: taken from \$LANG)
+  --encoding		Set encoding (default: taken from \$LANG)
 END
 	exit;
 }
 
+# converts an RDAP key into a human readable name:
 sub name {
 	my $key = shift;
 	return ($name->{$key} || $key);
 }
 
+# append a row [$name, $value] to the output array:
 sub append_row {
 	my $row = shift;
 	$row->[0] = $prefix.' '.$row->[0] if ($prefix ne '');
 	push(@rows, $row);
 }
+
+# handler for generic (top-level) data:
+sub handle_generic {
+	my ($data, $prefix) = @_;
+
+	foreach my $key (reverse sort { $order->{$a} <=> $order->{$b} } keys(%{$data})) {
+		if (defined($handler->{$key})) {
+			&{$handler->{$key}}($data->{$key});
+
+		} elsif (ref($data->{$key}) eq '') {
+			append_row([name($key), $data->{$key}]);
+
+		} else {
+			append_row([name($key), encode_json({$key => $data->{$key}})]);
+
+		}
+	}
+}
+
+#
+# handlers for specific keys:
+#
 
 sub handle_delegationKeys {
 	my $keys = shift;
@@ -272,23 +329,6 @@ sub handle_emails {
 
 	foreach my $addrs (@{$addrs}) {
 		append_row([$name->{'emails'}, $addrs]);
-	}
-}
-
-sub handle_generic {
-	my ($data, $prefix) = @_;
-
-	foreach my $key (reverse sort { $order->{$a} <=> $order->{$b} } keys(%{$data})) {
-		if (defined($handler->{$key})) {
-			&{$handler->{$key}}($data->{$key});
-
-		} elsif (ref($data->{$key}) eq '') {
-			append_row([name($key), $data->{$key}]);
-
-		} else {
-			append_row([name($key), encode_json({$key => $data->{$key}})]);
-
-		}
 	}
 }
 
@@ -401,6 +441,18 @@ Force use of TLS.
 =item --raw
 
 Causes rdapper to emit pretty-printed JSON rather than text output.
+
+=item lang=LANGUAGE
+
+Specify a language. This is sent to the server using the C<Accept-Language>
+header. If unset, the language will be taken from your $LANG environment
+variable (or "en" if that is not defined).
+
+=item encoding=encoding
+
+Specify an encoding. This is sent to the server using the C<Accept-Encoding>
+header. If unset, the encoding will be taken from your $LANG environment
+variable (or "UTF-8" if that is not defined).
 
 =back
 
