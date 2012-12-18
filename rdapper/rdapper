@@ -2,15 +2,18 @@
 # Copyright (c) 2012 CentralNic Ltd. All rights reserved. This program is
 # free software; you can redistribute it and/or modify it under the same
 # terms as Perl itself.
-use LWP;
+use Getopt::Long;
 use HTTP::Request::Common;
 use JSON;
-use Getopt::Long;
+use LWP 6.00;
+use MIME::Base64;
+use Mozilla::CA;
 use POSIX;
+use Pod::Usage;
 use strict;
 
 my $NAME = 'rdapper';
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 #
 # determines the order in which fields appear in output. The higher the number,
@@ -121,24 +124,40 @@ my @roles = qw(registrant admin tech billing);
 #
 my $help;
 my $host;
+my $port;
 my $type = 'domain';
 my $query;
 my $raw;
 my $tls;
 my $lang;
 my $encoding;
+my $username;
+my $password;
+my $debug;
+my $cert;
+my $key;
+my $keypass;
 GetOptions(
 	'help'		=> \$help,
 	'host=s'	=> \$host,
+	'port:i'	=> \$port,
 	'type:s'	=> \$type,
 	'query:s'	=> \$query,
 	'raw'		=> \$raw,
 	'tls'		=> \$tls,
 	'lang:s'	=> \$lang,
 	'encoding:s'	=> \$encoding,
+	'username:s'	=> \$username,
+	'password:s'	=> \$password,
+	'debug'		=> \$debug,
+	'cert:s'	=> \$cert,
+	'key:s'		=> \$key,
+	'keypass:s'	=> \$keypass,
 );
 $type = lc($type);
 $query = $ARGV[0] if ($query eq '' && $ARGV[0] ne '');
+
+$port = ($port > 0 ? $port : ($tls ? 443 : 80));
 
 if ($lang eq '') {
 	if (defined($ENV{'LANG'})) {
@@ -153,15 +172,54 @@ if ($lang eq '') {
 
 $encoding = 'UTF-8' if ($encoding eq '');
 
-help() if ($host eq '' || $query eq '' || $help);
+pod2usage('-verbose' => 1) if ($host eq '' || $query eq '' || $help);
+
+if ($raw && $debug) {
+	print STDERR "Error: Can't use --raw and --debug at the same time\n";
+	exit(1);
+}
 
 #
 # prepare the UA:
 #
-my $uri = sprintf('%s://%s/%s/%s', ($tls ? 'https' : 'http'), $host, $type, $query);
+my $uri = sprintf('%s://%s:%d/%s/%s', ($tls ? 'https' : 'http'), $host, $port, $type, $query);
 
 my $ua = LWP::UserAgent->new;
 $ua->agent("$NAME/$VERSION");
+
+my %ssl_opts = (
+	'verify_hostname'	=> 1,
+	'SSL_ca_file'		=> Mozilla::CA::SSL_ca_file(),
+);
+
+if ($cert ne '' || $key ne '') {
+	if ($cert eq '') {
+		print STDERR "Error: Missing --cert option\n";
+		exit 1;
+
+	} elsif (!-r $cert) {
+		print STDERR "Error: Certificate file '$cert' can't be read\n";
+		exit 1;
+
+	}
+
+	if ($key eq '') {
+		print STDERR "Error: Missing --key option\n";
+		exit 1;
+
+	} elsif (!-r $key) {
+		print STDERR "Error: Certificate file '$key' can't be read\n";
+		exit 1;
+
+	}
+
+	$ssl_opts{'SSL_cert_file'} = $cert;
+	$ssl_opts{'SSL_key_file'}  = $key;
+	$ssl_opts{'SSL_passwd_cb'} = sub { $keypass };
+
+}
+
+$ua->ssl_opts(%ssl_opts);
 
 #
 # prepare request:
@@ -170,6 +228,7 @@ my $req = GET($uri);
 $req->header('Accept-Language',	$lang);
 $req->header('Accept-Encoding',	$encoding);
 $req->header('Accept',		'application/json');
+$req->header('Authorization',	encode_base64($username.':'.$password)) if ($username ne '');
 
 #
 # send request:
@@ -188,12 +247,16 @@ my @notices;
 #
 # handle response:
 #
-if ($res->is_error) {
+if ($debug) {
+	print $req->as_string;
+	print $res->as_string;
+
+} elsif ($res->is_error) {
 	printf(STDERR "Error: %s\n", $res->status_line);
 	exit(1);
 
 } elsif ($res->header('Content-Type') ne 'application/rdap+json') {
-	printf(STDERR "Don't know what to do with %s\n", $res->header('Content-Type'));
+	printf(STDERR "Error: Don't know what to do with a response of content type '%s' (hint: use --debug to see the full server response)\n", $res->header('Content-Type'));
 	exit(1);
 
 } else {
@@ -240,23 +303,6 @@ print "\n";
 # END:
 #
 exit(0);
-
-# display help:
-sub help {
-	print <<"END";
-$NAME version $VERSION. Copyright 2012 CentralNic Ltd.
-Usage: $NAME --host=HOST [--type=TYPE] QUERY
-Options:
-  --help                Show this help
-  --host=HOST           Set server hostname
-  --type=TYPE           Set query type (default: domain)
-  --raw			Show raw JSON response
-  --tls			Use SSL/TLS
-  --lang		Set language (default: taken from \$LANG)
-  --encoding		Set encoding (default: taken from \$LANG)
-END
-	exit;
-}
 
 # converts an RDAP key into a human readable name:
 sub name {
@@ -427,7 +473,7 @@ To install this program type the following commands in the source directory:
 
 =head1 USAGE
 
-    rdapper --host=HOST [--type=TYPE] [--tls] [--raw] QUERY
+    rdapper --host=HOST [OPTIONS] QUERY
 
 =head1 OPTIONS
 
@@ -435,7 +481,7 @@ To install this program type the following commands in the source directory:
 
 =item --host=HOST
 
-Specify the host to query
+Specify the host to query.
 
 =item --TYPE=TYPE (default: domain)
 
@@ -446,21 +492,46 @@ nameserver, autnum, ip.
 
 Force use of TLS.
 
+=item --username=USERNAME
+
+Specify a username to be used with Basic Authentication.
+
+=item --password=PASSWORD
+
+Specify a password to be used with Basic Authentication.
+
+=item --cert=CERTIFICATE
+
+Specify a client SSL certificate to present to the server.
+
+=item --key=KEY
+
+Specify a private key matching the certificate given in C<--password>.
+
+=item --keypass=PASSPHRASE
+
+Specify a passphrase to decrypt the private key given by C<--key>.
+
 =item --raw
 
 Causes rdapper to emit pretty-printed JSON rather than text output.
 
-=item lang=LANGUAGE
+=item --debug
+
+Causes rdapper to display the HTTP request and response rather than the text
+output.
+
+=item --lang=LANGUAGE
 
 Specify a language. This is sent to the server using the C<Accept-Language>
 header. If unset, the language will be taken from your C<$LANG> environment
-variable (or "C<en>" if that is not defined).
+variable (or C<en> if that is not defined).
 
-=item encoding=ENCODING
+=item --encoding=ENCODING
 
 Specify an encoding. This is sent to the server using the C<Accept-Encoding>
 header. If unset, the encoding will be taken from your C<$LANG> environment
-variable (or "C<UTF-8>" if that is not defined).
+variable (or C<UTF-8> if that is not defined).
 
 =back
 
