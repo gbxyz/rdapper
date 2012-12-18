@@ -21,13 +21,13 @@ To install this program type the following commands in the source directory:
 
 # USAGE
 
-    rdapper --host=HOST [--type=TYPE] [--tls] [--raw] QUERY
+    rdapper --host=HOST [OPTIONS] QUERY
 
 # OPTIONS
 
 - \--host=HOST
 
-    Specify the host to query
+    Specify the host to query.
 
 - \--TYPE=TYPE (default: domain)
 
@@ -38,21 +38,46 @@ To install this program type the following commands in the source directory:
 
     Force use of TLS.
 
+- \--username=USERNAME
+
+    Specify a username to be used with Basic Authentication.
+
+- \--password=PASSWORD
+
+    Specify a password to be used with Basic Authentication.
+
+- \--cert=CERTIFICATE
+
+    Specify a client SSL certificate to present to the server.
+
+- \--key=KEY
+
+    Specify a private key matching the certificate given in `--password`.
+
+- \--keypass=PASSPHRASE
+
+    Specify a passphrase to decrypt the private key given by `--key`.
+
 - \--raw
 
     Causes rdapper to emit pretty-printed JSON rather than text output.
 
-- lang=LANGUAGE
+- \--debug
+
+    Causes rdapper to display the HTTP request and response rather than the text
+    output.
+
+- \--lang=LANGUAGE
 
     Specify a language. This is sent to the server using the `Accept-Language`
     header. If unset, the language will be taken from your `$LANG` environment
-    variable (or "`en`" if that is not defined).
+    variable (or `en` if that is not defined).
 
-- encoding=ENCODING
+- \--encoding=ENCODING
 
     Specify an encoding. This is sent to the server using the `Accept-Encoding`
     header. If unset, the encoding will be taken from your `$LANG` environment
-    variable (or "`UTF-8`" if that is not defined).
+    variable (or `UTF-8` if that is not defined).
 
 # SEE ALSO
 
