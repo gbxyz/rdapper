@@ -208,7 +208,7 @@ if ($cert ne '' || $key ne '') {
 		exit 1;
 
 	} elsif (!-r $key) {
-		print STDERR "Error: Certificate file '$key' can't be read\n";
+		print STDERR "Error: Key file '$key' can't be read\n";
 		exit 1;
 
 	}
