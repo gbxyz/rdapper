@@ -14,6 +14,7 @@ WriteMakefile(
 		'JSON'			=> 0,
 		'LWP'			=> 6.00,
 		'MIME::Base64'		=> 0,
+		'MIME::Type'		=> 0,
 		'Mozilla::CA'		=> 0,
 		'POSIX'			=> 0,
 		'Pod::Usage'		=> 0,
