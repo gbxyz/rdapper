@@ -21,13 +21,13 @@ To install this program type the following commands in the source directory:
 
 # USAGE
 
-    rdapper --host=HOST [OPTIONS] QUERY
+    rdapper [OPTIONS] QUERY
 
 # OPTIONS
 
-- \--host=HOST
+- \--host=HOST (default: rdap.org)
 
-    Specify the host to query.
+    Specify the host to query. If not set, rdapper uses `rdap.org` (see below).
 
 - \--TYPE=TYPE (default: domain)
 
@@ -79,10 +79,17 @@ To install this program type the following commands in the source directory:
     header. If unset, the encoding will be taken from your `$LANG` environment
     variable (or `UTF-8` if that is not defined).
 
+# USE OF RDAP.ORG
+
+Unless instructed otherwise (via the --host argument), rdapper will send 
+all queries to rdap.org: this server is an aggregator of RDAP services, 
+and will provide an HTTP redirect where available.
+
 # SEE ALSO
 
 - [http://tools.ietf.org/wg/weirds/](http://tools.ietf.org/wg/weirds/)
 - [https://www.centralnic.com/](https://www.centralnic.com/)
+- [http://rdap.org/](http://rdap.org/)
 
 # COPYRIGHT
 

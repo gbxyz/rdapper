@@ -14,7 +14,7 @@ use Pod::Usage;
 use strict;
 
 my $NAME = 'rdapper';
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 #
 # determines the order in which fields appear in output. The higher the number,
@@ -124,7 +124,7 @@ my @roles = qw(registrant admin tech billing);
 # command line options:
 #
 my $help;
-my $host;
+my $host = 'rdap.org';
 my $port;
 my $type = 'domain';
 my $query;
@@ -249,7 +249,11 @@ my @notices;
 # handle response:
 #
 if ($debug) {
-	print $req->as_string;
+	foreach my $prev ($res->redirects) {
+		print $prev->request->as_string;
+		print $prev->as_string;
+	}
+	print $res->request->as_string;
 	print $res->as_string;
 	exit(0);
 
@@ -479,15 +483,15 @@ To install this program type the following commands in the source directory:
 
 =head1 USAGE
 
-    rdapper --host=HOST [OPTIONS] QUERY
+    rdapper [OPTIONS] QUERY
 
 =head1 OPTIONS
 
 =over
 
-=item --host=HOST
+=item --host=HOST (default: rdap.org)
 
-Specify the host to query.
+Specify the host to query. If not set, rdapper uses C<rdap.org> (see below).
 
 =item --TYPE=TYPE (default: domain)
 
@@ -541,6 +545,12 @@ variable (or C<UTF-8> if that is not defined).
 
 =back
 
+=head1 USE OF RDAP.ORG
+
+Unless instructed otherwise (via the --host argument), rdapper will send 
+all queries to rdap.org: this server is an aggregator of RDAP services, 
+and will provide an HTTP redirect where available.
+
 =head1 SEE ALSO
 
 =over
@@ -548,6 +558,8 @@ variable (or C<UTF-8> if that is not defined).
 =item L<http://tools.ietf.org/wg/weirds/>
 
 =item L<https://www.centralnic.com/>
+
+=item L<http://rdap.org/>
 
 =back
 
