@@ -176,7 +176,7 @@ if ($type eq '') {
 	) {
 		$type = 'ip';
 
-	} elsif ($query =~ /^AS(\d+)$/i) {
+	} elsif ($query =~ /^ASN?(\d+)$/i) {
 		$query = $1;
 		$type = 'autnum';
 
