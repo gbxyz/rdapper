@@ -328,11 +328,20 @@ foreach my $row (@rows) {
 # display notices:
 #
 foreach my $notice (@notices) {
-	my $bar = '=' x (38 - (POSIX::floor(length($notice->{'notice'}->{'title'}))/2));
-	print "\n".$bar.' '.$notice->{'notice'}->{'title'}.' '.$bar."\n\n";
-	map { print $_."\n" } @{$notice->{'notice'}->{'description'}};
+	my $bar = '=' x (38 - (POSIX::floor(length($notice->{'title'}))/2));
+	print "\n".$bar.' '.$notice->{'title'}.' '.$bar."\n\n";
+
+	if (ref($notice->{'description'}) eq '') {
+		chomp($notice->{'description'});
+		print $notice->{'description'}."\n";
+
+	} elsif (ref($notice->{'description'}) eq 'ARRAY') {
+		map { print $_."\n" } @{$notice->{'description'}};
+
+	}
+
 	print "\n";
-	print "URI: ".$notice->{'notice'}->{'uri'}."\n" if (defined($notice->{'notice'}->{'uri'}));
+	print "URI: ".$notice->{'uri'}."\n" if (defined($notice->{'uri'}));
 }
 
 print "\n";
@@ -359,16 +368,21 @@ sub append_row {
 sub handle_generic {
 	my ($data, $prefix) = @_;
 
-	foreach my $key (reverse sort { $order->{$a} <=> $order->{$b} } keys(%{$data})) {
-		if (defined($handler->{$key})) {
-			&{$handler->{$key}}($data->{$key});
+	if (ref($data) ne 'HASH') {
+		append_row([name(ref($data)), encode_json($data)]);
 
-		} elsif (ref($data->{$key}) eq '') {
-			append_row([name($key), $data->{$key}]);
+	} else {
+		foreach my $key (reverse sort { $order->{$a} <=> $order->{$b} } keys(%{$data})) {
+			if (defined($handler->{$key})) {
+				&{$handler->{$key}}($data->{$key});
 
-		} else {
-			append_row([name($key), encode_json({$key => $data->{$key}})]);
+			} elsif (ref($data->{$key}) eq '') {
+				append_row([name($key), $data->{$key}]);
 
+			} else {
+				append_row([name($key), encode_json({$key => $data->{$key}})]);
+
+			}
 		}
 	}
 }
