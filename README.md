@@ -29,10 +29,12 @@ To install this program type the following commands in the source directory:
 
     Specify the host to query. If not set, rdapper uses `rdap.org` (see below).
 
-- \--TYPE=TYPE (default: domain)
+- \--TYPE=TYPE
 
-    Specify the type of object being queried. Possible values are: domain, entity,
-    nameserver, autnum, ip.
+    Specify the type of object being queried. Possible values are: domain, 
+    entity, nameserver, autnum, ip. Rdapper will automatically detect IPv4 
+    and IPv6 addresses and AS numbers, and will fall back to domain queries 
+    for everything else.
 
 - \--tls
 
