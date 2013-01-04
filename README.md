@@ -1,6 +1,6 @@
 # NAME
 
-rdapper
+rdapper - a command-line RDAP client.
 
 # DESCRIPTION
 

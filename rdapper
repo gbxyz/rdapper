@@ -14,7 +14,7 @@ use Pod::Usage;
 use strict;
 
 my $NAME = 'rdapper';
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 #
 # determines the order in which fields appear in output. The higher the number,
@@ -504,7 +504,7 @@ __END__
 
 =head1 NAME
 
-rdapper
+rdapper - a command-line RDAP client.
 
 =head1 DESCRIPTION
 
