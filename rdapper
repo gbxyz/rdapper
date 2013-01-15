@@ -25,6 +25,7 @@ my $order = {
 	'handle'		=> 99999,
 	'name'			=> 88888,
 	'names'			=> 88887,
+	'entityNames'		=> 88887,
 	'variants'		=> 77777,
 	'status'		=> 66666,
 	'sponsoredBy'		=> 66333,
@@ -60,6 +61,7 @@ my $name = {
 	'endAddress'		=> 'End Address',
 	'endAutnum'		=> 'End AS',
 	'entities'		=> 'Contact',
+	'entitiyNames'		=> 'Name',
 	'errorCode'		=> 'Error Code',
 	'expirationDate'	=> 'Expiration Date',
 	'fax'			=> 'Fax',
@@ -103,9 +105,11 @@ my $handler = {
 	'delegationKeys'	=> \&handle_delegationKeys,
 	'emails'		=> \&handle_emails,
 	'entities'		=> \&handle_entities,
+	'entityNames'		=> \&handle_names,
 	'ipAddresses'		=> \&handle_ipAddresses,
 	'links'			=> \&handle_links,
 	'lang'			=> \&handle_language,
+	# deprecated in draft-ietf-weirds-json-response-02 but still used in the examples
 	'names'			=> \&handle_names,
 	'nameServers'		=> \&handle_nameServers,
 	'notices'		=> \&handle_notices,
@@ -531,7 +535,7 @@ sub handle_links {
 	my $links = shift;
 
 	foreach my $link (@{$links}) {
-		append_row([$name->{'links'}, $uri->{'href'}]);
+		append_row([$name->{'links'}, $link->{'href'}]);
 	}
 }
 
