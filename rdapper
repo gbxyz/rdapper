@@ -1,9 +1,10 @@
 #!/usr/bin/perl
-# Copyright (c) 2012 CentralNic Ltd. All rights reserved. This program is
+# Copyright (c) 2013 CentralNic Ltd. All rights reserved. This program is
 # free software; you can redistribute it and/or modify it under the same
 # terms as Perl itself.
 use Getopt::Long;
 use HTTP::Request::Common;
+use IO::Socket::SSL;
 use JSON;
 use LWP 6.00;
 use MIME::Base64;
@@ -14,7 +15,7 @@ use Pod::Usage;
 use strict;
 
 my $NAME = 'rdapper';
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 #
 # determines the order in which fields appear in output. The higher the number,
@@ -67,7 +68,7 @@ my $name = {
 	'ipVersion'		=> 'IP Version',
 	'keyTag'		=> 'Key Tag',
 	'lang'			=> 'Language',
-	'lastChangedBy'		=> 'Last Changed Up',
+	'lastChangedBy'		=> 'Last Changed By',
 	'lastChangedDate'	=> 'Last Changed',
 	'links'			=> 'Link',
 	'name'			=> 'Name',
@@ -91,6 +92,7 @@ my $name = {
 	'title'			=> 'Title',
 	'transferDate'		=> 'Transferred',
 	'type'			=> 'Type',
+	'uris'			=> 'URI',
 	'variants'		=> 'Variant',
 };
 
@@ -102,17 +104,18 @@ my $handler = {
 	'emails'		=> \&handle_emails,
 	'entities'		=> \&handle_entities,
 	'ipAddresses'		=> \&handle_ipAddresses,
-#	'links'			=> \&handle_links,
+	'links'			=> \&handle_links,
 	'lang'			=> \&handle_language,
 	'names'			=> \&handle_names,
 	'nameServers'		=> \&handle_nameServers,
 	'notices'		=> \&handle_notices,
 	'phones'		=> \&handle_phones,
 	'postalAddress'		=> \&handle_postalAddress,
-#	'remarks',		=> \&handle_remarks,
+	'remarks',		=> \&handle_remarks,
 	'rdapConformance'	=> \&handle_rdapConformance,
 	'status'		=> \&handle_status,
-#	'variants'		=> \&handle_variants,
+	'uris'			=> \&handle_uris,
+	'variants'		=> \&handle_variants,
 };
 
 #
@@ -138,6 +141,7 @@ my $debug;
 my $cert;
 my $key;
 my $keypass;
+my $insecure;
 GetOptions(
 	'help'		=> \$help,
 	'host=s'	=> \$host,
@@ -154,6 +158,7 @@ GetOptions(
 	'cert:s'	=> \$cert,
 	'key:s'		=> \$key,
 	'keypass:s'	=> \$keypass,
+	'insecure'	=> \$insecure,
 );
 
 $type = lc($type);
@@ -216,10 +221,16 @@ my $uri = sprintf('%s://%s:%d/%s/%s', ($tls ? 'https' : 'http'), $host, $port, $
 my $ua = LWP::UserAgent->new;
 $ua->agent("$NAME/$VERSION");
 
-my %ssl_opts = (
-	'verify_hostname'	=> 1,
-	'SSL_ca_file'		=> Mozilla::CA::SSL_ca_file(),
-);
+my %ssl_opts;
+if ($insecure) {
+	$ssl_opts{'verify_hostname'} = 0;
+
+} else {
+	$ssl_opts{'verify_hostname'}		=  1;
+	$ssl_opts{'SSL_ca_file'}		= Mozilla::CA::SSL_ca_file();
+	$ssl_opts{'SSL_verify_mode'}		= SSL_VERIFY_PEER;
+	$ssl_opts{'SSL_verifycn_scheme'}	= 'http';
+}
 
 if ($cert ne '' || $key ne '') {
 	if ($cert eq '') {
@@ -374,7 +385,15 @@ sub handle_generic {
 	} else {
 		foreach my $key (reverse sort { $order->{$a} <=> $order->{$b} } keys(%{$data})) {
 			if (defined($handler->{$key})) {
-				&{$handler->{$key}}($data->{$key});
+				eval {
+					&{$handler->{$key}}($data->{$key});
+				};
+				if ($@) {
+					chomp($@);
+					$@ =~ s/ at $0 line \d+\.$//;
+					append_row([name('remarks'), sprintf("Error parsing value for '%s': %s", $key, $@)]);
+					append_row([name($key), encode_json({$key => $data->{$key}})]);
+				}
 
 			} elsif (ref($data->{$key}) eq '') {
 				append_row([name($key), $data->{$key}]);
@@ -499,6 +518,41 @@ sub handle_notices {
 	}
 }
 
+# NB: "uris" were deprecated in favour of "links" in draft-ietf-weirds-json-response-01
+sub handle_uris {
+	my $uris = shift;
+
+	foreach my $uri (@{$uris}) {
+		append_row([$name->{'uris'}, $uri->{'uri'}]);
+	}
+}
+
+sub handle_links {
+	my $links = shift;
+
+	foreach my $link (@{$links}) {
+		append_row([$name->{'links'}, $uri->{'href'}]);
+	}
+}
+
+sub handle_remarks {
+	my $remarks = shift;
+
+	foreach my $remark (@{$remarks}) {
+		append_row([$name->{'remarks'}, $remark]) if ($remark ne '');
+	}
+}
+
+sub handle_variants {
+	my $variants = shift;
+
+	foreach my $vlist (@{$variants}) {
+		foreach my $name (@{$vlist->{'variantNames'}}) {
+			append_row([$name->{'variants'}, $name]);
+		}
+	}
+}
+
 __END__
 =pod
 
@@ -537,14 +591,18 @@ Specify the host to query. If not set, rdapper uses C<rdap.org> (see below).
 
 =item --TYPE=TYPE
 
-Specify the type of object being queried. Possible values are: domain, 
-entity, nameserver, autnum, ip. Rdapper will automatically detect IPv4 
-and IPv6 addresses and AS numbers, and will fall back to domain queries 
+Specify the type of object being queried. Possible values are: C<domain>, 
+C<entity>, C<nameserver>, C<autnum> and C<ip>. rdapper will detect IPv4 and IPv6
+addresses and CIDR networks and AS numbers, and will fall back to domain queries
 for everything else.
 
 =item --tls
 
 Force use of TLS.
+
+=item --insecure
+
+Disable server certificate checking and hostname verification.
 
 =item --username=USERNAME
 
@@ -553,6 +611,10 @@ Specify a username to be used with Basic Authentication.
 =item --password=PASSWORD
 
 Specify a password to be used with Basic Authentication.
+
+Note: if the initial request is redirected, authentication credentials will be
+sent in the subsequent request to the target server, so users should consider
+whether these credentials might be disclosed inappropriately.
 
 =item --cert=CERTIFICATE
 
@@ -591,9 +653,9 @@ variable (or C<UTF-8> if that is not defined).
 
 =head1 USE OF RDAP.ORG
 
-Unless instructed otherwise (via the --host argument), rdapper will send 
-all queries to rdap.org: this server is an aggregator of RDAP services, 
-and will provide an HTTP redirect where available.
+Unless instructed otherwise (via the C<--host> argument), rdapper will send 
+all queries to rdap.org: this server is an aggregator of RDAP services, and will
+provide an HTTP redirect to the appropriate service where available.
 
 =head1 SEE ALSO
 
@@ -609,7 +671,7 @@ and will provide an HTTP redirect where available.
 
 =head1 COPYRIGHT
 
-rdapper is Copyright 2012 CentralNic Ltd. All rights reserved. This program is
+rdapper is Copyright 2013 CentralNic Ltd. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same terms as
 Perl itself.
 

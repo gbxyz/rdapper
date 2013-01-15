@@ -2,15 +2,14 @@
 use ExtUtils::MakeMaker;
 use strict;
 
-my $script = 'rdapper';
-
 WriteMakefile(
-	'NAME'		=> $script,
-	'VERSION_FROM'	=> $script,
-	'EXE_FILES'	=> [ $script ],
+	'NAME'		=> 'rdapper',
+	'VERSION_FROM'	=> 'rdapper',
+	'EXE_FILES'	=> [ 'rdapper' ],
 	'PREREQ_PM'	=> {
 		'Getopt::Long'		=> 0,
 		'HTTP::Request::Common' => 0,
+		'IO::Socket::SSL'	=> 0,
 		'JSON'			=> 0,
 		'LWP'			=> 6.00,
 		'MIME::Base64'		=> 0,
