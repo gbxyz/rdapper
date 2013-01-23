@@ -62,7 +62,7 @@ To install this program type the following commands in the source directory:
 
 - \--key=KEY
 
-    Specify a private key matching the certificate given in `--password`.
+    Specify a private key matching the certificate given in `--cert`.
 
 - \--keypass=PASSPHRASE
 

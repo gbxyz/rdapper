@@ -626,7 +626,7 @@ Specify a client SSL certificate to present to the server.
 
 =item --key=KEY
 
-Specify a private key matching the certificate given in C<--password>.
+Specify a private key matching the certificate given in C<--cert>.
 
 =item --keypass=PASSPHRASE
 
