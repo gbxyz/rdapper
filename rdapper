@@ -6,16 +6,18 @@ use Getopt::Long;
 use HTTP::Request::Common;
 use IO::Socket::SSL;
 use JSON;
+use JSON::Path;
 use LWP 6.00;
 use MIME::Base64;
 use MIME::Type;
 use Mozilla::CA;
 use POSIX;
 use Pod::Usage;
+use URI;
 use strict;
 
 my $NAME = 'rdapper';
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 #
 # determines the order in which fields appear in output. The higher the number,
@@ -96,6 +98,9 @@ my $name = {
 	'type'			=> 'Type',
 	'uris'			=> 'URI',
 	'variants'		=> 'Variant',
+
+	# server-specific values:
+	'cnic_recordGenerated'	=> 'Record Updated On',
 };
 
 #
@@ -146,6 +151,9 @@ my $cert;
 my $key;
 my $keypass;
 my $insecure;
+my $follow;
+my $show_links;
+my $path;
 GetOptions(
 	'help'		=> \$help,
 	'host=s'	=> \$host,
@@ -163,6 +171,9 @@ GetOptions(
 	'key:s'		=> \$key,
 	'keypass:s'	=> \$keypass,
 	'insecure'	=> \$insecure,
+	'follow'	=> \$follow,
+	'links'		=> \$show_links,
+	'path:s'	=> \$path,
 );
 
 $type = lc($type);
@@ -194,6 +205,8 @@ if ($type eq '') {
 
 	}
 }
+$type = 'nameserver' if ($type eq 'host');
+$type = 'entity' if ($type eq 'contact');
 
 $port = ($port > 0 ? $port : ($tls ? 443 : 80));
 
@@ -220,8 +233,6 @@ if ($raw && $debug) {
 #
 # prepare the UA:
 #
-my $uri = sprintf('%s://%s:%d/%s/%s', ($tls ? 'https' : 'http'), $host, $port, $type, $query);
-
 my $ua = LWP::UserAgent->new;
 $ua->agent("$NAME/$VERSION");
 
@@ -265,19 +276,7 @@ if ($cert ne '' || $key ne '') {
 
 $ua->ssl_opts(%ssl_opts);
 
-#
-# prepare request:
-#
-my $req = GET($uri);
-$req->header('Accept-Language',	$lang);
-$req->header('Accept-Encoding',	$encoding);
-$req->header('Accept',		'application/json');
-$req->header('Authorization',	encode_base64($username.':'.$password)) if ($username ne '');
-
-#
-# send request:
-#
-my $res = $ua->request($req);
+my $json = new JSON->allow_nonref;
 
 # this is used to prepend information to a key name:
 my $prefix;
@@ -288,9 +287,15 @@ my @rows;
 # notices go in here:
 my @notices;
 
-#
-# handle response:
-#
+
+my $uri = URI->new;
+$uri->scheme($tls ? 'https' : 'http');
+$uri->host($host);
+$uri->port($port);
+$uri->path($type.'/'.$query);
+
+my $res = request($uri->as_string);
+
 if ($debug) {
 	foreach my $prev ($res->redirects) {
 		print $prev->request->as_string;
@@ -305,23 +310,31 @@ if ($debug) {
 	exit(1);
 
 } else {
-	my $type = MIME::Type->new('type' => $res->header('Content-Type'));
+	my $data = $json->decode($res->content);
 
-	if (!$type->equals('application/rdap+json') && !$type->equals('application/rdap_error+json')) {
-		printf(STDERR "Error: Don't know what to do with a response of content type '%s' (hint: use --debug to see the full server response)\n", $res->header('Content-Type'));
-		exit(1);
+	if ($raw) {
+		print $json->pretty->encode($data);
+		exit(0);
+
+	} elsif ($path) {
+		my $jpath = JSON::Path->new($path);
+
+		my @values = $jpath->values($data);
+		if (1 == scalar(@values)) {
+			print $json->pretty->encode($values[0]);
+
+		} elsif (scalar(@values) > 0) {
+			print $json->pretty->encode(\@values);
+
+		} else {
+			exit(1);
+
+		}
+		exit(0);
 
 	} else {
-		my $json = new JSON;
-		my $data = $json->decode($res->content);
-	
-		if ($raw) {
-			print $json->pretty->encode($data);
-	
-		} else {
-			handle_generic($data);
-	
-		}
+		handle_generic($data);
+
 	}
 }
 
@@ -429,6 +442,17 @@ sub handle_entities {
 
 	my $roles = {};
 	foreach my $entity (@{$entities}) {
+
+		my $self = (grep { $_->{'rel'} eq 'self' } @{$entity->{'links'}})[0];
+		if ($follow && $self) {
+			my $res = request($self->{'href'});
+			if (!$res->is_error) {
+				my $data = $json->decode($res->content);
+				map { delete($entity->{$_}) } grep { $_ ne 'roles' } keys(%{$entity});
+				map { $entity->{$_} = $data->{$_} } grep { $_ ne 'notices' } keys(%{$data});
+			}
+		}
+
 		next if (!defined($entity->{'roles'}));
 
 		foreach my $role (@{$entity->{'roles'}}) {
@@ -534,8 +558,10 @@ sub handle_uris {
 sub handle_links {
 	my $links = shift;
 
+	return unless ($show_links);
+
 	foreach my $link (@{$links}) {
-		append_row([$name->{'links'}, $link->{'href'}]);
+		append_row([sprintf('%s (%s)', $name->{'links'}, ucfirst($link->{'rel'})), $link->{'href'}]);
 	}
 }
 
@@ -554,6 +580,28 @@ sub handle_variants {
 		foreach my $name (@{$vlist->{'variantNames'}}) {
 			append_row([$name->{'variants'}, $name]);
 		}
+	}
+}
+
+sub request {
+	my $uri = shift;
+	my $req = GET($uri);
+
+	$req->header('Accept-Language',	$lang);
+	$req->header('Accept-Encoding',	$encoding);
+	$req->header('Accept',		'application/json');
+	$req->header('Authorization',	encode_base64($username.':'.$password)) if ($username ne '');
+	
+	my $res = $ua->request($req);
+
+	my $type = MIME::Type->new('type' => $res->header('Content-Type'));
+
+	if (!$type->equals('application/rdap+json') && !$type->equals('application/rdap_error+json')) {
+		return HTTP::Response->new(406, "Don't know what to do with a response of content type '%s' (hint: use --debug to see the full server response)\n", $res->header('Content-Type'));
+
+	} else {
+		return $res;
+
 	}
 }
 
@@ -596,9 +644,24 @@ Specify the host to query. If not set, rdapper uses C<rdap.org> (see below).
 =item --TYPE=TYPE
 
 Specify the type of object being queried. Possible values are: C<domain>, 
-C<entity>, C<nameserver>, C<autnum> and C<ip>. rdapper will detect IPv4 and IPv6
-addresses and CIDR networks and AS numbers, and will fall back to domain queries
-for everything else.
+C<entity> (also C<contact>), C<nameserver> (also C<host>), C<autnum> and C<ip>.
+rdapper will detect IPv4 and IPv6 addresses and CIDR networks and AS numbers, and
+will fall back to domain queries for everything else.
+
+=item --follow
+
+Instructs rdapper to follow links to retrieve full entity information.
+
+=item --links
+
+Display URIs for referenced objects.
+
+=item --path=PATH
+
+Specify a JSONPath query. Any elements in the response which match this path
+will be printed in JSON format.
+
+See below for details of JSONPath.
 
 =item --tls
 
@@ -655,6 +718,19 @@ variable (or C<UTF-8> if that is not defined).
 
 =back
 
+=head1 JSONPath
+
+You can use JSONPath to specify a subset of the complete response. JSONPath is
+an XPath-like syntax for querying JSON structures. The following are examples of
+JSONPath queries:
+
+	$.handle		# the handle of an object
+	$.nameServers[0].name	# the name of a domain's first nameserver
+	$.entities[0].emails[0]	# the first email address of an object's first entity
+	$.nameServers..name	# the names of every nameserver
+
+For a full explanation of the available syntax, see the link below.
+
 =head1 USE OF RDAP.ORG
 
 Unless instructed otherwise (via the C<--host> argument), rdapper will send 
@@ -670,6 +746,8 @@ provide an HTTP redirect to the appropriate service where available.
 =item L<https://www.centralnic.com/>
 
 =item L<http://rdap.org/>
+
+=item L<http://goessner.net/articles/JsonPath/>
 
 =back
 
