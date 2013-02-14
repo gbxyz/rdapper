@@ -287,7 +287,6 @@ my @rows;
 # notices go in here:
 my @notices;
 
-
 my $uri = URI->new;
 $uri->scheme($tls ? 'https' : 'http');
 $uri->host($host);
