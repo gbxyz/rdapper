@@ -16,6 +16,7 @@ WriteMakefile(
 		'JSON'			=> 0,
 		'JSON::Path'		=> 0,
 		'LWP'			=> 6.00,
+		'LWP::Protocol::https'	=> 0,
 		'MIME::Base64'		=> 0,
 		'MIME::Type'		=> 0,
 		'Mozilla::CA'		=> 0,
