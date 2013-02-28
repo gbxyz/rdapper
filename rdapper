@@ -233,18 +233,16 @@ if ($raw && $debug) {
 #
 # prepare the UA:
 #
-my $ua = LWP::UserAgent->new;
-$ua->agent("$NAME/$VERSION");
-
 my %ssl_opts;
 if ($insecure) {
-	$ssl_opts{'verify_hostname'} = 0;
+	$ssl_opts{'SSL_verify_mode'}	= SSL_VERIFY_NONE;
+	$ssl_opts{'verify_mode'}	= 0;
 
 } else {
-	$ssl_opts{'verify_hostname'}		=  1;
 	$ssl_opts{'SSL_ca_file'}		= Mozilla::CA::SSL_ca_file();
 	$ssl_opts{'SSL_verify_mode'}		= SSL_VERIFY_PEER;
 	$ssl_opts{'SSL_verifycn_scheme'}	= 'http';
+	$ssl_opts{'verify_mode'}		= 1;
 }
 
 if ($cert ne '' || $key ne '') {
@@ -274,7 +272,18 @@ if ($cert ne '' || $key ne '') {
 
 }
 
-$ua->ssl_opts(%ssl_opts);
+my $ua = LWP::UserAgent->new(
+	'agent' => sprintf(
+		'%s/%s (%s %s, Perl %s, LWP %s, IO::Socket::SSL %s)',
+		$NAME,
+		$VERSION,
+		(POSIX::uname())[0,2],
+		$^V,
+		$LWP::VERSION,
+		$IO::Socket::SSL::VERSION,
+	),
+	'ssl_opts' => \%ssl_opts
+);
 
 my $json = new JSON->allow_nonref;
 
