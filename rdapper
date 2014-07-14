@@ -597,7 +597,7 @@ sub request {
 
 	$req->header('Accept-Language',	$lang);
 	$req->header('Accept-Encoding',	$encoding);
-	$req->header('Accept',		'application/rdap+json;application/json');
+	$req->header('Accept',		'application/rdap+json,application/json');
 	$req->header('Authorization',	encode_base64($username.':'.$password)) if ($username ne '');
 	
 	my $res = $ua->request($req);
