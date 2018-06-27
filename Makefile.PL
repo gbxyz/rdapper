@@ -6,7 +6,7 @@ WriteMakefile(
 	'NAME'		=> 'rdapper',
 	'VERSION_FROM'	=> 'rdapper',
 	'ABSTRACT_FROM'	=> 'rdapper',
-	'AUTHOR'	=> [ 'Gavin Brown <gavin.brown@uk.com>' ],
+	'AUTHOR'	=> [ 'Gavin Brown <gavin.brown@centralnic.com>' ],
 	'LICENSE'	=> 'perl',
 	'EXE_FILES'	=> [ 'rdapper' ],
 	'PREREQ_PM'	=> {

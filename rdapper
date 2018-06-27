@@ -9,7 +9,10 @@ use Net::DNS::Domain;
 use Net::IP;
 use Net::RDAP;
 use Term::ANSIColor;
+use vars qw($VERSION);
 use strict;
+
+$VERSION = 0.1;
 
 sub warning {
 	my ($fmt, @params) = @_;
