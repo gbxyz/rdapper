@@ -1,137 +1,60 @@
 # NAME
 
-rdapper - a command-line RDAP client.
+`rdapper` - a simple console-based RDAP client
 
-# DESCRIPTION
+# SYNOPSIS
 
-rdapper is a command-line client for the Registration Data Access Protocol
-(RDAP), the successor protocol to Whois (RFC 3912). RDAP is currently being
-developed by the WEIRDS IETF working group, and has not yet been finalized.
+        rdapper OBJECT
 
-This tool will send an RDAP query to an RDAP server over HTTP or HTTPS, parse
-the JSON response, and display it in human-readable form.
+`rdapper` is a simple RDAP client. It uses [Net::RDAP](https://metacpan.org/pod/Net::RDAP) to retrieve
+data about internet resources (domain names, IP addresses, and
+autonymous systems) and outputs the information in a human-readable
+format. If you want to consume this data in your own program you
+should use [Net::RDAP](https://metacpan.org/pod/Net::RDAP) directly.
 
-# INSTALLING
+`rdapper` was originally conceived as a full RDAP client (back
+when the RDAP protocol was still in draft form) but is now just
+a very thin front-end to [Net::RDAP](https://metacpan.org/pod/Net::RDAP), and its main purpose is to
+allow testing of that library.
 
-To install this program type the following commands in the source directory:
+You can pass any internet resource as an argument; this may be a:
 
-    perl Makefile.PL
-    make
-    make install
+- a "forward" domain name such as `example.com`;
+- a "reverse" domain name such as `168.192.in-addr.arpa`;
+- a IPv4 or IPv6 address or CIDR prefix, such as `192.168.0.1` or `2001:DB8::/32`;
+- an Autonymous System Number such as `AS65536`.
 
-# USAGE
+# DEPENDENCIES
 
-    rdapper [OPTIONS] QUERY
+`rdapper` uses the following modules, some of which may already be
+installed:
 
-# OPTIONS
-
-- \--host=HOST (default: rdap.org)
-
-    Specify the host to query. If not set, rdapper uses `rdap.org` (see below).
-
-- \--TYPE=TYPE
-
-    Specify the type of object being queried. Possible values are: `domain`, 
-    `entity` (also `contact`), `nameserver` (also `host`), `autnum` and `ip`.
-    rdapper will detect IPv4 and IPv6 addresses and CIDR networks and AS numbers, and
-    will fall back to domain queries for everything else.
-
-- \--follow
-
-    Instructs rdapper to follow links to retrieve full entity information.
-
-- \--links
-
-    Display URIs for referenced objects.
-
-- \--path=PATH
-
-    Specify a JSONPath query. Any elements in the response which match this path
-    will be printed in JSON format.
-
-    See below for details of JSONPath.
-
-- \--tls
-
-    Force use of TLS.
-
-- \--insecure
-
-    Disable server certificate checking and hostname verification.
-
-- \--username=USERNAME
-
-    Specify a username to be used with Basic Authentication.
-
-- \--password=PASSWORD
-
-    Specify a password to be used with Basic Authentication.
-
-    Note: if the initial request is redirected, authentication credentials will be
-    sent in the subsequent request to the target server, so users should consider
-    whether these credentials might be disclosed inappropriately.
-
-- \--cert=CERTIFICATE
-
-    Specify a client SSL certificate to present to the server.
-
-- \--key=KEY
-
-    Specify a private key matching the certificate given in `--cert`.
-
-- \--keypass=PASSPHRASE
-
-    Specify a passphrase to decrypt the private key given by `--key`.
-
-- \--raw
-
-    Causes rdapper to emit pretty-printed JSON rather than text output.
-
-- \--debug
-
-    Causes rdapper to display the HTTP request and response rather than the text
-    output.
-
-- \--lang=LANGUAGE
-
-    Specify a language. This is sent to the server using the `Accept-Language`
-    header. If unset, the language will be taken from your `$LANG` environment
-    variable (or `en` if that is not defined).
-
-- \--encoding=ENCODING
-
-    Specify an encoding. This is sent to the server using the `Accept-Encoding`
-    header. If unset, the encoding will be taken from your `$LANG` environment
-    variable (or `UTF-8` if that is not defined).
-
-# JSONPath
-
-You can use JSONPath to specify a subset of the complete response. JSONPath is
-an XPath-like syntax for querying JSON structures. The following are examples of
-JSONPath queries:
-
-	$.handle		# the handle of an object
-	$.nameServers[0].name	# the name of a domain's first nameserver
-	$.entities[0].emails[0]	# the first email address of an object's first entity
-	$.nameServers..name	# the names of every nameserver
-
-For a full explanation of the available syntax, see the link below.
-
-# USE OF RDAP.ORG
-
-Unless instructed otherwise (via the `--host` argument), rdapper will send 
-all queries to rdap.org: this server is an aggregator of RDAP services, and will
-provide an HTTP redirect to the appropriate service where available.
-
-# SEE ALSO
-
-- [http://tools.ietf.org/wg/weirds/](http://tools.ietf.org/wg/weirds/)
-- [https://www.centralnic.com/](https://www.centralnic.com/)
-- [http://rdap.org/](http://rdap.org/)
-- [http://goessner.net/articles/JsonPath/](http://goessner.net/articles/JsonPath/)
+- [Getopt::Long](https://metacpan.org/pod/Getopt::Long)
+- [List::MoreUtils](https://metacpan.org/pod/List::MoreUtils)
+- [Net::ASN](https://metacpan.org/pod/Net::ASN)
+- [Net::DNS::Domain](https://metacpan.org/pod/Net::DNS::Domain)
+- [Net::IP](https://metacpan.org/pod/Net::IP)
+- [Net::RDAP](https://metacpan.org/pod/Net::RDAP) (obviously)
+- [Term::ANSIColor](https://metacpan.org/pod/Term::ANSIColor)
 
 # COPYRIGHT
 
-rdapper is Copyright 2013 CentralNic Ltd. All rights reserved. This program is
-free software; you can redistribute it and/or modify it under the same terms as
-Perl itself.
+Copyright 2018 CentralNic Ltd. All rights reserved.
+
+# LICENSE
+
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted,
+provided that the above copyright notice appear in all copies and that
+both that copyright notice and this permission notice appear in
+supporting documentation, and that the name of the author not be used
+in advertising or publicity pertaining to distribution of the software
+without specific prior written permission.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

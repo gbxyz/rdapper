@@ -1,768 +1,307 @@
 #!/usr/bin/perl
-# Copyright (c) 2013 CentralNic Ltd. All rights reserved. This program is
+# Copyright (c) 2018 CentralNic Ltd. All rights reserved. This program is
 # free software; you can redistribute it and/or modify it under the same
 # terms as Perl itself.
 use Getopt::Long;
-use HTTP::Request::Common;
-use IO::Socket::SSL;
-use JSON;
-use JSON::Path;
-use LWP 6.00;
-use MIME::Base64;
-use MIME::Type;
-use Mozilla::CA;
-use POSIX;
-use Pod::Usage;
-use URI;
+use List::MoreUtils qw(any);
+use Net::ASN;
+use Net::DNS::Domain;
+use Net::IP;
+use Net::RDAP;
+use Term::ANSIColor;
 use strict;
 
-my $NAME = 'rdapper';
-our $VERSION = '0.08';
+sub warning {
+	my ($fmt, @params) = @_;
+	my $str = sprintf("Warning: $fmt", @params);
+	print STDERR colored([qw(yellow)], $str)."\n";
+}
 
-#
-# determines the order in which fields appear in output. The higher the number,
-# the closer to the top the field appears:
-#
-my $order = {
-	'handle'		=> 99999,
-	'name'			=> 88888,
-	'names'			=> 88887,
-	'entityNames'		=> 88887,
-	'variants'		=> 77777,
-	'status'		=> 66666,
-	'sponsoredBy'		=> 66333,
-	'registrationDate'	=> 55555,
-	'registrationBy'	=> 44444,
-	'expirationDate'	=> 33333,
-	'lastChangedDate'	=> 22222,
-	'lastChangedBy'		=> 11111,
-	'transferDate'		=> 11110,
-	'entities'		=> 11109,
-	'nameServers'		=> 11108,
-	'delegationKeys'	=> 11107,
-	'postalAddress'		=> 11106,
-	'phones'		=> 11105,
-	'emails'		=> 11104,
-	'keyTag'		=> 11103,
-	'algorithm'		=> 11102,
-	'digestType'		=> 11101,
-	'digest'		=> 11100,
-};
+sub error {
+	my ($fmt, @params) = @_;
+	my $str = sprintf("Error: $fmt", @params);
+	print STDERR colored([qw(red)], $str)."\n";
+	exit 1;
+}
 
-#
-# English names for keys. These need to be internationalised at some point:
-#
-my $name = {
-	'algorithm'		=> 'Algorithm',
-	'country'		=> 'Country',
-	'delegationKeys'	=> 'DNSSEC Key',
-	'description'		=> 'Description',
-	'digest'		=> 'Digest',
-	'digestType'		=> 'Digest Type',
-	'emails'		=> 'Email Address',
-	'endAddress'		=> 'End Address',
-	'endAutnum'		=> 'End AS',
-	'entities'		=> 'Contact',
-	'entitiyNames'		=> 'Name',
-	'errorCode'		=> 'Error Code',
-	'expirationDate'	=> 'Expiration Date',
-	'fax'			=> 'Fax',
-	'handle'		=> 'Handle',
-	'ipAddresses'		=> 'IP Address',
-	'ipVersion'		=> 'IP Version',
-	'keyTag'		=> 'Key Tag',
-	'lang'			=> 'Language',
-	'lastChangedBy'		=> 'Last Changed By',
-	'lastChangedDate'	=> 'Last Changed',
-	'links'			=> 'Link',
-	'name'			=> 'Name',
-	'names'			=> 'Name',
-	'nameServers'		=> 'Nameserver',
-	'notices'		=> 'Notice',
-	'parentHandle'		=> 'Parent',
-	'phones'		=> 'Telephone',
-	'port43'		=> 'Port 43 Whois',
-	'postalAddress'		=> 'Postal Address',
-	'rdapConformance'	=> 'RDAP Conformance',
-	'registrationBy'	=> 'Registered By',
-	'registrationDate'	=> 'Registered',
-	'remarks'		=> 'Remarks',
-	'resoldBy'		=> 'Resold By',
-	'roles'			=> 'Role',
-	'sponsoredBy'		=> 'Sponsored By',
-	'startAddress'		=> 'Start Address',
-	'startAutnum'		=> 'Start AS',
-	'status'		=> 'Status',
-	'title'			=> 'Title',
-	'transferDate'		=> 'Transferred',
-	'type'			=> 'Type',
-	'uris'			=> 'URI',
-	'variants'		=> 'Variant',
+my $rdap = Net::RDAP->new;
 
-	# server-specific values:
-	'cnic_recordGenerated'	=> 'Record Updated On',
-};
-
-#
-# handlers for specific data types:
-#
-my $handler = {
-	'delegationKeys'	=> \&handle_delegationKeys,
-	'emails'		=> \&handle_emails,
-	'entities'		=> \&handle_entities,
-	'entityNames'		=> \&handle_names,
-	'ipAddresses'		=> \&handle_ipAddresses,
-	'links'			=> \&handle_links,
-	'lang'			=> \&handle_language,
-	# deprecated in draft-ietf-weirds-json-response-02 but still used in the examples
-	'names'			=> \&handle_names,
-	'nameServers'		=> \&handle_nameServers,
-	'notices'		=> \&handle_notices,
-	'phones'		=> \&handle_phones,
-	'postalAddress'		=> \&handle_postalAddress,
-	'remarks',		=> \&handle_remarks,
-	'rdapConformance'	=> \&handle_rdapConformance,
-	'status'		=> \&handle_status,
-	'uris'			=> \&handle_uris,
-	'variants'		=> \&handle_variants,
-};
-
-#
-# entity roles:
-#
-my @roles = qw(registrant admin tech billing);
-
-#
-# command line options:
-#
-my $help;
-my $host = 'rdap.org';
-my $port;
-my $type = '';
-my $query;
-my $raw;
-my $tls;
-my $lang;
-my $encoding;
-my $username;
-my $password;
-my $debug;
-my $cert;
-my $key;
-my $keypass;
-my $insecure;
-my $follow;
-my $show_links;
-my $path;
+my ($type, $object);
 GetOptions(
-	'help'		=> \$help,
-	'host=s'	=> \$host,
-	'port:i'	=> \$port,
 	'type:s'	=> \$type,
-	'query:s'	=> \$query,
-	'raw'		=> \$raw,
-	'tls'		=> \$tls,
-	'lang:s'	=> \$lang,
-	'encoding:s'	=> \$encoding,
-	'username:s'	=> \$username,
-	'password:s'	=> \$password,
-	'debug'		=> \$debug,
-	'cert:s'	=> \$cert,
-	'key:s'		=> \$key,
-	'keypass:s'	=> \$keypass,
-	'insecure'	=> \$insecure,
-	'follow'	=> \$follow,
-	'links'		=> \$show_links,
-	'path:s'	=> \$path,
+	'object:s'	=> \$object,
 );
 
-$type = lc($type);
+$object = shift(@ARGV) if (!$object);
 
-$query = $ARGV[0] if ($query eq '' && $ARGV[0] ne '');
-
-if ($type eq '') {
-	if (
-		# IPv4 address:
-		$query =~ /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/ ||
-
-		# IPv4 CIDR:
-		$query =~ /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(\d|[1-2]\d|3[0-2]))$/ ||
-
-		# IPv6:
-		$query =~ /^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*/ ||
-
-		# IPv6 CIDR:
-		$query =~ /^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*(\/(\d|\d\d|1[0-1]\d|12[0-8]))$/
-	) {
-		$type = 'ip';
-
-	} elsif ($query =~ /^ASN?(\d+)$/i) {
-		$query = $1;
-		$type = 'autnum';
-
-	} else {
-		$type = 'domain';
-
-	}
-}
-$type = 'nameserver' if ($type eq 'host');
-$type = 'entity' if ($type eq 'contact');
-
-$port = ($port > 0 ? $port : ($tls ? 443 : 80));
-
-if ($lang eq '') {
-	if (defined($ENV{'LANG'})) {
-		($lang, $encoding) = split(/\./, $ENV{'LANG'}, 2);
-		$lang =~ s/_/-/;
-
-	} else {
-		$lang = 'en';
-
-	}
+if (!$type) {
+	if ($object =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)			{ $type = 'ip'		} # v4 address
+	elsif ($object =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/)	{ $type = 'ip'		} # v4 range
+	elsif ($object =~ /^[0-9a-f:]+$/i)					{ $type = 'ip'		} # v6 address
+	elsif ($object =~ /^[0-9a-f:]+\/\d{1,3}$/i)				{ $type = 'ip'		} # v6 range
+	elsif ($object =~ /^asn?\d+$/i)						{ $type = 'autnum'	} # ASN
+	else									{ $type = 'domain'	} # domain
 }
 
-$encoding = 'UTF-8' if ($encoding eq '');
+my $rdap = Net::RDAP->new;
 
-pod2usage('-verbose' => 1) if ($host eq '' || $query eq '' || $help);
+my $response;
+if ('ip' eq $type) {
+	$response = $rdap->ip(Net::IP->new($object));
 
-if ($raw && $debug) {
-	print STDERR "Error: Can't use --raw and --debug at the same time\n";
-	exit(1);
-}
+} elsif ('autnum' eq $type) {
+	my $asn = $object;
+	$asn =~ s/^asn?//ig;
+	$response = $rdap->autnum(Net::ASN->new($asn));
 
-#
-# prepare the UA:
-#
-my %ssl_opts;
-if ($insecure) {
-	$ssl_opts{'SSL_verify_mode'}	= SSL_VERIFY_NONE;
-	$ssl_opts{'verify_mode'}	= 0;
+} elsif ('domain' eq $type) {
+	$response = $rdap->domain(Net::DNS::Domain->new($object));
 
 } else {
-	$ssl_opts{'SSL_ca_file'}		= Mozilla::CA::SSL_ca_file();
-	$ssl_opts{'SSL_verify_mode'}		= SSL_VERIFY_PEER;
-	$ssl_opts{'SSL_verifycn_scheme'}	= 'http';
-	$ssl_opts{'verify_mode'}		= 1;
-}
-
-if ($cert ne '' || $key ne '') {
-	if ($cert eq '') {
-		print STDERR "Error: Missing --cert option\n";
-		exit 1;
-
-	} elsif (!-r $cert) {
-		print STDERR "Error: Certificate file '$cert' can't be read\n";
-		exit 1;
-
-	}
-
-	if ($key eq '') {
-		print STDERR "Error: Missing --key option\n";
-		exit 1;
-
-	} elsif (!-r $key) {
-		print STDERR "Error: Key file '$key' can't be read\n";
-		exit 1;
-
-	}
-
-	$ssl_opts{'SSL_cert_file'} = $cert;
-	$ssl_opts{'SSL_key_file'}  = $key;
-	$ssl_opts{'SSL_passwd_cb'} = sub { $keypass };
+	error("Unable to handle type '$type'");
 
 }
 
-my $ua = LWP::UserAgent->new(
-	'agent' => sprintf(
-		'%s/%s (%s %s, Perl %s, LWP %s, IO::Socket::SSL %s)',
-		$NAME,
-		$VERSION,
-		(POSIX::uname())[0,2],
-		$^V,
-		$LWP::VERSION,
-		$IO::Socket::SSL::VERSION,
-	),
-	'ssl_opts' => \%ssl_opts
-);
-
-my $json = new JSON->allow_nonref;
-
-# this is used to prepend information to a key name:
-my $prefix;
-
-# output rows go in here:
-my @rows;
-
-# notices go in here:
-my @notices;
-
-my $uri = URI->new;
-$uri->scheme($tls ? 'https' : 'http');
-$uri->host($host);
-$uri->port($port);
-$uri->path($type.'/'.$query);
-
-my $res = request($uri->as_string);
-
-if ($debug) {
-	foreach my $prev ($res->redirects) {
-		print $prev->request->as_string;
-		print $prev->as_string;
-	}
-	print $res->request->as_string;
-	print $res->as_string;
-	exit(0);
-
-} elsif ($res->is_error) {
-	printf(STDERR "Error: %s\n", $res->status_line);
-	exit(1);
+if (!$response) {
+	error("Unable to retrieve data");
 
 } else {
-	my $data = $json->decode($res->content);
+	my $name = $response->name;
+	printf("\nName: %s\n\n", uc('Net::DNS::Domain' eq ref($name) ? $name->name : $name)) if ($name);
 
-	if ($raw) {
-		print $json->pretty->encode($data);
-		exit(0);
+	printf("Handle: %s\n\n", $response->handle);
 
-	} elsif ($path) {
-		my $jpath = JSON::Path->new($path);
-
-		my @values = $jpath->values($data);
-		if (1 == scalar(@values)) {
-			print $json->pretty->encode($values[0]);
-
-		} elsif (scalar(@values) > 0) {
-			print $json->pretty->encode(\@values);
-
-		} else {
-			exit(1);
-
+	my @links = $response->links;
+	if (scalar(@links) > 0) {
+		print "Links:\n";
+		foreach my $link (@links) {
+			printf("\n  * %s (%s)\n", $link->href->as_string, $link->title || $link->rel || '-');
 		}
-		exit(0);
+		print "\n";
+	}
+
+	if ('ip' eq $type) {
+		printf("Range: %s\n\n", $response->range->prefix);
+
+		printf("Domain: %s\n\n", $response->domain->as_string);
+
+	} elsif ('autnum' eq $type) {
+		printf("Range: %u - %u\n\n", $response->start, $response->end) if ($response->start > 0 && $response->end > 0);
+		printf("Type: %s\n\n", $response->type) if ($response->type);
+
+	} elsif ('domain' eq $type) {
+		my @ns = $response->nameservers;
+		if (scalar(@ns) > 0) {
+			print "Nameservers:\n\n";
+			foreach my $ns (sort { lc($a->name->name) cmp lc($b->name->name) } @ns) {
+				printf("  %s\n", uc($ns->name->name));
+			}
+			print "\n";
+		}
+
+		my @ds = $response->ds;
+		if (scalar(@ds) > 0) {
+			print "DNSSEC:\n\n";
+			foreach my $ds ($response->ds) {
+				printf("  %s. IN DS %u %u %u %s\n", uc($ds->name), $ds->keytag, $ds->algorithm, $ds->digtype, uc($ds->digest));
+			}
+			print "\n";
+		}
+
+		my @keys = $response->keys;
+		if (scalar(@keys) > 0) {
+			print "DNSSEC Keys:\n\n";
+			foreach my $key (@keys) {
+				printf("  %s. IN DNSKEY %u %u %u %s\n", uc($key->name), $key->flags, $key->protocol, $key->algorithm, uc($key->key));
+			}
+			print "\n";
+		}
 
 	} else {
-		handle_generic($data);
-
-	}
-}
-
-#
-# output response:
-#
-my $max = 0;
-map { $max = length($_->[0]) if (length($_->[0]) > $max) } @rows;
-
-foreach my $row (@rows) {
-	print	$row->[0] .
-		' ' x ($max -length($row->[0])) .
-		' : ' .
-		$row->[1] .
-		"\n";
-}
-
-#
-# display notices:
-#
-foreach my $notice (@notices) {
-	my $bar = '=' x (38 - (POSIX::floor(length($notice->{'title'}))/2));
-	print "\n".$bar.' '.$notice->{'title'}.' '.$bar."\n\n";
-
-	if (ref($notice->{'description'}) eq '') {
-		chomp($notice->{'description'});
-		print $notice->{'description'}."\n";
-
-	} elsif (ref($notice->{'description'}) eq 'ARRAY') {
-		map { print $_."\n" } @{$notice->{'description'}};
+		error("Unable to handle type '$type'");
 
 	}
 
+	print "Events:\n\n";
+	foreach my $event ($response->events) {
+		printf("  %s: %s\n", ucfirst($event->action), scalar($event->date));
+	}
 	print "\n";
-	print "URI: ".$notice->{'uri'}."\n" if (defined($notice->{'uri'}));
-}
 
-print "\n";
+	my @status = $response->status;
+	if (scalar(@status) > 0) {
+		print "Status:\n\n";
+		foreach my $status (@status) {
+			printf("  * %s\n", $status);
+		}
+		print "\n";
+	}
 
-#
-# END:
-#
-exit(0);
+	my @entities = $response->entities;
+	my %entities;
+	foreach my $entity (@entities) {
+		eval {
+			my $new = $rdap->fetch($entity) if (!$entity->vcard);
+			$entity = $new if ($new);
+		};
+		foreach my $role ($entity->roles) {
+			$entities{$role} = $entity;
+		}
+	}
 
-# converts an RDAP key into a human readable name:
-sub name {
-	my $key = shift;
-	return ($name->{$key} || $key);
-}
+	if (scalar(@entities) > 0) {
+		print "Entities:\n\n";
 
-# append a row [$name, $value] to the output array:
-sub append_row {
-	my $row = shift;
-	$row->[0] = $prefix.' '.$row->[0] if ($prefix ne '');
-	push(@rows, $row);
-}
+		foreach my $entity (@entities) {
+			my $card = $entity->vcard;
+			if ($card) {
+				my @roles = $entity->roles;
+				if (scalar(@roles) > 0) {
+					printf("  Entity %s (%s):\n\n", $entity->handle, join(', ', @roles));
 
-# handler for generic (top-level) data:
-sub handle_generic {
-	my ($data, $prefix) = @_;
-
-	if (ref($data) ne 'HASH') {
-		append_row([name(ref($data)), encode_json($data)]);
-
-	} else {
-		foreach my $key (reverse sort { $order->{$a} <=> $order->{$b} } keys(%{$data})) {
-			if (defined($handler->{$key})) {
-				eval {
-					&{$handler->{$key}}($data->{$key});
-				};
-				if ($@) {
-					chomp($@);
-					$@ =~ s/ at $0 line \d+\.$//;
-					append_row([name('remarks'), sprintf("Error parsing value for '%s': %s", $key, $@)]);
-					append_row([name($key), encode_json({$key => $data->{$key}})]);
+				} else {
+					printf("  Entity %s:\n\n", $entity->handle);
 				}
 
-			} elsif (ref($data->{$key}) eq '') {
-				append_row([name($key), $data->{$key}]);
+				printf("    Name: %s\n", $card->full_name) if ($card->full_name);
+				printf("    Organization: %s\n", $card->organization) if ($card->organization);
 
-			} else {
-				append_row([name($key), encode_json({$key => $data->{$key}})]);
+				foreach my $email (@{$card->email_addresses}) {
+					if ($email->{'type'}) {
+						printf("    Email: %s (%s)\n", $email->{'address'}, $email->{'type'});
+						
+					} else {
+						printf("    Email: %s\n", $email->{'address'});
 
+					}
+				}
+
+				foreach my $number (@{$card->phones}) {
+					my @types = ('ARRAY' eq ref($number->{'type'}) ? @{$number->{'type'}} : ($number->{'type'}));
+					my $type = ((any { lc($_) eq 'fax' } @types) ? 'Fax' : 'Phone');
+					printf("    %s: %s\n", $type, $number->{'number'});
+				}
+
+				print "\n";
 			}
 		}
 	}
-}
 
-#
-# handlers for specific keys:
-#
-
-sub handle_delegationKeys {
-	my $keys = shift;
-
-	foreach my $key (@{$keys}) {
-		$prefix = name('delegationKeys');
-		handle_generic($key);
-		$prefix = '';
-	}
-}
-
-sub handle_entities {
-	my $entities = shift;
-
-	my $roles = {};
-	foreach my $entity (@{$entities}) {
-
-		my $self = (grep { $_->{'rel'} eq 'self' } @{$entity->{'links'}})[0];
-		if ($follow && $self) {
-			my $res = request($self->{'href'});
-			if (!$res->is_error) {
-				my $data = $json->decode($res->content);
-				map { delete($entity->{$_}) } grep { $_ ne 'roles' } keys(%{$entity});
-				map { $entity->{$_} = $data->{$_} } grep { $_ ne 'notices' } keys(%{$data});
+	my @remarks = $response->remarks;
+	if (scalar(@remarks) > 0) {
+		print "Remarks:\n\n";
+		foreach my $remark (@remarks) {
+			my $indent = ' ' x 2;
+			if ($remark->title) {
+				printf("  %s:\n  %s\n\n", $remark->title, ('=' x (1 + length($remark->title))));
+				$indent = ' ' x 4;
 			}
-		}
-
-		next if (!defined($entity->{'roles'}));
-
-		foreach my $role (@{$entity->{'roles'}}) {
-			$roles->{$role} = $entity;
-		}
-		delete($entity->{'roles'});
-	}
-
-	foreach my $role (@roles) {
-		next if (!defined($roles->{$role}));
-		$prefix = sprintf('%s Contact', ucfirst($role));
-		handle_generic($roles->{$role});
-		$prefix = '';
-	}
-}
-
-sub handle_emails {
-	my $addrs = shift;
-
-	foreach my $addrs (@{$addrs}) {
-		append_row([$name->{'emails'}, $addrs]);
-	}
-}
-
-sub handle_ipAddresses {
-	my $addrs = shift;
-
-	foreach my $addrs (@{$addrs}) {
-		append_row([$name->{'ipAddresses'}, $addrs]);
-	}
-}
-
-sub handle_language {
-	# do nothing
-}
-
-sub handle_names {
-	my $names = shift;
-
-	append_row([$name->{'names'}, sort(join(', ', grep { $_ ne '' } @{$names}))]);
-}
-
-sub handle_nameServers {
-	my $ns = shift;
-
-	foreach my $host (sort { $a->{'name'} cmp $b->{'name'} } @{$ns}) {
-		append_row([$name->{'nameServers'}, $host->{'name'}]);
-	}
-}
-
-sub handle_phones {
-	my $phones = shift;
-
-	foreach my $type (keys(%{$phones})) {
-		if ($type eq 'fax') {
-			append_row([$name->{'fax'}, $phones->{$type}]);
-
-		} else {
-			append_row([sprintf('%s (%s)', $name->{'phones'}, $type), $phones->{$type}]);
-
+			print $indent.join("\n$indent", $remark->description)."\n";
+			foreach my $link ($remark->links) {
+				printf("\n%s* %s (%s)\n", ($indent x 2), $link->href->as_string, ($link->title || $link->rel || '-'));
+			}
+			print "\n";
 		}
 	}
-}
 
-sub handle_postalAddress {
-	my $address = shift;
-
-	foreach my $line (@{$address}) {
-		append_row([$name->{'postalAddress'}, $line]);
-	}
-
-}
-
-sub handle_rdapConformance {
-	# do nothing
-}
-
-sub handle_status {
-	my $codes = shift;
-
-	foreach my $code (@{$codes}) {
-		append_row([$name->{'status'}, $code]);
-	}
-}
-
-sub handle_notices {
-	my $notices = shift;
-
-	foreach my $notice (@{$notices}) {
-		push(@notices, $notice);
-	}
-}
-
-# NB: "uris" were deprecated in favour of "links" in draft-ietf-weirds-json-response-01
-sub handle_uris {
-	my $uris = shift;
-
-	foreach my $uri (@{$uris}) {
-		append_row([$name->{'uris'}, $uri->{'uri'}]);
-	}
-}
-
-sub handle_links {
-	my $links = shift;
-
-	return unless ($show_links);
-
-	foreach my $link (@{$links}) {
-		append_row([sprintf('%s (%s)', $name->{'links'}, ucfirst($link->{'rel'})), $link->{'href'}]);
-	}
-}
-
-sub handle_remarks {
-	my $remarks = shift;
-
-	foreach my $remark (@{$remarks}) {
-		append_row([$name->{'remarks'}, $remark]) if ($remark ne '');
-	}
-}
-
-sub handle_variants {
-	my $variants = shift;
-
-	foreach my $vlist (@{$variants}) {
-		foreach my $name (@{$vlist->{'variantNames'}}) {
-			append_row([$name->{'variants'}, $name]);
+	my @notices = $response->notices;
+	if (scalar(@notices) > 0) {
+		print "Notices:\n\n";
+		foreach my $notice (@notices) {
+			my $indent = ' ' x 2;
+			if ($notice->title) {
+				printf("  %s:\n  %s\n\n", $notice->title, ('=' x (1 + length($notice->title))));
+				$indent = ' ' x 4;
+			}
+			print $indent.join("\n$indent", $notice->description)."\n";
+			foreach my $link ($notice->links) {
+				printf("\n%s* %s (%s)\n", ($indent x 2), $link->href->as_string, ($link->title || $link->rel || '-'));
+			}
+			print "\n";
 		}
-	}
-}
-
-sub request {
-	my $uri = shift;
-	my $req = GET($uri);
-
-	$req->header('Accept-Language',	$lang);
-	$req->header('Accept-Encoding',	$encoding);
-	$req->header('Accept',		'application/rdap+json,application/json');
-	$req->header('Authorization',	encode_base64($username.':'.$password)) if ($username ne '');
-	
-	my $res = $ua->request($req);
-
-	my $type = MIME::Type->new('type' => $res->header('Content-Type'));
-
-	if (!$type->equals('application/rdap+json') && !$type->equals('application/rdap_error+json')) {
-		return HTTP::Response->new(406, "Don't know what to do with a response of content type '%s' (hint: use --debug to see the full server response)\n", $res->header('Content-Type'));
-
-	} else {
-		return $res;
-
 	}
 }
 
 __END__
+
 =pod
 
 =head1 NAME
 
-rdapper - a command-line RDAP client.
+C<rdapper> - a simple console-based RDAP client
 
-=head1 DESCRIPTION
+=head1 SYNOPSIS
 
-rdapper is a command-line client for the Registration Data Access Protocol
-(RDAP), the successor protocol to Whois (RFC 3912). RDAP is currently being
-developed by the WEIRDS IETF working group, and has not yet been finalized.
+	rdapper OBJECT
 
-This tool will send an RDAP query to an RDAP server over HTTP or HTTPS, parse
-the JSON response, and display it in human-readable form.
+C<rdapper> is a simple RDAP client. It uses L<Net::RDAP> to retrieve
+data about internet resources (domain names, IP addresses, and
+autonymous systems) and outputs the information in a human-readable
+format. If you want to consume this data in your own program you
+should use L<Net::RDAP> directly.
 
-=head1 INSTALLING
+C<rdapper> was originally conceived as a full RDAP client (back
+when the RDAP protocol was still in draft form) but is now just
+a very thin front-end to L<Net::RDAP>, and its main purpose is to
+allow testing of that library.
 
-To install this program type the following commands in the source directory:
-
-   perl Makefile.PL
-   make
-   make install
-
-=head1 USAGE
-
-    rdapper [OPTIONS] QUERY
-
-=head1 OPTIONS
+You can pass any internet resource as an argument; this may be a:
 
 =over
 
-=item --host=HOST (default: rdap.org)
+=item * a "forward" domain name such as C<example.com>;
 
-Specify the host to query. If not set, rdapper uses C<rdap.org> (see below).
+=item * a "reverse" domain name such as C<168.192.in-addr.arpa>;
 
-=item --TYPE=TYPE
+=item * a IPv4 or IPv6 address or CIDR prefix, such as C<192.168.0.1> or C<2001:DB8::/32>;
 
-Specify the type of object being queried. Possible values are: C<domain>, 
-C<entity> (also C<contact>), C<nameserver> (also C<host>), C<autnum> and C<ip>.
-rdapper will detect IPv4 and IPv6 addresses and CIDR networks and AS numbers, and
-will fall back to domain queries for everything else.
-
-=item --follow
-
-Instructs rdapper to follow links to retrieve full entity information.
-
-=item --links
-
-Display URIs for referenced objects.
-
-=item --path=PATH
-
-Specify a JSONPath query. Any elements in the response which match this path
-will be printed in JSON format.
-
-See below for details of JSONPath.
-
-=item --tls
-
-Force use of TLS.
-
-=item --insecure
-
-Disable server certificate checking and hostname verification.
-
-=item --username=USERNAME
-
-Specify a username to be used with Basic Authentication.
-
-=item --password=PASSWORD
-
-Specify a password to be used with Basic Authentication.
-
-Note: if the initial request is redirected, authentication credentials will be
-sent in the subsequent request to the target server, so users should consider
-whether these credentials might be disclosed inappropriately.
-
-=item --cert=CERTIFICATE
-
-Specify a client SSL certificate to present to the server.
-
-=item --key=KEY
-
-Specify a private key matching the certificate given in C<--cert>.
-
-=item --keypass=PASSPHRASE
-
-Specify a passphrase to decrypt the private key given by C<--key>.
-
-=item --raw
-
-Causes rdapper to emit pretty-printed JSON rather than text output.
-
-=item --debug
-
-Causes rdapper to display the HTTP request and response rather than the text
-output.
-
-=item --lang=LANGUAGE
-
-Specify a language. This is sent to the server using the C<Accept-Language>
-header. If unset, the language will be taken from your C<$LANG> environment
-variable (or C<en> if that is not defined).
-
-=item --encoding=ENCODING
-
-Specify an encoding. This is sent to the server using the C<Accept-Encoding>
-header. If unset, the encoding will be taken from your C<$LANG> environment
-variable (or C<UTF-8> if that is not defined).
+=item * an Autonymous System Number such as C<AS65536>.
 
 =back
 
-=head1 JSONPath
+=head1 DEPENDENCIES
 
-You can use JSONPath to specify a subset of the complete response. JSONPath is
-an XPath-like syntax for querying JSON structures. The following are examples of
-JSONPath queries:
-
-	$.handle		# the handle of an object
-	$.nameServers[0].name	# the name of a domain's first nameserver
-	$.entities[0].emails[0]	# the first email address of an object's first entity
-	$.nameServers..name	# the names of every nameserver
-
-For a full explanation of the available syntax, see the link below.
-
-=head1 USE OF RDAP.ORG
-
-Unless instructed otherwise (via the C<--host> argument), rdapper will send 
-all queries to rdap.org: this server is an aggregator of RDAP services, and will
-provide an HTTP redirect to the appropriate service where available.
-
-=head1 SEE ALSO
+C<rdapper> uses the following modules, some of which may already be
+installed:
 
 =over
 
-=item L<http://tools.ietf.org/wg/weirds/>
+=item * L<Getopt::Long>
 
-=item L<https://www.centralnic.com/>
+=item * L<List::MoreUtils>
 
-=item L<http://rdap.org/>
+=item * L<Net::ASN>
 
-=item L<http://goessner.net/articles/JsonPath/>
+=item * L<Net::DNS::Domain>
+
+=item * L<Net::IP>
+
+=item * L<Net::RDAP> (obviously)
+
+=item * L<Term::ANSIColor>
 
 =back
 
 =head1 COPYRIGHT
 
-rdapper is Copyright 2013 CentralNic Ltd. All rights reserved. This program is
-free software; you can redistribute it and/or modify it under the same terms as
-Perl itself.
+Copyright 2018 CentralNic Ltd. All rights reserved.
+
+=head1 LICENSE
+
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted,
+provided that the above copyright notice appear in all copies and that
+both that copyright notice and this permission notice appear in
+supporting documentation, and that the name of the author not be used
+in advertising or publicity pertaining to distribution of the software
+without specific prior written permission.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 =cut
