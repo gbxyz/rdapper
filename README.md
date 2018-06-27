@@ -1,6 +1,6 @@
 # NAME
 
-`rdapper` - a simple console-based RDAP client
+`rdapper` - a simple console-based RDAP client.
 
 # SYNOPSIS
 
