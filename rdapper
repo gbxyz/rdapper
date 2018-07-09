@@ -69,10 +69,15 @@ if (!$response) {
 	error("Unable to retrieve data");
 
 } else {
-	my $name = $response->name;
-	printf("\nName: %s\n\n", uc('Net::DNS::Domain' eq ref($name) ? $name->name : $name)) if ($name);
+	if ($response->isa('Net::RDAP::Error')) {
+		warning("%03u %s", $response->errorCode, $response->title);
 
-	printf("Handle: %s\n\n", $response->handle);
+	} else {
+		my $name = $response->name;
+		printf("\nName: %s\n\n", uc('Net::DNS::Domain' eq ref($name) ? $name->name : $name)) if ($name);
+
+		printf("Handle: %s\n\n", $response->handle);
+	}
 
 	my @links = $response->links;
 	if (scalar(@links) > 0) {
@@ -83,16 +88,16 @@ if (!$response) {
 		print "\n";
 	}
 
-	if ('ip' eq $type) {
+	if ('ip network' eq $response->class) {
 		printf("Range: %s\n\n", $response->range->prefix);
 
 		printf("Domain: %s\n\n", $response->domain->as_string);
 
-	} elsif ('autnum' eq $type) {
+	} elsif ('autnum' eq $response->class) {
 		printf("Range: %u - %u\n\n", $response->start, $response->end) if ($response->start > 0 && $response->end > 0);
 		printf("Type: %s\n\n", $response->type) if ($response->type);
 
-	} elsif ('domain' eq $type) {
+	} elsif ('domain' eq $response->class) {
 		my @ns = $response->nameservers;
 		if (scalar(@ns) > 0) {
 			print "Nameservers:\n\n";
@@ -120,16 +125,19 @@ if (!$response) {
 			print "\n";
 		}
 
-	} else {
-		error("Unable to handle type '$type'");
-
+	} elsif ($response->isa('Net::RDAP::Error')) {
+		my @description = $response->description;
+		print join("\n", @description) if (scalar(@description) > 0);
 	}
 
-	print "Events:\n\n";
-	foreach my $event ($response->events) {
-		printf("  %s: %s\n", ucfirst($event->action), scalar($event->date));
+	my @events = $response->events;
+	if (scalar(@events)) {
+		print "Events:\n\n";
+		foreach my $event (@events) {
+			printf("  %s: %s\n", ucfirst($event->action), scalar($event->date));
+		}
+		print "\n";
 	}
-	print "\n";
 
 	my @status = $response->status;
 	if (scalar(@status) > 0) {
@@ -143,10 +151,16 @@ if (!$response) {
 	my @entities = $response->entities;
 	my %entities;
 	foreach my $entity (@entities) {
-		eval {
-			my $new = $rdap->fetch($entity) if (!$entity->vcard);
-			$entity = $new if ($new);
-		};
+		if (!$entity->vcard) {
+			my $new = $rdap->fetch($entity);
+			if ($new->isa('Net::RDAP::Error')) {
+				warning("%s: %03u %s", $new->self->href->as_string, $new->errorCode, $new->title);
+
+			} else {
+				$entity = $new;
+
+			}
+		}
 		foreach my $role ($entity->roles) {
 			$entities{$role} = $entity;
 		}
