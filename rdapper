@@ -9,6 +9,7 @@ use Net::DNS::Domain;
 use Net::IP;
 use Net::RDAP;
 use Term::ANSIColor;
+use URI;
 use vars qw($VERSION);
 use strict;
 
@@ -43,6 +44,7 @@ if (!$type) {
 	elsif ($object =~ /^[0-9a-f:]+$/i)					{ $type = 'ip'		} # v6 address
 	elsif ($object =~ /^[0-9a-f:]+\/\d{1,3}$/i)				{ $type = 'ip'		} # v6 range
 	elsif ($object =~ /^asn?\d+$/i)						{ $type = 'autnum'	} # ASN
+	elsif ($object =~ /^https?:\/\//)					{ $type = 'url'		} # URL
 	else									{ $type = 'domain'	} # domain
 }
 
@@ -59,6 +61,9 @@ if ('ip' eq $type) {
 
 } elsif ('domain' eq $type) {
 	$response = $rdap->domain(Net::DNS::Domain->new($object));
+
+} elsif ('url' eq $type) {
+	$response = $rdap->fetch(URI->new($object));
 
 } else {
 	error("Unable to handle type '$type'");
@@ -262,7 +267,7 @@ when the RDAP protocol was still in draft form) but is now just
 a very thin front-end to L<Net::RDAP>, and its main purpose is to
 allow testing of that library.
 
-You can pass any internet resource as an argument; this may be a:
+You can pass any internet resource as an argument; this may be:
 
 =over
 
@@ -273,6 +278,8 @@ You can pass any internet resource as an argument; this may be a:
 =item * a IPv4 or IPv6 address or CIDR prefix, such as C<192.168.0.1> or C<2001:DB8::/32>;
 
 =item * an Autonymous System Number such as C<AS65536>.
+
+=item * the URL of an RDAP resource such as C<https://example.com/rdap/domain/example.com>.
 
 =back
 
