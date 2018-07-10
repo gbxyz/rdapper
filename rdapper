@@ -8,6 +8,7 @@ use Net::ASN;
 use Net::DNS::Domain;
 use Net::IP;
 use Net::RDAP;
+use Pod::Usage;
 use Term::ANSIColor;
 use URI;
 use vars qw($VERSION);
@@ -30,11 +31,15 @@ sub error {
 
 my $rdap = Net::RDAP->new;
 
-my ($type, $object);
+my ($type, $object, $help, $debug);
 GetOptions(
 	'type:s'	=> \$type,
 	'object:s'	=> \$object,
+	'help'		=> \$help,
+	'debug'		=> \$debug,
 );
+
+pod2usage('-verbose' => 99, '-sections' => [qw(NAME SYNOPSIS OPTIONS COPYRIGHT)]) if ($help);
 
 $object = shift(@ARGV) if (!$object);
 
@@ -47,6 +52,8 @@ if (!$type) {
 	elsif ($object =~ /^https?:\/\//)					{ $type = 'url'		} # URL
 	else									{ $type = 'domain'	} # domain
 }
+
+$ENV{'NET_RDAP_UA_DEBUG'} = 1 if ($debug);
 
 my $rdap = Net::RDAP->new;
 
@@ -256,6 +263,8 @@ C<rdapper> - a simple console-based RDAP client.
 
 	rdapper OBJECT
 
+=head1 DESCRIPTION
+
 C<rdapper> is a simple RDAP client. It uses L<Net::RDAP> to retrieve
 data about internet resources (domain names, IP addresses, and
 autonymous systems) and outputs the information in a human-readable
@@ -267,6 +276,8 @@ when the RDAP protocol was still in draft form) but is now just
 a very thin front-end to L<Net::RDAP>, and its main purpose is to
 allow testing of that library.
 
+=head1 OPTIONS
+
 You can pass any internet resource as an argument; this may be:
 
 =over
@@ -275,11 +286,28 @@ You can pass any internet resource as an argument; this may be:
 
 =item * a "reverse" domain name such as C<168.192.in-addr.arpa>;
 
-=item * a IPv4 or IPv6 address or CIDR prefix, such as C<192.168.0.1> or C<2001:DB8::/32>;
+=item * a IPv4 or IPv6 address or CIDR prefix, such as C<192.168.0.1>
+or C<2001:DB8::/32>;
 
 =item * an Autonymous System Number such as C<AS65536>.
 
-=item * the URL of an RDAP resource such as C<https://example.com/rdap/domain/example.com>.
+=item * the URL of an RDAP resource such as
+C<https://example.com/rdap/domain/example.com>.
+
+=back
+
+=head2 ADDITIONAL ARGUMENTS
+
+=over
+
+=item * C<--type=TYPE> - explicitly set the object type. C<rdapper>
+will guess the type by pattern matching the value of C<OBJECT> but
+you can override this by explicitly setting the C<--type> argument
+to one of : C<ip>, C<autnum>, C<domain> or C<url>.
+
+=item * C<--help> - display help message.
+
+=item * C<--debug> - enable L<Net::RDAP> debug mode.
 
 =back
 

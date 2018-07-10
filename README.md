@@ -6,6 +6,8 @@
 
         rdapper OBJECT
 
+# DESCRIPTION
+
 `rdapper` is a simple RDAP client. It uses [Net::RDAP](https://metacpan.org/pod/Net::RDAP) to retrieve
 data about internet resources (domain names, IP addresses, and
 autonymous systems) and outputs the information in a human-readable
@@ -17,12 +19,26 @@ when the RDAP protocol was still in draft form) but is now just
 a very thin front-end to [Net::RDAP](https://metacpan.org/pod/Net::RDAP), and its main purpose is to
 allow testing of that library.
 
-You can pass any internet resource as an argument; this may be a:
+# OPTIONS
+
+You can pass any internet resource as an argument; this may be:
 
 - a "forward" domain name such as `example.com`;
 - a "reverse" domain name such as `168.192.in-addr.arpa`;
-- a IPv4 or IPv6 address or CIDR prefix, such as `192.168.0.1` or `2001:DB8::/32`;
+- a IPv4 or IPv6 address or CIDR prefix, such as `192.168.0.1`
+or `2001:DB8::/32`;
 - an Autonymous System Number such as `AS65536`.
+- the URL of an RDAP resource such as
+`https://example.com/rdap/domain/example.com`.
+
+## ADDITIONAL ARGUMENTS
+
+- `--type=TYPE` - explicitly set the object type. `rdapper`
+will guess the type by pattern matching the value of `OBJECT` but
+you can override this by explicitly setting the `--type` argument
+to one of : `ip`, `autnum`, `domain` or `url`.
+- `--help` - display help message.
+- `--debug` - enable [Net::RDAP](https://metacpan.org/pod/Net::RDAP) debug mode.
 
 # DEPENDENCIES
 
