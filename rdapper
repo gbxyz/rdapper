@@ -10,11 +10,12 @@ use Net::IP;
 use Net::RDAP;
 use Pod::Usage;
 use Term::ANSIColor;
+use Text::Wrap;
 use URI;
 use vars qw($VERSION);
 use strict;
 
-$VERSION = 0.1;
+$VERSION = 0.2;
 
 sub warning {
 	my ($fmt, @params) = @_;
@@ -31,17 +32,20 @@ sub error {
 
 my $rdap = Net::RDAP->new;
 
-my ($type, $object, $help, $debug);
+my ($type, $object, $help, $debug, $expand, $short);
 GetOptions(
 	'type:s'	=> \$type,
 	'object:s'	=> \$object,
 	'help'		=> \$help,
 	'debug'		=> \$debug,
+	'expand'	=> \$expand,
+	'short'		=> \$short,
 );
 
-pod2usage('-verbose' => 99, '-sections' => [qw(NAME SYNOPSIS OPTIONS COPYRIGHT)]) if ($help);
-
 $object = shift(@ARGV) if (!$object);
+
+pod2usage('-verbose' => 99, '-sections' => [qw(NAME SYNOPSIS OPTIONS COPYRIGHT)]) if ($help);
+pod2usage('-verbose' => 99, '-sections' => [qw(SYNOPSIS OPTIONS)]) if (length($object) < 1);
 
 if (!$type) {
 	if ($object =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)			{ $type = 'ip'		} # v4 address
@@ -49,9 +53,11 @@ if (!$type) {
 	elsif ($object =~ /^[0-9a-f:]+$/i)					{ $type = 'ip'		} # v6 address
 	elsif ($object =~ /^[0-9a-f:]+\/\d{1,3}$/i)				{ $type = 'ip'		} # v6 range
 	elsif ($object =~ /^asn?\d+$/i)						{ $type = 'autnum'	} # ASN
-	elsif ($object =~ /^https?:\/\//)					{ $type = 'url'		} # URL
+	elsif ($object =~ /^(file|https)?:\/\//)				{ $type = 'url'		} # URL
 	else									{ $type = 'domain'	} # domain
 }
+
+$Text::Wrap::columns = 80;
 
 $ENV{'NET_RDAP_UA_DEBUG'} = 1 if ($debug);
 
@@ -81,23 +87,18 @@ if (!$response) {
 	error("Unable to retrieve data");
 
 } else {
+	my @errors;
+
 	if ($response->isa('Net::RDAP::Error')) {
-		warning("%03u %s", $response->errorCode, $response->title);
+		push(@errors, sprintf("%03u (%s)", $response->errorCode, $response->title));
 
 	} else {
-		my $name = $response->name;
-		printf("\nName: %s\n\n", uc('Net::DNS::Domain' eq ref($name) ? $name->name : $name)) if ($name);
+		if ('entity' ne $response->class) {
+			my $name = $response->name;
+			printf("\nName: %s\n\n", uc('Net::DNS::Domain' eq ref($name) ? $name->name : $name)) if ($name);
+		}
 
 		printf("Handle: %s\n\n", $response->handle);
-	}
-
-	my @links = $response->links;
-	if (scalar(@links) > 0) {
-		print "Links:\n";
-		foreach my $link (@links) {
-			printf("\n  * %s (%s)\n", $link->href->as_string, $link->title || $link->rel || '-');
-		}
-		print "\n";
 	}
 
 	if ('ip network' eq $response->class) {
@@ -137,9 +138,9 @@ if (!$response) {
 			print "\n";
 		}
 
-	} elsif ($response->isa('Net::RDAP::Error')) {
-		my @description = $response->description;
-		print join("\n", @description) if (scalar(@description) > 0);
+	} elsif ('entity' eq $response->class) {
+		print_vcard($response->vcard, ' ' x 2);
+
 	}
 
 	my @events = $response->events;
@@ -163,19 +164,17 @@ if (!$response) {
 	my @entities = $response->entities;
 	my %entities;
 	foreach my $entity (@entities) {
-		if (!$entity->vcard) {
+		if (!$entity->vcard && $expand) {
 			my $new = $rdap->fetch($entity);
 			if ($new->isa('Net::RDAP::Error')) {
-				warning("%s: %03u %s", $new->self->href->as_string, $new->errorCode, $new->title);
+				push(@errors, sprintf('Unable to expand %s: %d (%s)', $entity->handle, $new->errorCode, $new->title));
 
 			} else {
 				$entity = $new;
 
 			}
 		}
-		foreach my $role ($entity->roles) {
-			$entities{$role} = $entity;
-		}
+		map { $entities{$_} = $entity } $entity->roles;
 	}
 
 	if (scalar(@entities) > 0) {
@@ -186,29 +185,64 @@ if (!$response) {
 			if ($card) {
 				my @roles = $entity->roles;
 				if (scalar(@roles) > 0) {
-					printf("  Entity %s (%s):\n\n", $entity->handle, join(', ', @roles));
+					if ($entity->handle) {
+						printf("  Entity %s (%s):\n\n", $entity->handle, join(', ', @roles));
+
+					} else {
+						printf("  %s:\n\n", join(', ', map { sprintf('%s Contact', ucfirst($_)) } @roles));
+
+					}
 
 				} else {
 					printf("  Entity %s:\n\n", $entity->handle);
+
 				}
 
-				printf("    Name: %s\n", $card->full_name) if ($card->full_name);
-				printf("    Organization: %s\n", $card->organization) if ($card->organization);
+				print_vcard($card, ' ' x 4);
+			}
+		}
+	}
 
-				foreach my $email (@{$card->email_addresses}) {
-					if ($email->{'type'}) {
-						printf("    Email: %s (%s)\n", $email->{'address'}, $email->{'type'});
-						
-					} else {
-						printf("    Email: %s\n", $email->{'address'});
+	if (!$short) {
+		my @links = $response->links;
+		if (scalar(@links) > 0) {
+			print "Links:\n";
+			foreach my $link (@links) {
+				printf("\n  * %s (%s)\n", $link->href->as_string, $link->title || $link->rel || '-');
+			}
+			print "\n";
+		}
 
-					}
+		my @remarks = $response->remarks;
+		if (scalar(@remarks) > 0) {
+			print "Remarks:\n\n";
+			foreach my $remark (@remarks) {
+				my $indent = ' ' x 2;
+
+				printf("  %s:\n  %s\n\n", $remark->title, ('=' x (1 + length($remark->title)))) if ($remark->title);
+
+				print fill($indent, $indent, join("\n", $remark->description))."\n";
+
+				foreach my $link ($remark->links) {
+					printf("\n%s* %s (%s)\n", ($indent x 2), $link->href->as_string, ($link->title || $link->rel || '-'));
 				}
 
-				foreach my $number (@{$card->phones}) {
-					my @types = ('ARRAY' eq ref($number->{'type'}) ? @{$number->{'type'}} : ($number->{'type'}));
-					my $type = ((any { lc($_) eq 'fax' } @types) ? 'Fax' : 'Phone');
-					printf("    %s: %s\n", $type, $number->{'number'});
+				print "\n";
+			}
+		}
+
+		my @notices = $response->notices;
+		if (scalar(@notices) > 0) {
+			print "Notices:\n\n";
+			foreach my $notice (@notices) {
+				my $indent = ' ' x 2;
+
+				printf("  %s:\n  %s\n\n", $notice->title, ('=' x (1 + length($notice->title)))) if ($notice->title);
+
+				print fill($indent, $indent, join("\n", $notice->description))."\n";
+
+				foreach my $link ($notice->links) {
+					printf("\n%s* %s (%s)\n", ($indent x 2), $link->href->as_string, ($link->title || $link->rel || '-'));
 				}
 
 				print "\n";
@@ -216,39 +250,45 @@ if (!$response) {
 		}
 	}
 
-	my @remarks = $response->remarks;
-	if (scalar(@remarks) > 0) {
-		print "Remarks:\n\n";
-		foreach my $remark (@remarks) {
-			my $indent = ' ' x 2;
-			if ($remark->title) {
-				printf("  %s:\n  %s\n\n", $remark->title, ('=' x (1 + length($remark->title))));
-				$indent = ' ' x 4;
+	map { warning($_) } @errors;
+}
+
+sub print_vcard {
+	my ($card, $indent) = @_;
+
+	printf("%sName: %s\n\n", $indent, $card->full_name) if ($card->full_name);
+	printf("%sOrganization: %s\n\n", $indent, $card->organization) if ($card->organization);
+
+	my @addresses = @{$card->addresses};
+	if (scalar(@addresses) > 0) {
+		foreach my $address (@addresses) {
+			printf("%sAddress:\n\n", $indent);
+
+			my @lines;
+			foreach my $element (@{$address->{'address'}}) {
+				push(@lines, ('ARRAY' eq ref($element) ? @{$element} : $element));
 			}
-			print $indent.join("\n$indent", $remark->description)."\n";
-			foreach my $link ($remark->links) {
-				printf("\n%s* %s (%s)\n", ($indent x 2), $link->href->as_string, ($link->title || $link->rel || '-'));
-			}
-			print "\n";
+
+			print $indent."  ".join(sprintf("\n%s  ", $indent), grep { length > 0 } map { s/^[ \t\r\n]+//g ; s/[ \t\r\n]+$//g ; $_ } @lines)."\n\n";
 		}
 	}
 
-	my @notices = $response->notices;
-	if (scalar(@notices) > 0) {
-		print "Notices:\n\n";
-		foreach my $notice (@notices) {
-			my $indent = ' ' x 2;
-			if ($notice->title) {
-				printf("  %s:\n  %s\n\n", $notice->title, ('=' x (1 + length($notice->title))));
-				$indent = ' ' x 4;
-			}
-			print $indent.join("\n$indent", $notice->description)."\n";
-			foreach my $link ($notice->links) {
-				printf("\n%s* %s (%s)\n", ($indent x 2), $link->href->as_string, ($link->title || $link->rel || '-'));
-			}
-			print "\n";
+	foreach my $email (@{$card->email_addresses}) {
+		if ($email->{'type'}) {
+			printf("%sEmail: %s (%s)\n\n", $indent, $email->{'address'}, $email->{'type'});
+			
+		} else {
+			printf("%sEmail: %s\n\n", $indent, $email->{'address'});
+
 		}
 	}
+
+	foreach my $number (@{$card->phones}) {
+		my @types = ('ARRAY' eq ref($number->{'type'}) ? @{$number->{'type'}} : ($number->{'type'}));
+		my $type = ((any { lc($_) eq 'fax' } @types) ? 'Fax' : 'Phone');
+		printf("%s%s: %s\n\n", $indent, $type, $number->{'number'});
+	}
+
 }
 
 __END__
@@ -305,9 +345,16 @@ will guess the type by pattern matching the value of C<OBJECT> but
 you can override this by explicitly setting the C<--type> argument
 to one of : C<ip>, C<autnum>, C<domain> or C<url>.
 
+If C<--type=url> is used, C<rdapper> will directly fetch the
+specified URL and attempt to process it as an RDAP response.
+
 =item * C<--help> - display help message.
 
 =item * C<--debug> - enable L<Net::RDAP> debug mode.
+
+=item * C<--short> - omit remarks, notices, and links.
+
+=item * C<--expand> - attempt to "expand" truncated entity objects.
 
 =back
 
@@ -331,6 +378,8 @@ installed:
 =item * L<Net::RDAP> (obviously)
 
 =item * L<Term::ANSIColor>
+
+=item * L<Text::Wrap>
 
 =back
 

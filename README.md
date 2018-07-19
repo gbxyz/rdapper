@@ -37,8 +37,14 @@ or `2001:DB8::/32`;
 will guess the type by pattern matching the value of `OBJECT` but
 you can override this by explicitly setting the `--type` argument
 to one of : `ip`, `autnum`, `domain` or `url`.
+
+    If `--type=url` is used, `rdapper` will directly fetch the
+    specified URL and attempt to process it as an RDAP response.
+
 - `--help` - display help message.
 - `--debug` - enable [Net::RDAP](https://metacpan.org/pod/Net::RDAP) debug mode.
+- `--short` - omit remarks, notices, and links.
+- `--expand` - attempt to "expand" truncated entity objects.
 
 # DEPENDENCIES
 
@@ -52,6 +58,7 @@ installed:
 - [Net::IP](https://metacpan.org/pod/Net::IP)
 - [Net::RDAP](https://metacpan.org/pod/Net::RDAP) (obviously)
 - [Term::ANSIColor](https://metacpan.org/pod/Term::ANSIColor)
+- [Text::Wrap](https://metacpan.org/pod/Text::Wrap)
 
 # COPYRIGHT
 
