@@ -16,6 +16,9 @@ WriteMakefile(
 		'Net::DNS::Domain'	=> 0,
 		'Net::IP'		=> 0,
 		'Net::RDAP'		=> 0,
+		'Pod::Usage'		=> 0,
 		'Term::ANSIColor'	=> 0,
+		'Text::Wrap'		=> 0,
+		'URI'			=> 0,
 	},
 );
