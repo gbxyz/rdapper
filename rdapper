@@ -276,7 +276,7 @@ sub print_vcard {
 	foreach my $email (@{$card->email_addresses}) {
 		if ($email->{'type'}) {
 			printf("%sEmail: %s (%s)\n\n", $indent, $email->{'address'}, $email->{'type'});
-			
+
 		} else {
 			printf("%sEmail: %s\n\n", $indent, $email->{'address'});
 
