@@ -32,7 +32,7 @@ sub error {
 
 my $rdap = Net::RDAP->new;
 
-my ($type, $object, $help, $debug, $expand, $short);
+my ($type, $object, $help, $debug, $expand, $short, $bypass);
 GetOptions(
 	'type:s'	=> \$type,
 	'object:s'	=> \$object,
@@ -40,6 +40,7 @@ GetOptions(
 	'debug'		=> \$debug,
 	'expand'	=> \$expand,
 	'short'		=> \$short,
+	'bypass-cache'	=> \$bypass,
 );
 
 $object = shift(@ARGV) if (!$object);
@@ -59,9 +60,10 @@ if (!$type) {
 
 $Text::Wrap::columns = 80;
 
-$ENV{'NET_RDAP_UA_DEBUG'} = 1 if ($debug);
-
-my $rdap = Net::RDAP->new;
+my $rdap = Net::RDAP->new(
+	'use_cache'	=> !$bypass,
+	'debug'		=> $debug,
+);
 
 my $response;
 if ('ip' eq $type) {
@@ -355,6 +357,8 @@ specified URL and attempt to process it as an RDAP response.
 =item * C<--short> - omit remarks, notices, and links.
 
 =item * C<--expand> - attempt to "expand" truncated entity objects.
+
+=item * C<--bypass-cache> - disable local cache of RDAP objects.
 
 =back
 

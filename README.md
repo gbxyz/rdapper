@@ -45,6 +45,7 @@ to one of : `ip`, `autnum`, `domain` or `url`.
 - `--debug` - enable [Net::RDAP](https://metacpan.org/pod/Net::RDAP) debug mode.
 - `--short` - omit remarks, notices, and links.
 - `--expand` - attempt to "expand" truncated entity objects.
+- `--bypass-cache` - disable local cache of RDAP objects.
 
 # DEPENDENCIES
 
