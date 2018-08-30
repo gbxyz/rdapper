@@ -33,7 +33,7 @@ sub error {
 
 my $rdap = Net::RDAP->new;
 
-my ($type, $object, $help, $debug, $expand, $short, $bypass);
+my ($type, $object, $help, $debug, $expand, $short, $bypass, $auth);
 GetOptions(
 	'type:s'	=> \$type,
 	'object:s'	=> \$object,
@@ -42,6 +42,7 @@ GetOptions(
 	'expand'	=> \$expand,
 	'short'		=> \$short,
 	'bypass-cache'	=> \$bypass,
+	'auth:s'	=> \$auth,
 );
 
 $object = shift(@ARGV) if (!$object);
@@ -66,20 +67,23 @@ my $rdap = Net::RDAP->new(
 	'debug'		=> $debug,
 );
 
+my %args;
+($args{'user'}, $args{'pass'}) = split(/:/, $auth, 2) if ($auth);
+
 my $response;
 if ('ip' eq $type) {
-	$response = $rdap->ip(Net::IP->new($object));
+	$response = $rdap->ip(Net::IP->new($object), %args);
 
 } elsif ('autnum' eq $type) {
 	my $asn = $object;
 	$asn =~ s/^asn?//ig;
-	$response = $rdap->autnum(Net::ASN->new($asn));
+	$response = $rdap->autnum(Net::ASN->new($asn), %args);
 
 } elsif ('domain' eq $type) {
-	$response = $rdap->domain(Net::DNS::Domain->new($object));
+	$response = $rdap->domain(Net::DNS::Domain->new($object), %args);
 
 } elsif ('url' eq $type) {
-	$response = $rdap->fetch(URI->new($object));
+	$response = $rdap->fetch(URI->new($object), %args);
 
 } else {
 	error("Unable to handle type '$type'");
