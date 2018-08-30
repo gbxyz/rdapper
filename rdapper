@@ -33,7 +33,7 @@ sub error {
 
 my $rdap = Net::RDAP->new;
 
-my ($type, $object, $help, $debug, $expand, $short, $bypass, $auth);
+my ($type, $object, $help, $debug, $expand, $short, $bypass, $auth, $nopager);
 GetOptions(
 	'type:s'	=> \$type,
 	'object:s'	=> \$object,
@@ -43,7 +43,14 @@ GetOptions(
 	'short'		=> \$short,
 	'bypass-cache'	=> \$bypass,
 	'auth:s'	=> \$auth,
+	'nopager'	=> \$nopager,
 );
+
+if (-t STDOUT && !$nopager && !$short) {
+	open(LESS, sprintf('|%s', $ENV{'PAGER'} || 'less'));
+	select(LESS);
+}
+
 
 $object = shift(@ARGV) if (!$object);
 
@@ -102,121 +109,153 @@ if (!$response) {
 	} else {
 		if ('entity' ne $response->class) {
 			my $name = $response->name;
-			printf("\nName: %s\n\n", uc('Net::DNS::Domain' eq ref($name) ? $name->name : $name)) if ($name);
+			if ($name) {
+				my $xname;
+				if ('Net::DNS::Domain' eq ref($name)) {
+					$xname = $name->xname;
+					$name = $name->name;
+
+				} else {
+					$xname = $name;
+
+				}
+				if ($xname ne $name) {
+					printf("\nName: %s (%s)\n\n", uc($xname), uc($name));
+
+				} else {
+					printf("\nName: %s\n\n", uc($name));
+
+				}
+			}
 		}
 
 		printf("Handle: %s\n\n", $response->handle);
-	}
 
-	if ('ip network' eq $response->class) {
-		printf("Range: %s\n\n", $response->range->prefix);
+		if ('ip network' eq $response->class) {
+			printf("Range: %s\n\n", $response->range->prefix);
 
-		printf("Domain: %s\n\n", $response->domain->as_string);
+			printf("Domain: %s\n\n", $response->domain->as_string);
 
-	} elsif ('autnum' eq $response->class) {
-		printf("Range: %u - %u\n\n", $response->start, $response->end) if ($response->start > 0 && $response->end > 0);
-		printf("Type: %s\n\n", $response->type) if ($response->type);
+		} elsif ('autnum' eq $response->class) {
+			printf("Range: %u - %u\n\n", $response->start, $response->end) if ($response->start > 0 && $response->end > 0);
+			printf("Type: %s\n\n", $response->type) if ($response->type);
 
-	} elsif ('domain' eq $response->class) {
-		my @ns = $response->nameservers;
-		if (scalar(@ns) > 0) {
-			print "Nameservers:\n\n";
-			foreach my $ns (sort { lc($a->name->name) cmp lc($b->name->name) } @ns) {
-				printf("  %s\n", uc($ns->name->name));
+		} elsif ('domain' eq $response->class) {
+			my @ns = $response->nameservers;
+			if (scalar(@ns) > 0) {
+				print "Nameservers:\n\n";
+				foreach my $ns (sort { lc($a->name->name) cmp lc($b->name->name) } @ns) {
+					printf("  %s\n", uc($ns->name->name));
+				}
+				print "\n";
 			}
-			print "\n";
-		}
 
-		my @ds = $response->ds;
-		if (scalar(@ds) > 0) {
-			print "DNSSEC:\n\n";
-			foreach my $ds ($response->ds) {
-				printf("  %s. IN DS %u %u %u %s\n", uc($ds->name), $ds->keytag, $ds->algorithm, $ds->digtype, uc($ds->digest));
+			my @ds = $response->ds;
+			if (scalar(@ds) > 0) {
+				print "DNSSEC:\n\n";
+				foreach my $ds ($response->ds) {
+					printf("  %s. IN DS %u %u %u %s\n", uc($ds->name), $ds->keytag, $ds->algorithm, $ds->digtype, uc($ds->digest));
+				}
+				print "\n";
 			}
-			print "\n";
-		}
 
-		my @keys = $response->keys;
-		if (scalar(@keys) > 0) {
-			print "DNSSEC Keys:\n\n";
-			foreach my $key (@keys) {
-				printf("  %s. IN DNSKEY %u %u %u %s\n", uc($key->name), $key->flags, $key->protocol, $key->algorithm, uc($key->key));
+			my @keys = $response->keys;
+			if (scalar(@keys) > 0) {
+				print "DNSSEC Keys:\n\n";
+				foreach my $key (@keys) {
+					printf("  %s. IN DNSKEY %u %u %u %s\n", uc($key->name), $key->flags, $key->protocol, $key->algorithm, uc($key->key));
+				}
+				print "\n";
 			}
-			print "\n";
-		}
 
-	} elsif ('entity' eq $response->class) {
-		print_vcard($response->vcard, ' ' x 2);
+		} elsif ('entity' eq $response->class) {
+			print_vcard($response->vcard, ' ' x 2);
 
-	}
+		} elsif ('nameserver' eq $response->class) {
+			print "IP Addresses:\n\n";
 
-	my @events = $response->events;
-	if (scalar(@events)) {
-		print "Events:\n\n";
-		foreach my $event (@events) {
-			printf("  %s: %s\n", ucfirst($event->action), scalar($event->date));
-		}
-		print "\n";
-	}
-
-	my @status = $response->status;
-	if (scalar(@status) > 0) {
-		print "Status:\n\n";
-		foreach my $status (@status) {
-			if ('domain' eq $response->class && rdap2epp($status)) {
-				printf("  * %s (EPP: %s)\n", $status, rdap2epp($status));
-
-			} else {
-				printf("  * %s\n", $status);
-
-			}
-		}
-		print "\n";
-	}
-
-	my @entities = $response->entities;
-	my %entities;
-	foreach my $entity (@entities) {
-		if (!$entity->vcard && $expand) {
-			my $new = $rdap->fetch($entity);
-			if ($new->isa('Net::RDAP::Error')) {
-				push(@errors, sprintf('Unable to expand %s: %d (%s)', $entity->handle, $new->errorCode, $new->title));
-
-			} else {
-				$entity = $new;
-
-			}
-		}
-		map { $entities{$_} = $entity } $entity->roles;
-	}
-
-	if (scalar(@entities) > 0) {
-		print "Entities:\n\n";
-
-		foreach my $entity (@entities) {
-
-			my @roles = $entity->roles;
-			if (scalar(@roles) > 0) {
-				if ($entity->handle) {
-					printf("  Entity %s (%s):\n\n", $entity->handle, join(', ', sort(@roles)));
-
-				} else {
-					printf("  %s:\n\n", join(', ', map { sprintf('%s Contact', ucfirst($_)) } sort(@roles)));
-
+			my @addrs = $response->addresses;
+			if (scalar(@addrs) > 0) {
+				foreach my $ip (@addrs) {
+					printf("  * %s\n", $ip->ip);
 				}
 
 			} else {
-				printf("  Entity %s:\n\n", $entity->handle);
+				print "  * (no IP addresses returned)\n";
 
 			}
+			print "\n";
+		}
 
-			my $card = $entity->vcard;
-			if (!$card) {
-				print "    (no further information available)\n\n";
+		my @events = $response->events;
+		if (scalar(@events)) {
+			print "Events:\n\n";
+			foreach my $event (@events) {
+				printf("  %s: %s\n", ucfirst($event->action), scalar($event->date));
+			}
+			print "\n";
+		}
 
-			} else {
-				print_vcard($card, ' ' x 4);
+		my @status = $response->status;
+		if (scalar(@status) > 0) {
+			print "Status:\n\n";
+			foreach my $status (@status) {
+				my $epp = rdap2epp($status);
+				if ($epp) {
+					printf("  * %s (EPP: %s)\n", $status, $epp);
 
+				} else {
+					printf("  * %s\n", $status);
+
+				}
+			}
+			print "\n";
+		}
+
+		my @entities = $response->entities;
+		my %entities;
+		foreach my $entity (@entities) {
+			if (!$entity->vcard && $expand) {
+				my $new = $rdap->fetch($entity);
+				if ($new->isa('Net::RDAP::Error')) {
+					push(@errors, sprintf('Unable to expand %s: %d (%s)', $entity->handle, $new->errorCode, $new->title));
+
+				} else {
+					$entity = $new;
+
+				}
+			}
+			map { $entities{$_} = $entity } $entity->roles;
+		}
+
+		if (scalar(@entities) > 0) {
+			print "Entities:\n\n";
+
+			foreach my $entity (@entities) {
+
+				my @roles = $entity->roles;
+				if (scalar(@roles) > 0) {
+					if ($entity->handle) {
+						printf("  Entity %s (%s):\n\n", $entity->handle, join(', ', sort(@roles)));
+
+					} else {
+						printf("  %s:\n\n", join(', ', map { sprintf('%s Contact', ucfirst($_)) } sort(@roles)));
+
+					}
+
+				} else {
+					printf("  Entity %s:\n\n", $entity->handle);
+
+				}
+
+				my $card = $entity->vcard;
+				if (!$card) {
+					print "    (no further information available)\n\n";
+
+				} else {
+					print_vcard($card, ' ' x 4);
+
+				}
 			}
 		}
 	}
@@ -270,6 +309,8 @@ if (!$response) {
 
 	map { warning($_) } @errors;
 }
+
+close(LESS);
 
 sub print_vcard {
 	my ($card, $indent) = @_;
@@ -370,11 +411,18 @@ specified URL and attempt to process it as an RDAP response.
 
 =item * C<--debug> - enable L<Net::RDAP> debug mode.
 
-=item * C<--short> - omit remarks, notices, and links.
+=item * C<--short> - omit remarks, notices, and links. Implies
+C<--nopager>.
 
 =item * C<--expand> - attempt to "expand" truncated entity objects.
 
 =item * C<--bypass-cache> - disable local cache of RDAP objects.
+
+=item * C<--auth=USER:PASS> - HTTP Basic Authentication credentials
+to be used when accessing the specified resource.
+
+=item * C<--nopager> - by default, C<rdapper> will pass its output
+to C<less(1)>. Setting C<--nopager> disables this behaviour.
 
 =back
 
