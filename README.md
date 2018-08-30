@@ -43,9 +43,14 @@ to one of : `ip`, `autnum`, `domain` or `url`.
 
 - `--help` - display help message.
 - `--debug` - enable [Net::RDAP](https://metacpan.org/pod/Net::RDAP) debug mode.
-- `--short` - omit remarks, notices, and links.
+- `--short` - omit remarks, notices, and links. Implies
+`--nopager`.
 - `--expand` - attempt to "expand" truncated entity objects.
 - `--bypass-cache` - disable local cache of RDAP objects.
+- `--auth=USER:PASS` - HTTP Basic Authentication credentials
+to be used when accessing the specified resource.
+- `--nopager` - by default, `rdapper` will pass its output
+to `less(1)`. Setting `--nopager` disables this behaviour.
 
 # DEPENDENCIES
 
