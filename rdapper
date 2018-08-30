@@ -8,6 +8,7 @@ use Net::ASN;
 use Net::DNS::Domain;
 use Net::IP;
 use Net::RDAP;
+use Net::RDAP::EPPStatusMap;
 use Pod::Usage;
 use Term::ANSIColor;
 use Text::Wrap;
@@ -158,7 +159,13 @@ if (!$response) {
 	if (scalar(@status) > 0) {
 		print "Status:\n\n";
 		foreach my $status (@status) {
-			printf("  * %s\n", $status);
+			if ('domain' eq $response->class && rdap2epp($status)) {
+				printf("  * %s (EPP: %s)\n", $status, rdap2epp($status));
+
+			} else {
+				printf("  * %s\n", $status);
+
+			}
 		}
 		print "\n";
 	}
