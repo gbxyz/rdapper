@@ -51,6 +51,7 @@ to one of : `ip`, `autnum`, `domain` or `url`.
 to be used when accessing the specified resource.
 - `--nopager` - by default, `rdapper` will pass its output
 to `less(1)`. Setting `--nopager` disables this behaviour.
+- `--raw` - output raw JSON response (implies `--nopager`).
 
 # DEPENDENCIES
 

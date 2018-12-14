@@ -3,6 +3,7 @@
 # free software; you can redistribute it and/or modify it under the same
 # terms as Perl itself.
 use Getopt::Long;
+use JSON;
 use List::MoreUtils qw(any);
 use Net::ASN;
 use Net::DNS::Domain;
@@ -16,7 +17,7 @@ use URI;
 use vars qw($VERSION);
 use strict;
 
-$VERSION = 0.2;
+$VERSION = 0.3;
 
 sub warning {
 	my ($fmt, @params) = @_;
@@ -33,7 +34,7 @@ sub error {
 
 my $rdap = Net::RDAP->new;
 
-my ($type, $object, $help, $debug, $expand, $short, $bypass, $auth, $nopager);
+my ($type, $object, $help, $debug, $expand, $short, $bypass, $auth, $nopager, $raw);
 GetOptions(
 	'type:s'	=> \$type,
 	'object:s'	=> \$object,
@@ -44,13 +45,15 @@ GetOptions(
 	'bypass-cache'	=> \$bypass,
 	'auth:s'	=> \$auth,
 	'nopager'	=> \$nopager,
+	'raw'		=> \$raw,
 );
+
+$nopager = 1 if ($raw);
 
 if (-t STDOUT && !$nopager && !$short) {
 	open(LESS, sprintf('|%s', $ENV{'PAGER'} || 'less'));
 	select(LESS);
 }
-
 
 $object = shift(@ARGV) if (!$object);
 
@@ -99,6 +102,9 @@ if ('ip' eq $type) {
 
 if (!$response) {
 	error("Unable to retrieve data");
+
+} elsif ($raw) {
+	print to_json({%{$response}});
 
 } else {
 	my @errors;
@@ -423,6 +429,8 @@ to be used when accessing the specified resource.
 
 =item * C<--nopager> - by default, C<rdapper> will pass its output
 to C<less(1)>. Setting C<--nopager> disables this behaviour.
+
+=item * C<--raw> - output raw JSON response (implies C<--nopager>).
 
 =back
 
