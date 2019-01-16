@@ -402,6 +402,11 @@ or C<2001:DB8::/32>;
 =item * the URL of an RDAP resource such as
 C<https://example.com/rdap/domain/example.com>.
 
+=item * the "tagged" handle of an entity, such as an LIR, registrar,
+or domain admin/tech contact. Because these handles are difficult
+to distinguish from domain names, you must use the C<--type> argument
+to explicitly tell C<rdapper> that you want to perform an entity query.
+
 =back
 
 =head2 ADDITIONAL ARGUMENTS
