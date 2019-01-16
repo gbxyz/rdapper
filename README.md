@@ -30,16 +30,24 @@ or `2001:DB8::/32`;
 - an Autonymous System Number such as `AS65536`.
 - the URL of an RDAP resource such as
 `https://example.com/rdap/domain/example.com`.
+- the "tagged" handle of an entity, such as an LIR, registrar,
+or domain admin/tech contact. Because these handles are difficult
+to distinguish from domain names, you must use the `--type` argument
+to explicitly tell `rdapper` that you want to perform an entity query.
 
 ## ADDITIONAL ARGUMENTS
 
 - `--type=TYPE` - explicitly set the object type. `rdapper`
 will guess the type by pattern matching the value of `OBJECT` but
 you can override this by explicitly setting the `--type` argument
-to one of : `ip`, `autnum`, `domain` or `url`.
+to one of : `ip`, `autnum`, `domain`, `entity` or `url`.
 
     If `--type=url` is used, `rdapper` will directly fetch the
     specified URL and attempt to process it as an RDAP response.
+
+    If `--type=entity` is used, `OBJECT` must be a a string
+    containing a "tagged" handle, such as `ABC123-EXAMPLE`, as per
+    RFC 8521.
 
 - `--help` - display help message.
 - `--debug` - enable [Net::RDAP](https://metacpan.org/pod/Net::RDAP) debug mode.
@@ -69,7 +77,7 @@ installed:
 
 # COPYRIGHT
 
-Copyright 2018 CentralNic Ltd. All rights reserved.
+Copyright 2019 CentralNic Ltd. All rights reserved.
 
 # LICENSE
 
