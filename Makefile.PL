@@ -11,6 +11,7 @@ WriteMakefile(
 	'EXE_FILES'	=> [ 'rdapper' ],
 	'PREREQ_PM'	=> {
 		'Getopt::Long'		=> 0,
+		'JSON'			=> 0,
 		'List::MoreUtils'	=> 0,
 		'Net::ASN'		=> 0,
 		'Net::DNS::Domain'	=> 0,
