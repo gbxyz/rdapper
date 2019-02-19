@@ -15,9 +15,8 @@ format. If you want to consume this data in your own program you
 should use [Net::RDAP](https://metacpan.org/pod/Net::RDAP) directly.
 
 `rdapper` was originally conceived as a full RDAP client (back
-when the RDAP protocol was still in draft form) but is now just
-a very thin front-end to [Net::RDAP](https://metacpan.org/pod/Net::RDAP), and its main purpose is to
-allow testing of that library.
+when the RDAP specification was still in draft form) but is now
+just a very thin front-end to [Net::RDAP](https://metacpan.org/pod/Net::RDAP).
 
 # OPTIONS
 
@@ -33,7 +32,8 @@ or `2001:DB8::/32`;
 - the "tagged" handle of an entity, such as an LIR, registrar,
 or domain admin/tech contact. Because these handles are difficult
 to distinguish from domain names, you must use the `--type` argument
-to explicitly tell `rdapper` that you want to perform an entity query.
+to explicitly tell `rdapper` that you want to perform an entity query,
+.e.g `rdapper --type=entity ABC123-EXAMPLE`.
 
 ## ADDITIONAL ARGUMENTS
 
@@ -60,6 +60,23 @@ to be used when accessing the specified resource.
 - `--nopager` - by default, `rdapper` will pass its output
 to `less(1)`. Setting `--nopager` disables this behaviour.
 - `--raw` - output raw JSON response (implies `--nopager`).
+
+# INSTALLATION
+
+Assuming you have `cpan` installed, installing `rdapper` should be
+as simple as running this command:
+
+    sudo cpan -i rdapper
+
+Otherwise, you can manually install `rdapper` by running
+
+    perl Makefile.PL
+    make
+    sudo make install
+
+You may need to manually install one or more of the dependencies
+listed below, if they are not already installed, using `cpan` or
+your operating system vendor's packages.
 
 # DEPENDENCIES
 

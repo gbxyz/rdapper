@@ -380,9 +380,8 @@ format. If you want to consume this data in your own program you
 should use L<Net::RDAP> directly.
 
 C<rdapper> was originally conceived as a full RDAP client (back
-when the RDAP protocol was still in draft form) but is now just
-a very thin front-end to L<Net::RDAP>, and its main purpose is to
-allow testing of that library.
+when the RDAP specification was still in draft form) but is now
+just a very thin front-end to L<Net::RDAP>.
 
 =head1 OPTIONS
 
@@ -405,7 +404,8 @@ C<https://example.com/rdap/domain/example.com>.
 =item * the "tagged" handle of an entity, such as an LIR, registrar,
 or domain admin/tech contact. Because these handles are difficult
 to distinguish from domain names, you must use the C<--type> argument
-to explicitly tell C<rdapper> that you want to perform an entity query.
+to explicitly tell C<rdapper> that you want to perform an entity query,
+.e.g C<rdapper --type=entity ABC123-EXAMPLE>.
 
 =back
 
@@ -445,6 +445,23 @@ to C<less(1)>. Setting C<--nopager> disables this behaviour.
 =item * C<--raw> - output raw JSON response (implies C<--nopager>).
 
 =back
+
+=head1 INSTALLATION
+
+Assuming you have C<cpan> installed, installing C<rdapper> should be
+as simple as running this command:
+
+    sudo cpan -i rdapper
+
+Otherwise, you can manually install C<rdapper> by running
+
+    perl Makefile.PL
+    make
+    sudo make install
+
+You may need to manually install one or more of the dependencies
+listed below, if they are not already installed, using C<cpan> or
+your operating system vendor's packages.
 
 =head1 DEPENDENCIES
 
