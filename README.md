@@ -4,19 +4,19 @@
 
 # SYNOPSIS
 
-        rdapper OBJECT
+    rdapper OBJECT [OPTIONS]
 
 # DESCRIPTION
 
-`rdapper` is a simple RDAP client. It uses [Net::RDAP](https://metacpan.org/pod/Net::RDAP) to retrieve
+`rdapper` is a simple RDAP client. It uses [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP) to retrieve
 data about internet resources (domain names, IP addresses, and
 autonymous systems) and outputs the information in a human-readable
 format. If you want to consume this data in your own program you
-should use [Net::RDAP](https://metacpan.org/pod/Net::RDAP) directly.
+should use [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP) directly.
 
 `rdapper` was originally conceived as a full RDAP client (back
 when the RDAP specification was still in draft form) but is now
-just a very thin front-end to [Net::RDAP](https://metacpan.org/pod/Net::RDAP).
+just a very thin front-end to [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP).
 
 # OPTIONS
 
@@ -37,6 +37,8 @@ to explicitly tell `rdapper` that you want to perform an entity query,
 
 ## ADDITIONAL ARGUMENTS
 
+- `--registrar` - follow referral to the registrar's RDAP record
+(if any) which will be displayed instead of the registry record.
 - `--type=TYPE` - explicitly set the object type. `rdapper`
 will guess the type by pattern matching the value of `OBJECT` but
 you can override this by explicitly setting the `--type` argument
@@ -50,7 +52,7 @@ to one of : `ip`, `autnum`, `domain`, `entity` or `url`.
     RFC 8521.
 
 - `--help` - display help message.
-- `--debug` - enable [Net::RDAP](https://metacpan.org/pod/Net::RDAP) debug mode.
+- `--debug` - enable [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP) debug mode.
 - `--short` - omit remarks, notices, and links. Implies
 `--nopager`.
 - `--expand` - attempt to "expand" truncated entity objects.
@@ -63,19 +65,14 @@ to `less(1)`. Setting `--nopager` disables this behaviour.
 
 # INSTALLATION
 
-Assuming you have `cpan` installed, installing `rdapper` should be
-as simple as running this command:
-
-    sudo cpan -i rdapper
-
-Otherwise, you can manually install `rdapper` by running
+To install, run:
 
     perl Makefile.PL
     make
     sudo make install
 
 You may need to manually install one or more of the dependencies
-listed below, if they are not already installed, using `cpan` or
+(listed below), if they are not already installed, using `cpanm` or
 your operating system vendor's packages.
 
 # DEPENDENCIES
@@ -83,21 +80,17 @@ your operating system vendor's packages.
 `rdapper` uses the following modules, some of which may already be
 installed:
 
-- [Getopt::Long](https://metacpan.org/pod/Getopt::Long)
-- [List::MoreUtils](https://metacpan.org/pod/List::MoreUtils)
-- [Net::ASN](https://metacpan.org/pod/Net::ASN)
-- [Net::DNS::Domain](https://metacpan.org/pod/Net::DNS::Domain)
-- [Net::IP](https://metacpan.org/pod/Net::IP)
-- [Net::RDAP](https://metacpan.org/pod/Net::RDAP) (obviously)
-- [Term::ANSIColor](https://metacpan.org/pod/Term::ANSIColor)
-- [Text::Wrap](https://metacpan.org/pod/Text::Wrap)
+- [Getopt::Long](https://metacpan.org/pod/Getopt%3A%3ALong)
+- [List::MoreUtils](https://metacpan.org/pod/List%3A%3AMoreUtils)
+- [Net::ASN](https://metacpan.org/pod/Net%3A%3AASN)
+- [Net::DNS::Domain](https://metacpan.org/pod/Net%3A%3ADNS%3A%3ADomain)
+- [Net::IP](https://metacpan.org/pod/Net%3A%3AIP)
+- [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP) (obviously)
+- [Term::ANSIColor](https://metacpan.org/pod/Term%3A%3AANSIColor)
+- [Text::Wrap](https://metacpan.org/pod/Text%3A%3AWrap)
 
-# COPYRIGHT
+# COPYRIGHT & LICENSE
 
-Copyright 2019 CentralNic Ltd. All rights reserved.
-
-# LICENSE
-
-Copyright (c) 2018 CentralNic Ltd. All rights reserved. This program is
+Copyright (c) 2022 CentralNic Ltd. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
