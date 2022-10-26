@@ -48,6 +48,8 @@ if (-t STDOUT && !$nopager && !$short) {
     select(LESS);
 }
 
+binmode(select(), ':utf8');
+
 $Text::Wrap::columns = 80;
 
 my @displayorder = qw(registrant administrative technical billing abuse registrar reseller sponsor proxy notifications noc);
