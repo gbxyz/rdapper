@@ -228,20 +228,13 @@ sub display {
         }
 
         foreach my $entity ($response->entities) {
-            my @roles = $entity->roles;
-            if (scalar(@roles) > 0) {
-                my $rstring = join(', ', map { sprintf('%s Contact', ucfirst($_)) } @roles);
+            my $rstring = join(', ', map { sprintf('%s Contact', ucfirst($_)) } $entity->roles);
 
-                if ($entity->handle && 'not applicable' ne $entity->handle) {
-                    print_kv($rstring, $entity->handle, $indent);
-
-                } else {
-                    print_kv($rstring, '', $indent);
-
-                }
+            if ($entity->handle && 'not applicable' ne $entity->handle && 'HANDLE REDACTED FOR PRIVACY' ne $entity->handle) {
+                print_kv($rstring, $entity->handle, $indent);
 
             } else {
-                print_kv('Entity', $entity->handle, $indent);
+                print_kv($rstring, '', $indent);
 
             }
 
