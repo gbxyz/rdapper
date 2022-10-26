@@ -426,7 +426,8 @@ to explicitly tell C<rdapper> that you want to perform an entity query,
 
 C<rdapper> also implements limited support for in-bailiwick nameservers,
 but you must use the C<--type=nameserver> argument to disambiguate
-from domain names.
+from domain names. The RDAP server of the parent domain's registry will
+be queried.
 
 =head2 ADDITIONAL ARGUMENTS
 

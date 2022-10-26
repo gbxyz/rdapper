@@ -35,6 +35,11 @@ to distinguish from domain names, you must use the `--type` argument
 to explicitly tell `rdapper` that you want to perform an entity query,
 .e.g `rdapper --type=entity ABC123-EXAMPLE`.
 
+`rdapper` also implements limited support for in-bailiwick nameservers,
+but you must use the `--type=nameserver` argument to disambiguate
+from domain names. The RDAP server of the parent domain's registry will
+be queried.
+
 ## ADDITIONAL ARGUMENTS
 
 - `--registrar` - follow referral to the registrar's RDAP record
@@ -42,7 +47,8 @@ to explicitly tell `rdapper` that you want to perform an entity query,
 - `--type=TYPE` - explicitly set the object type. `rdapper`
 will guess the type by pattern matching the value of `OBJECT` but
 you can override this by explicitly setting the `--type` argument
-to one of : `ip`, `autnum`, `domain`, `entity` or `url`.
+to one of : `ip`, `autnum`, `domain`, `nameserver`, `entity`
+or `url`.
 
     If `--type=url` is used, `rdapper` will directly fetch the
     specified URL and attempt to process it as an RDAP response.
@@ -55,13 +61,13 @@ to one of : `ip`, `autnum`, `domain`, `entity` or `url`.
 - `--debug` - enable [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP) debug mode.
 - `--short` - omit remarks, notices, and links. Implies
 `--nopager`.
-- `--expand` - attempt to "expand" truncated entity objects.
 - `--bypass-cache` - disable local cache of RDAP objects.
 - `--auth=USER:PASS` - HTTP Basic Authentication credentials
 to be used when accessing the specified resource.
 - `--nopager` - by default, `rdapper` will pass its output
 to `less(1)`. Setting `--nopager` disables this behaviour.
 - `--raw` - output raw JSON response (implies `--nopager`).
+- `--nocolor` - disable ANSI colors in the formatted output.
 
 # INSTALLATION
 
