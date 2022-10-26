@@ -95,6 +95,13 @@ if ('ip' eq $type) {
 } elsif ('entity' eq $type) {
     $response = $rdap->entity($object, %args);
 
+} elsif ('nameserver' eq $type) {
+    my $url = Net::RDAP::Registry->get_url(Net::DNS::Domain->new($object));
+    my $path = $url->path;
+    $path =~ s!/domain/!/nameserver/!;
+    $url->path($path);
+    $response = $rdap->fetch($url, %args);
+
 } else {
     error("Unable to handle type '$type'");
 
@@ -424,6 +431,10 @@ to explicitly tell C<rdapper> that you want to perform an entity query,
 
 =back
 
+C<rdapper> also implements limited support for in-bailiwick nameservers,
+but you must use the C<--type=nameserver> argument to disambiguate
+from domain names.
+
 =head2 ADDITIONAL ARGUMENTS
 
 =over
@@ -434,7 +445,8 @@ to explicitly tell C<rdapper> that you want to perform an entity query,
 =item * C<--type=TYPE> - explicitly set the object type. C<rdapper>
 will guess the type by pattern matching the value of C<OBJECT> but
 you can override this by explicitly setting the C<--type> argument
-to one of : C<ip>, C<autnum>, C<domain>, C<entity> or C<url>.
+to one of : C<ip>, C<autnum>, C<domain>, C<nameserver>, C<entity>
+or C<url>.
 
 If C<--type=url> is used, C<rdapper> will directly fetch the
 specified URL and attempt to process it as an RDAP response.
