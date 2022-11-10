@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+use Carp qw(verbose);
 use Getopt::Long;
 use JSON;
 use List::MoreUtils qw(any);
@@ -24,9 +25,11 @@ use constant {
 use vars qw($VERSION);
 use strict;
 
-$VERSION = 0.4;
+$SIG{__DIE__} = sub { Carp::confess(@_) };
 
-my ($type, $object, $help, $debug, $short, $bypass, $auth, $nopager, $raw, $registrar, $nocolor);
+$VERSION = 0.5;
+
+my ($type, $object, $help, $debug, $short, $bypass, $auth, $nopager, $raw, $registrar, $nocolor, $reverse);
 GetOptions(
     'type:s'        => \$type,
     'object:s'      => \$object,
@@ -39,6 +42,7 @@ GetOptions(
     'raw'           => \$raw,
     'registrar'     => \$registrar,
     'nocolor'       => \$nocolor,
+    'reverse'       => \$reverse,
 );
 
 $nopager = 1 if ($raw);
@@ -80,6 +84,11 @@ my %args;
 my $response;
 if ('ip' eq $type) {
     $response = $rdap->ip(Net::IP->new($object), %args);
+
+    if ($reverse) {
+        $type = 'domain';
+        $response = $rdap->fetch($response->domain);
+    }
 
 } elsif ('autnum' eq $type) {
     my $asn = $object;
@@ -165,18 +174,23 @@ sub display {
         }
 
         if ('ip network' eq $response->class) {
-            print_kv('Handle', $response->handle, $indent) if ($response->handle);
+            print_kv('Handle',  $response->handle, $indent)         if ($response->handle);
+            print_kv('Version', $response->version, $indent)        if ($response->version);
+            print_kv('Domain',  colourise([qw(underline)], $response->domain->as_string), $indent) if ($response->domain);
+            print_kv('Type',    $response->type, $indent)           if ($response->type);
+            print_kv('Country', $response->country, $indent)        if ($response->country);
 
-            print_kv('Range', $response->range->prefix, $indent);
+            print_kv('Parent',  $response->parentHandle, $indent)   if ($response->parentHandle);
+            print_kv('Range',   $response->range->prefix, $indent)  if ($response->range);
 
-            print_kv('Domain', colourise([qw(underline)], $response->domain->as_string), $indent);
+            foreach my $cidr ($response->cidrs) {
+                print_kv('CIDR', $cidr->prefix, $indent);
+            }
 
         } elsif ('autnum' eq $response->class) {
-            print_kv('Handle', $response->handle, $indent) if ($response->handle);
-
-            print_kv('Range', sprintf('%u - %u', $response->start, $response->end), $indent) if ($response->start > 0 && $response->end > 0 && $response->end > $response->start);
-
-            print_kv('Type', $response->type, $indent) if ($response->type);
+            print_kv('Handle',  $response->handle, $indent) if ($response->handle);
+            print_kv('Range',   sprintf('%u - %u', $response->start, $response->end), $indent) if ($response->start > 0 && $response->end > 0 && $response->end > $response->start);
+            print_kv('Type',    $response->type, $indent)   if ($response->type);
 
         } elsif ('domain' eq $response->class) {
             print_kv('Handle', $response->handle, $indent) if ($response->handle);
@@ -193,6 +207,11 @@ sub display {
                 print_kv('DNSKEY Record', sprintf('%s. IN DNSKEY %u %u %u %s', uc($key->name), $key->flags, $key->protocol, $key->algorithm, uc($key->key)), $indent);
             }
 
+            display_artRecord($response->{'artRecord_record'}, $indent) if ($response->{'artRecord_record'});
+            display_platform_nameservers($response->{'platformNS_nameservers'}, $indent) if ($response->{'platformNS_nameservers'});
+
+            print_kv('Registration Type', $response->{'regType_regType'}) if ($response->{'regType_regType'});
+
         } elsif ('entity' eq $response->class) {
             print_kv('Handle', $response->handle, $indent) if ($response->handle && $indent < 1);
 
@@ -200,7 +219,7 @@ sub display {
                 print_kv($id->type, $id->identifier, $indent);
             }
 
-            print_vcard($response->vcard, $indent);
+            print_vcard($response->vcard, $indent) if ($response->vcard);
 
         } elsif ('nameserver' eq $response->class) {
             print_kv('Handle', $response->handle, $indent) if ($response->handle);
@@ -374,6 +393,21 @@ sub error {
     exit 1;
 }
 
+sub display_artRecord {
+    my ($records, $indent) = @_;
+    print_kv('Art Record', undef, $indent);
+    foreach my $record (@{$records}) {
+        print_kv($record->{'name'}, $record->{'value'}, $indent+1);
+    }
+}
+
+sub display_platform_nameservers {
+    my ($nameservers, $indent) = @_;
+    foreach my $ns (@{$nameservers}) {
+        print_kv('Platform Nameserver', uc(Net::RDAP::Object::Nameserver->new($ns)->name->name));
+    }
+}
+
 __END__
 
 =pod
@@ -435,6 +469,10 @@ be queried.
 
 =item * C<--registrar> - follow referral to the registrar's RDAP record
 (if any) which will be displayed instead of the registry record.
+
+=item * C<--reverse> - if you provide an IP address or CIDR prefix, then
+this option causes C<rdapper> to display the record of the corresponding
+C<in-addr.arpa> or C<ip6.arpa> domain.
 
 =item * C<--type=TYPE> - explicitly set the object type. C<rdapper>
 will guess the type by pattern matching the value of C<OBJECT> but
