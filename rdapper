@@ -151,7 +151,7 @@ sub display {
         display($response, $indent);
 
     } else {
-        if ('entity' ne $response->class) {
+        if ($response->can('name')) {
             my $name = $response->name;
             if ($name) {
                 my $xname;
@@ -404,7 +404,7 @@ sub display_artRecord {
 sub display_platform_nameservers {
     my ($nameservers, $indent) = @_;
     foreach my $ns (@{$nameservers}) {
-        print_kv('Platform Nameserver', uc(Net::RDAP::Object::Nameserver->new($ns)->name->name));
+        print_kv('Platform Nameserver', uc(Net::RDAP::Object::Nameserver->new($ns)->name->name), $indent);
     }
 }
 
