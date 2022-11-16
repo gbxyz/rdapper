@@ -345,10 +345,10 @@ sub print_vcard {
 
     foreach my $email (@{$card->email_addresses}) {
         if ($email->{'type'}) {
-            print_kv('Email', sprintf('%s (%s)', $email->{'address'}, $email->{'type'}), $indent);
+            print_kv('Email', sprintf('%s (%s)', colourise([qw(underline)], $email->{'address'}), $email->{'type'}), $indent);
 
         } else {
-            print_kv('Email', $email->{'address'}, $indent);
+            print_kv('Email', colourise([qw(underline)], $email->{'address'}), $indent);
 
         }
     }
