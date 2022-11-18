@@ -43,7 +43,7 @@ GetOptions(
     'registrar'     => \$registrar,
     'nocolor'       => \$nocolor,
     'reverse'       => \$reverse,
-);
+) || pod2usage('-verbose' => 99, '-sections' => [qw(SYNOPSIS OPTIONS)]);
 
 $nopager = 1 if ($raw);
 
@@ -60,7 +60,7 @@ my @displayorder = qw(registrant administrative technical billing abuse registra
 
 $object = shift(@ARGV) if (!$object);
 
-pod2usage('-verbose' => 99, '-sections' => [qw(NAME SYNOPSIS OPTIONS COPYRIGHT)]) if ($help);
+pod2usage('-verbose' => 99, '-sections' => ['NAME', 'SYNOPSIS', 'OPTIONS', 'ADDITIONAL ARGUMENTS', 'COPYRIGHT']) if ($help);
 pod2usage('-verbose' => 99, '-sections' => [qw(SYNOPSIS OPTIONS)]) if (length($object) < 1);
 
 if (!$type) {
@@ -123,8 +123,13 @@ if (!$response) {
     print to_json({%{$response}});
 
 } else {
-    display($response);
-
+    eval {
+        display($response);
+    };
+    if ($@) {
+        print STDERR $@;
+        error("Unable to parse and display response from server");
+    }
 }
 
 sub display {
@@ -142,7 +147,6 @@ sub display {
         foreach my $link ($response->links) {
             if ('related' eq $link->rel && 'application/rdap+json' eq $link->type) {
                 my $related = $rdap->fetch($link->href, %args);
-                display($related);
                 exit;
             }
         }
@@ -257,7 +261,13 @@ sub display {
 
             }
 
-            display($entity, 1+$indent);
+            eval {
+                display($entity, 1+$indent);
+            };
+            if ($@) {
+                print STDERR $@;
+                warning('unable to parse and display entity');
+            }
         }
     }
 
@@ -463,7 +473,7 @@ but you must use the C<--type=nameserver> argument to disambiguate
 from domain names. The RDAP server of the parent domain's registry will
 be queried.
 
-=head2 ADDITIONAL ARGUMENTS
+=head1 ADDITIONAL ARGUMENTS
 
 =over
 
