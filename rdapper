@@ -138,7 +138,7 @@ sub display {
     my @errors;
 
     if ($response->isa('Net::RDAP::Error')) {
-        push(@errors, sprintf('%03u (%s)', $response->errorCode, $response->title));
+        error('%03u (%s)', $response->errorCode, $response->title);
 
     } elsif ($registrar) {
         # avoid recursion
