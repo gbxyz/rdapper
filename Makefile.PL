@@ -22,4 +22,17 @@ WriteMakefile(
 		'Text::Wrap'		=> 0,
 		'URI'				=> 0,
 	},
+    META_MERGE => {
+        'meta-spec' => { version => 2 },
+         resources => {
+             repository => {
+                 type => 'git',
+                 url  => 'https://github.com/gbxyz/rdapper.git',
+                 web  => 'https://github.com/gbxyz/rdapper',
+             },
+             bugtracker => {
+                 web => 'https://github.com/gbxyz/rdapper/issues'
+             },
+         },
+    },
 );
