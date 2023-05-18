@@ -6,7 +6,7 @@
    "dynamic_config" : 0,
    "generated_by" : "ExtUtils::MakeMaker version 7.34, CPAN::Meta::Converter version 2.150010",
    "license" : [
-      "perl_5"
+      "freebsd"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
@@ -42,7 +42,6 @@
             "Pod::Usage" : "0",
             "Term::ANSIColor" : "0",
             "Text::Wrap" : "0",
-            "Time::HiRes" : "0",
             "URI" : "0"
          }
       }
@@ -58,6 +57,6 @@
          "web" : "https://github.com/gbxyz/rdapper"
       }
    },
-   "version" : 0.6,
+   "version" : 0.7,
    "x_serialization_backend" : "JSON::PP version 4.02"
 }

@@ -8,7 +8,7 @@ configure_requires:
   ExtUtils::MakeMaker: '0'
 dynamic_config: 0
 generated_by: 'ExtUtils::MakeMaker version 7.34, CPAN::Meta::Converter version 2.150010'
-license: perl
+license: open_source
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: '1.4'
@@ -28,10 +28,9 @@ requires:
   Pod::Usage: '0'
   Term::ANSIColor: '0'
   Text::Wrap: '0'
-  Time::HiRes: '0'
   URI: '0'
 resources:
   bugtracker: https://github.com/gbxyz/rdapper/issues
   repository: https://github.com/gbxyz/rdapper.git
-version: 0.6
+version: 0.7
 x_serialization_backend: 'CPAN::Meta::YAML version 0.018'
