@@ -1,3 +1,9 @@
+0.6 - 2023-05-18:
+  - convert to module so it can be distributed via CPAN.
+
+0.5:
+  - this space left intentionally blank.
+
 0.4 - 2022-10-06:
   - add this file.
   - add --registrar argument.

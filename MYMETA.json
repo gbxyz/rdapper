@@ -1,7 +1,7 @@
 {
-   "abstract" : "unknown",
+   "abstract" : "a simple console-based RDAP client.",
    "author" : [
-      "Gavin Brown <gavin.brown@centralnic.com>"
+      "Gavin Brown <gavin.brown@fastmail.uk>"
    ],
    "dynamic_config" : 0,
    "generated_by" : "ExtUtils::MakeMaker version 7.34, CPAN::Meta::Converter version 2.150010",
@@ -12,7 +12,7 @@
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
       "version" : 2
    },
-   "name" : "rdapper",
+   "name" : "App-rdapper",
    "no_index" : {
       "directory" : [
          "t",
@@ -42,11 +42,22 @@
             "Pod::Usage" : "0",
             "Term::ANSIColor" : "0",
             "Text::Wrap" : "0",
+            "Time::HiRes" : "0",
             "URI" : "0"
          }
       }
    },
    "release_status" : "stable",
-   "version" : 0.3,
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/gbxyz/rdapper/issues"
+      },
+      "repository" : {
+         "type" : "git",
+         "url" : "https://github.com/gbxyz/rdapper.git",
+         "web" : "https://github.com/gbxyz/rdapper"
+      }
+   },
+   "version" : 0.6,
    "x_serialization_backend" : "JSON::PP version 4.02"
 }
