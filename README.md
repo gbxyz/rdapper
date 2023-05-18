@@ -1,6 +1,6 @@
 # NAME
 
-`rdapper` - a simple console-based RDAP client.
+App::rdapper - a simple console-based RDAP client.
 
 # SYNOPSIS
 
@@ -40,10 +40,13 @@ but you must use the `--type=nameserver` argument to disambiguate
 from domain names. The RDAP server of the parent domain's registry will
 be queried.
 
-## ADDITIONAL ARGUMENTS
+# ADDITIONAL ARGUMENTS
 
 - `--registrar` - follow referral to the registrar's RDAP record
 (if any) which will be displayed instead of the registry record.
+- `--reverse` - if you provide an IP address or CIDR prefix, then
+this option causes `rdapper` to display the record of the corresponding
+`in-addr.arpa` or `ip6.arpa` domain.
 - `--type=TYPE` - explicitly set the object type. `rdapper`
 will guess the type by pattern matching the value of `OBJECT` but
 you can override this by explicitly setting the `--type` argument
@@ -59,44 +62,44 @@ or `url`.
 
 - `--help` - display help message.
 - `--debug` - enable [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP) debug mode.
-- `--short` - omit remarks, notices, and links. Implies
-`--nopager`.
+- `--short` - omit remarks, notices, and links.
 - `--bypass-cache` - disable local cache of RDAP objects.
 - `--auth=USER:PASS` - HTTP Basic Authentication credentials
 to be used when accessing the specified resource.
-- `--nopager` - by default, `rdapper` will pass its output
-to `less(1)`. Setting `--nopager` disables this behaviour.
-- `--raw` - output raw JSON response (implies `--nopager`).
 - `--nocolor` - disable ANSI colors in the formatted output.
 
 # INSTALLATION
 
 To install, run:
 
-    perl Makefile.PL
-    make
-    sudo make install
+        cpanm --sudo App::rdapper
 
-You may need to manually install one or more of the dependencies
-(listed below), if they are not already installed, using `cpanm` or
-your operating system vendor's packages.
+# RUNNING VIA DOCKER
+
+The [git repository](https://github.com/gbxyz/rdapper) contains a `Dockerfile`
+that can be used to build an image on your local system.
+
+Alternatively, you can pull the [image from Docker Hub](https://hub.docker.com/repository/docker/gbxyz/rdapper/general):
+
+        $ docker pull gbxyz/rdapper
+
+        $ docker run -it gbxyz/rdapper --help
 
 # DEPENDENCIES
 
-`rdapper` uses the following modules, some of which may already be
-installed:
+In addition to [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP), `rdapper` uses the following modules, some
+of which may already be installed:
 
+- [Carp](https://metacpan.org/pod/Carp)
 - [Getopt::Long](https://metacpan.org/pod/Getopt%3A%3ALong)
 - [List::MoreUtils](https://metacpan.org/pod/List%3A%3AMoreUtils)
-- [Net::ASN](https://metacpan.org/pod/Net%3A%3AASN)
-- [Net::DNS::Domain](https://metacpan.org/pod/Net%3A%3ADNS%3A%3ADomain)
-- [Net::IP](https://metacpan.org/pod/Net%3A%3AIP)
-- [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP) (obviously)
+- [Pod::Usage](https://metacpan.org/pod/Pod%3A%3AUsage)
 - [Term::ANSIColor](https://metacpan.org/pod/Term%3A%3AANSIColor)
 - [Text::Wrap](https://metacpan.org/pod/Text%3A%3AWrap)
+- [URI](https://metacpan.org/pod/URI)
 
 # COPYRIGHT & LICENSE
 
-Copyright (c) 2022 CentralNic Ltd. All rights reserved. This program is
+Copyright (c) 2023 CentralNic Ltd. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.

@@ -1,7 +1,11 @@
+0.7 - 2023-05-18:
+  - remove unneeded dependency.
+  - add documentation about Docker.
+
 0.6 - 2023-05-18:
   - convert to module so it can be distributed via CPAN.
 
-0.5:
+0.5 - 2022-10-06:
   - this space left intentionally blank.
 
 0.4 - 2022-10-06:
