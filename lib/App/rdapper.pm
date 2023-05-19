@@ -440,6 +440,23 @@ __END__
 
 App::rdapper - a simple console-based RDAP client.
 
+=head1 INSTALLATION
+
+To install, run:
+
+	cpanm --sudo App::rdapper
+
+=head1 RUNNING VIA DOCKER
+
+The L<git repository|https://github.com/gbxyz/rdapper> contains a C<Dockerfile>
+that can be used to build an image on your local system.
+
+Alternatively, you can pull the L<image from Docker Hub|https://hub.docker.com/repository/docker/gbxyz/rdapper/general>:
+
+	$ docker pull gbxyz/rdapper
+
+	$ docker run -it gbxyz/rdapper --help
+
 =head1 SYNOPSIS
 
     rdapper OBJECT [OPTIONS]
@@ -523,46 +540,6 @@ RFC 8521.
 to be used when accessing the specified resource.
 
 =item * C<--nocolor> - disable ANSI colors in the formatted output.
-
-=back
-
-=head1 INSTALLATION
-
-To install, run:
-
-	cpanm --sudo App::rdapper
-
-=head1 RUNNING VIA DOCKER
-
-The L<git repository|https://github.com/gbxyz/rdapper> contains a C<Dockerfile>
-that can be used to build an image on your local system.
-
-Alternatively, you can pull the L<image from Docker Hub|https://hub.docker.com/repository/docker/gbxyz/rdapper/general>:
-
-	$ docker pull gbxyz/rdapper
-
-	$ docker run -it gbxyz/rdapper --help
-
-=head1 DEPENDENCIES
-
-In addition to L<Net::RDAP>, C<rdapper> uses the following modules, some
-of which may already be installed:
-
-=over
-
-=item * L<Carp>
-
-=item * L<Getopt::Long>
-
-=item * L<List::MoreUtils>
-
-=item * L<Pod::Usage>
-
-=item * L<Term::ANSIColor>
-
-=item * L<Text::Wrap>
-
-=item * L<URI>
 
 =back
 

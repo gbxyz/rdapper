@@ -2,6 +2,23 @@
 
 App::rdapper - a simple console-based RDAP client.
 
+# INSTALLATION
+
+To install, run:
+
+        cpanm --sudo App::rdapper
+
+# RUNNING VIA DOCKER
+
+The [git repository](https://github.com/gbxyz/rdapper) contains a `Dockerfile`
+that can be used to build an image on your local system.
+
+Alternatively, you can pull the [image from Docker Hub](https://hub.docker.com/repository/docker/gbxyz/rdapper/general):
+
+        $ docker pull gbxyz/rdapper
+
+        $ docker run -it gbxyz/rdapper --help
+
 # SYNOPSIS
 
     rdapper OBJECT [OPTIONS]
@@ -67,36 +84,6 @@ or `url`.
 - `--auth=USER:PASS` - HTTP Basic Authentication credentials
 to be used when accessing the specified resource.
 - `--nocolor` - disable ANSI colors in the formatted output.
-
-# INSTALLATION
-
-To install, run:
-
-        cpanm --sudo App::rdapper
-
-# RUNNING VIA DOCKER
-
-The [git repository](https://github.com/gbxyz/rdapper) contains a `Dockerfile`
-that can be used to build an image on your local system.
-
-Alternatively, you can pull the [image from Docker Hub](https://hub.docker.com/repository/docker/gbxyz/rdapper/general):
-
-        $ docker pull gbxyz/rdapper
-
-        $ docker run -it gbxyz/rdapper --help
-
-# DEPENDENCIES
-
-In addition to [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP), `rdapper` uses the following modules, some
-of which may already be installed:
-
-- [Carp](https://metacpan.org/pod/Carp)
-- [Getopt::Long](https://metacpan.org/pod/Getopt%3A%3ALong)
-- [List::MoreUtils](https://metacpan.org/pod/List%3A%3AMoreUtils)
-- [Pod::Usage](https://metacpan.org/pod/Pod%3A%3AUsage)
-- [Term::ANSIColor](https://metacpan.org/pod/Term%3A%3AANSIColor)
-- [Text::Wrap](https://metacpan.org/pod/Text%3A%3AWrap)
-- [URI](https://metacpan.org/pod/URI)
 
 # COPYRIGHT & LICENSE
 
