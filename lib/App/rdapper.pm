@@ -55,7 +55,7 @@ sub main {
 	    'registrar'     => \$registrar,
 	    'nocolor'       => \$nocolor,
 	    'reverse'       => \$reverse,
-	) || usage(qw(SYNOPSIS OPTIONS));
+	) || show_usage(qw(SYNOPSIS OPTIONS));
 
 	$object = shift(@ARGV) if (!$object);
 
