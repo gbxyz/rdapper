@@ -532,6 +532,8 @@ RFC 8521.
 
 =item * C<--debug> - enable L<Net::RDAP> debug mode.
 
+=item * C<--raw> - print the raw JSON rather than parsing it.
+
 =item * C<--short> - omit remarks, notices, and links.
 
 =item * C<--bypass-cache> - disable local cache of RDAP objects.
