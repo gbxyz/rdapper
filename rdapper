@@ -3,4 +3,4 @@ use lib qw(./lib);
 use App::rdapper;
 use strict;
 
-App::rdapper->main;
+App::rdapper->main(@ARGV);

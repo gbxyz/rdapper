@@ -78,7 +78,6 @@ or `url`.
     RFC 8521.
 
 - `--help` - display help message.
-- `--debug` - enable [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP) debug mode.
 - `--raw` - print the raw JSON rather than parsing it.
 - `--short` - omit remarks, notices, and links.
 - `--bypass-cache` - disable local cache of RDAP objects.
