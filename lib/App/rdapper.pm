@@ -362,7 +362,7 @@ sub print_status {
 
     foreach my $status ($object->status) {
         my $epp = rdap2epp($status);
-        if ($epp && $is_domain) {
+        if ($epp && $is_domain && !$short) {
             $package->print_kv('Status', sprintf('%s (EPP: %s, %s)', $status, $epp, u(sprintf('https://icann.org/epp#%s', $epp))), $indent);
 
         } else {
