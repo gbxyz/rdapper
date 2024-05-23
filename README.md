@@ -13,7 +13,7 @@ To install, run:
 The [git repository](https://github.com/gbxyz/rdapper) contains a `Dockerfile`
 that can be used to build an image on your local system.
 
-Alternatively, you can pull the [image from Docker Hub](https://hub.docker.com/repository/docker/gbxyz/rdapper/general):
+Alternatively, you can pull the [image from Docker Hub](https://hub.docker.com/r/gbxyz/rdapper):
 
         $ docker pull gbxyz/rdapper
 
