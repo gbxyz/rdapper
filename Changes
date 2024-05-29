@@ -1,3 +1,11 @@
+0.9 - 2024-05-29:
+  - fix copyright notice.
+
+0.8 - 2024-05-29:
+  - when --short argument is used, the EPP status mappings are omitted.
+  - fix --registrar
+  - output is nicely wrapped to fit into your terminal.
+
 0.7 - 2023-05-18:
   - remove unneeded dependency.
   - add documentation about Docker.
