@@ -94,8 +94,8 @@ sub main {
     if (!$type) {
         if ($object =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)              { $type = 'ip'      }
         elsif ($object =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/)  { $type = 'ip'      }
-        elsif ($object =~ /^[0-9a-f:]+$/i)                                  { $type = 'ip'      }
-        elsif ($object =~ /^[0-9a-f:]+\/\d{1,3}$/i)                         { $type = 'ip'      }
+        elsif ($object =~ /^[0-9a-f:]+:[0-9a-f:]*$/i)                       { $type = 'ip'      }
+        elsif ($object =~ /^[0-9a-f:]+:[0-9a-f:]*\/\d{1,3}$/i)              { $type = 'ip'      }
         elsif ($object =~ /^asn?\d+$/i)                                     { $type = 'autnum'  }
         elsif ($object =~ /^(file|https)?:\/\//)                            { $type = 'url'     }
         elsif ($object =~ /^([a-z]{2,}|xn--[a-z0-9\-]+)$/i)                 { $type = 'tld'     }
@@ -107,7 +107,11 @@ sub main {
 
     my $response;
     if ('ip' eq $type) {
-        $response = $rdap->ip(Net::IP->new($object), %args);
+        my $ip = Net::IP->new($object);
+
+        $package->error("Invalid IP address '$object'") unless ($ip);
+
+        $response = $rdap->ip($ip, %args);
 
         $response = $rdap->fetch($response->domain) if ($reverse);
 
