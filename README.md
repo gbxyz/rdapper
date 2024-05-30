@@ -6,7 +6,7 @@ App::rdapper - a simple console-based RDAP client.
 
 To install, run:
 
-        cpanm --sudo App::rdapper
+    cpanm --sudo App::rdapper
 
 # RUNNING VIA DOCKER
 
@@ -15,13 +15,13 @@ that can be used to build an image on your local system.
 
 Alternatively, you can pull the [image from Docker Hub](https://hub.docker.com/r/gbxyz/rdapper):
 
-        $ docker pull gbxyz/rdapper
+    $ docker pull gbxyz/rdapper
 
-        $ docker run -it gbxyz/rdapper --help
+    $ docker run -it gbxyz/rdapper --help
 
 # SYNOPSIS
 
-    rdapper OBJECT [OPTIONS]
+    rdapper [OPTIONS] OBJECT
 
 # DESCRIPTION
 
@@ -40,6 +40,7 @@ just a very thin front-end to [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP
 You can pass any internet resource as an argument; this may be:
 
 - a "forward" domain name such as `example.com`;
+- a top-level domain such as `com`;
 - a "reverse" domain name such as `168.192.in-addr.arpa`;
 - a IPv4 or IPv6 address or CIDR prefix, such as `192.168.0.1`
 or `2001:DB8::/32`;
@@ -69,20 +70,22 @@ will guess the type by pattern matching the value of `OBJECT` but
 you can override this by explicitly setting the `--type` argument
 to one of : `ip`, `autnum`, `domain`, `nameserver`, `entity`
 or `url`.
-
-    If `--type=url` is used, `rdapper` will directly fetch the
-    specified URL and attempt to process it as an RDAP response.
-
-    If `--type=entity` is used, `OBJECT` must be a a string
+    - If `--type=url` is used, `rdapper` will directly fetch the
+    specified URL and attempt to process it as an RDAP response. If the URL
+    path ends with `/help` then the response will be treated as a "help"
+    query response (if you want to see the record for the .help TLD, use
+    `--type=tld help`).
+    - If `--type=entity` is used, `OBJECT` must be a a string
     containing a "tagged" handle, such as `ABC123-EXAMPLE`, as per
     RFC 8521.
-
 - `--help` - display help message.
 - `--raw` - print the raw JSON rather than parsing it.
-- `--short` - omit remarks, notices, and links.
+- `--short` - omit remarks, notices, links and redactions.
 - `--bypass-cache` - disable local cache of RDAP objects.
 - `--auth=USER:PASS` - HTTP Basic Authentication credentials
-to be used when accessing the specified resource.
+to be used when accessing the specified resource. This option
+**SHOULD NOT** be used unless you explicitly specify a URL, otherwise
+your credentials may be sent to servers you aren't expecting them to.
 - `--nocolor` - disable ANSI colors in the formatted output.
 
 # COPYRIGHT & LICENSE

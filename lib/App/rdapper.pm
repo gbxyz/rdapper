@@ -7,7 +7,7 @@ use Net::ASN;
 use Net::DNS::Domain;
 use Net::IP;
 use Net::RDAP::EPPStatusMap;
-use Net::RDAP;
+use Net::RDAP 0.24;
 use Pod::Usage;
 use Term::ANSIColor;
 use Term::Size;
@@ -21,11 +21,12 @@ use constant {
     'ADR_PC'        => 5,
     'ADR_CC'        => 6,
     'INDENT'        => '  ',
+    'IANA_BASE_URL' => 'https://rdap.iana.org/',
 };
 use vars qw($VERSION);
 use strict;
 
-$VERSION = '0.11';
+$VERSION = '1.00';
 
 #
 # global arg variables (note: nopager is now ignored)
@@ -91,13 +92,14 @@ sub main {
     $package->show_usage if ($help || length($object) < 1);
 
     if (!$type) {
-        if ($object =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)              { $type = 'ip'      } # v4 address
-        elsif ($object =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/)  { $type = 'ip'      } # v4 range
-        elsif ($object =~ /^[0-9a-f:]+$/i)                                  { $type = 'ip'      } # v6 address
-        elsif ($object =~ /^[0-9a-f:]+\/\d{1,3}$/i)                         { $type = 'ip'      } # v6 range
-        elsif ($object =~ /^asn?\d+$/i)                                     { $type = 'autnum'  } # ASN
-        elsif ($object =~ /^(file|https)?:\/\//)                            { $type = 'url'     } # URL
-        else                                                                { $type = 'domain'  } # domain
+        if ($object =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)              { $type = 'ip'      }
+        elsif ($object =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/)  { $type = 'ip'      }
+        elsif ($object =~ /^[0-9a-f:]+$/i)                                  { $type = 'ip'      }
+        elsif ($object =~ /^[0-9a-f:]+\/\d{1,3}$/i)                         { $type = 'ip'      }
+        elsif ($object =~ /^asn?\d+$/i)                                     { $type = 'autnum'  }
+        elsif ($object =~ /^(file|https)?:\/\//)                            { $type = 'url'     }
+        elsif ($object =~ /^([a-z]{2,}|xn--[a-z0-9\-]+)$/i)                 { $type = 'tld'     }
+        else                                                                { $type = 'domain'  }
     }
 
     my %args;
@@ -133,6 +135,9 @@ sub main {
     } elsif ('entity' eq $type) {
         $response = $rdap->entity($object, %args);
 
+    } elsif ('tld' eq $type) {
+        $response = $rdap->fetch(URI->new(IANA_BASE_URL.'domain/'.$object), %args);
+        
     } elsif ('url' eq $type) {
         my $uri = URI->new($object);
 
@@ -243,7 +248,7 @@ sub display {
         $package->print_entities($object, $indent);
 
         #
-        # links, remarks and notices unless --short has been passed
+        # links, remarks, notices and redactions, unless --short has been passed
         #
         if (!$short) {
             foreach my $link (grep { 'self' ne $_->rel } $object->links) {
@@ -256,6 +261,18 @@ sub display {
 
             foreach my $notice ($object->notices) {
                 $package->print_remark_or_notice($notice, $indent);
+            }
+
+            my @fields = $object->redactions;
+            if (scalar(@fields) > 0) {
+                $package->print_kv('Redacted Fields', '', $indent);
+                foreach my $field (@fields) {
+                    $out->print(wrap(
+                        (INDENT x ($indent + 1)),
+                        (INDENT x ($indent + 2)),
+                        sprintf("%s %s (reason: %s)\n", b('*'), $field->name, $field->reason)
+                    ));
+                }
             }
         }
 
@@ -560,7 +577,7 @@ Alternatively, you can pull the L<image from Docker Hub|https://hub.docker.com/r
 
 =head1 SYNOPSIS
 
-    rdapper OBJECT [OPTIONS]
+    rdapper [OPTIONS] OBJECT
 
 =head1 DESCRIPTION
 
@@ -581,6 +598,8 @@ You can pass any internet resource as an argument; this may be:
 =over
 
 =item * a "forward" domain name such as C<example.com>;
+
+=item * a top-level domain such as C<com>;
 
 =item * a "reverse" domain name such as C<168.192.in-addr.arpa>;
 
@@ -622,23 +641,32 @@ you can override this by explicitly setting the C<--type> argument
 to one of : C<ip>, C<autnum>, C<domain>, C<nameserver>, C<entity>
 or C<url>.
 
-If C<--type=url> is used, C<rdapper> will directly fetch the
-specified URL and attempt to process it as an RDAP response.
+=over
 
-If C<--type=entity> is used, C<OBJECT> must be a a string
+=item * If C<--type=url> is used, C<rdapper> will directly fetch the
+specified URL and attempt to process it as an RDAP response. If the URL
+path ends with C</help> then the response will be treated as a "help"
+query response (if you want to see the record for the .help TLD, use
+C<--type=tld help>).
+
+=item * If C<--type=entity> is used, C<OBJECT> must be a a string
 containing a "tagged" handle, such as C<ABC123-EXAMPLE>, as per
 RFC 8521.
+
+=back
 
 =item * C<--help> - display help message.
 
 =item * C<--raw> - print the raw JSON rather than parsing it.
 
-=item * C<--short> - omit remarks, notices, and links.
+=item * C<--short> - omit remarks, notices, links and redactions.
 
 =item * C<--bypass-cache> - disable local cache of RDAP objects.
 
 =item * C<--auth=USER:PASS> - HTTP Basic Authentication credentials
-to be used when accessing the specified resource.
+to be used when accessing the specified resource. This option
+B<SHOULD NOT> be used unless you explicitly specify a URL, otherwise
+your credentials may be sent to servers you aren't expecting them to.
 
 =item * C<--nocolor> - disable ANSI colors in the formatted output.
 
