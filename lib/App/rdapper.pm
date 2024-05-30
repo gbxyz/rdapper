@@ -26,12 +26,12 @@ use constant {
 use vars qw($VERSION);
 use strict;
 
-$VERSION = '1.00';
+$VERSION = '1.01';
 
 #
 # global arg variables (note: nopager is now ignored)
 #
-my ($type, $object, $help, $short, $bypass, $auth, $nopager, $raw, $registrar, $nocolor, $reverse);
+my ($type, $object, $help, $short, $bypass, $auth, $nopager, $raw, $registrar, $nocolor, $reverse, $version);
 
 #
 # options spec for Getopt::Long
@@ -48,6 +48,7 @@ my %opts = (
     'registrar'     => \$registrar,
     'nocolor'       => \$nocolor,
     'reverse'       => \$reverse,
+    'version'       => \$version,
 );
 
 my %funcs = (
@@ -90,6 +91,8 @@ sub main {
     $object = shift(@_) if (!$object);
 
     $package->show_usage if ($help || length($object) < 1);
+
+    $package->show_version if ($version);
 
     if (!$type) {
         if ($object =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)              { $type = 'ip'      }
@@ -168,6 +171,12 @@ sub show_usage {
         '-verbose'  => 99,
         '-sections' => [qw(SYNOPSIS OPTIONS)],
     );
+}
+
+sub show_version {
+    my $package = shift;
+    printf("%s v%s\n", $package, $VERSION);
+    exit;
 }
 
 sub display {
@@ -660,6 +669,8 @@ RFC 8521.
 =back
 
 =item * C<--help> - display help message.
+
+=item * C<--version> - display package and version.
 
 =item * C<--raw> - print the raw JSON rather than parsing it.
 

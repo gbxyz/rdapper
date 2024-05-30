@@ -79,6 +79,7 @@ or `url`.
     containing a "tagged" handle, such as `ABC123-EXAMPLE`, as per
     RFC 8521.
 - `--help` - display help message.
+- `--version` - display package and version.
 - `--raw` - print the raw JSON rather than parsing it.
 - `--short` - omit remarks, notices, links and redactions.
 - `--bypass-cache` - disable local cache of RDAP objects.

@@ -1,3 +1,8 @@
+1.01 - XXXX-XX-XX:
+  - fix pattern matching which treated TLDs like "de" as IPv6 addresses.
+  - when an object is identified as an IP address, make sure Net::IP->new returns an object before trying to use it.
+  - implemented --version argument.
+
 1.00 - 2024-05-30:
   - bump version to 1.00 as PAUSE ignores 0.1x version numbers as they are lower than 0.9 (:facepalm:)
   - display a list of redacted fields where provided
