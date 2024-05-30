@@ -55,6 +55,7 @@ my %funcs = (
     'domain'     => sub { App::rdapper->print_domain(@_) },
     'entity'     => sub { App::rdapper->print_entity(@_) },
     'nameserver' => sub { App::rdapper->print_nameserver(@_) },
+    'help'       => sub { 1 }, # help only contains generic properties
 );
 
 my @role_order = qw(registrant administrative technical billing abuse registrar reseller sponsor proxy notifications noc);
@@ -78,67 +79,74 @@ $Text::Wrap::huge = 'overflow';
 sub main {
     my $package = shift;
 
-	GetOptionsFromArray(\@_, %opts) || $package->show_usage;
+    GetOptionsFromArray(\@_, %opts) || $package->show_usage;
 
     $rdap = Net::RDAP->new(
         'use_cache' => !$bypass,
         'cache_ttl' => 300,
     );
 
-	$object = shift(@_) if (!$object);
+    $object = shift(@_) if (!$object);
 
-	$package->show_usage if ($help || length($object) < 1);
+    $package->show_usage if ($help || length($object) < 1);
 
-	if (!$type) {
-	    if ($object =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)              { $type = 'ip'      } # v4 address
-	    elsif ($object =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/)  { $type = 'ip'      } # v4 range
-	    elsif ($object =~ /^[0-9a-f:]+$/i)                                  { $type = 'ip'      } # v6 address
-	    elsif ($object =~ /^[0-9a-f:]+\/\d{1,3}$/i)                         { $type = 'ip'      } # v6 range
-	    elsif ($object =~ /^asn?\d+$/i)                                     { $type = 'autnum'  } # ASN
-	    elsif ($object =~ /^(file|https)?:\/\//)                            { $type = 'url'     } # URL
-	    else                                                                { $type = 'domain'  } # domain
-	}
+    if (!$type) {
+        if ($object =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)              { $type = 'ip'      } # v4 address
+        elsif ($object =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/)  { $type = 'ip'      } # v4 range
+        elsif ($object =~ /^[0-9a-f:]+$/i)                                  { $type = 'ip'      } # v6 address
+        elsif ($object =~ /^[0-9a-f:]+\/\d{1,3}$/i)                         { $type = 'ip'      } # v6 range
+        elsif ($object =~ /^asn?\d+$/i)                                     { $type = 'autnum'  } # ASN
+        elsif ($object =~ /^(file|https)?:\/\//)                            { $type = 'url'     } # URL
+        else                                                                { $type = 'domain'  } # domain
+    }
 
     my %args;
-	($args{'user'}, $args{'pass'}) = split(/:/, $auth, 2) if ($auth);
+    ($args{'user'}, $args{'pass'}) = split(/:/, $auth, 2) if ($auth);
 
-	my $response;
-	if ('ip' eq $type) {
-	    $response = $rdap->ip(Net::IP->new($object), %args);
+    my $response;
+    if ('ip' eq $type) {
+        $response = $rdap->ip(Net::IP->new($object), %args);
 
-	    $response = $rdap->fetch($response->domain) if ($reverse);
+        $response = $rdap->fetch($response->domain) if ($reverse);
 
-	} elsif ('autnum' eq $type) {
-	    my $asn = $object;
-	    $asn =~ s/^asn?//ig;
+    } elsif ('autnum' eq $type) {
+        my $asn = $object;
+        $asn =~ s/^asn?//ig;
 
-	    $response = $rdap->autnum(Net::ASN->new($asn), %args);
+        $response = $rdap->autnum(Net::ASN->new($asn), %args);
 
-	} elsif ('domain' eq $type) {
-	    $response = $rdap->domain(Net::DNS::Domain->new($object), %args);
+    } elsif ('domain' eq $type) {
+        $response = $rdap->domain(Net::DNS::Domain->new($object), %args);
 
-	} elsif ('nameserver' eq $type) {
-	    my $url = Net::RDAP::Registry->get_url(Net::DNS::Domain->new($object));
+    } elsif ('nameserver' eq $type) {
+        my $url = Net::RDAP::Registry->get_url(Net::DNS::Domain->new($object));
 
         #
         # munge path
         #
-	    my $path = $url->path;
-	    $path =~ s!/domain/!/nameserver/!;
-	    $url->path($path);
+        my $path = $url->path;
+        $path =~ s!/domain/!/nameserver/!;
+        $url->path($path);
 
-	    $response = $rdap->fetch($url, %args);
+        $response = $rdap->fetch($url, %args);
 
-	} elsif ('entity' eq $type) {
-	    $response = $rdap->entity($object, %args);
+    } elsif ('entity' eq $type) {
+        $response = $rdap->entity($object, %args);
 
-	} elsif ('url' eq $type) {
-	    $response = $rdap->fetch(URI->new($object), %args);
+    } elsif ('url' eq $type) {
+        my $uri = URI->new($object);
 
-	} else {
-	    $package->error("Unable to handle type '$type'");
+        #
+        # if the path ends with /help then we assume then it's a help query
+        #
+        $args{'class_override'} = 'help' if ('help' eq lc(($uri->path_segments)[-1]));
 
-	}
+        $response = $rdap->fetch($uri, %args);
+
+    } else {
+        $package->error("Unable to handle type '$type'");
+
+    }
 
     $package->display($response, 0);
 }
@@ -146,11 +154,11 @@ sub main {
 sub show_usage {
     my $package = shift;
 
-	pod2usage(
-		'-input' 	=> __FILE__, 
-		'-verbose' 	=> 99,
-		'-sections' => [qw(SYNOPSIS OPTIONS)],
-	);
+    pod2usage(
+        '-input'    => __FILE__, 
+        '-verbose'  => 99,
+        '-sections' => [qw(SYNOPSIS OPTIONS)],
+    );
 }
 
 sub display {
@@ -181,7 +189,7 @@ sub display {
         }
 
     } elsif ($raw) {
-	    $out->print(to_json({%{$object}}));
+        $out->print(to_json({%{$object}}));
 
         return 1;
 
@@ -351,8 +359,10 @@ sub print_events {
     foreach my $event ($object->events) {
         if ($event->actor) {
             $package->print_kv(ucfirst($event->action), sprintf('%s (by %s)', scalar($event->date), $event->actor), $indent);
+
         } else {
             $package->print_kv(ucfirst($event->action), scalar($event->date), $indent);
+
         }
     }
 }
@@ -535,7 +545,7 @@ App::rdapper - a simple console-based RDAP client.
 
 To install, run:
 
-	cpanm --sudo App::rdapper
+    cpanm --sudo App::rdapper
 
 =head1 RUNNING VIA DOCKER
 
@@ -544,9 +554,9 @@ that can be used to build an image on your local system.
 
 Alternatively, you can pull the L<image from Docker Hub|https://hub.docker.com/r/gbxyz/rdapper>:
 
-	$ docker pull gbxyz/rdapper
+    $ docker pull gbxyz/rdapper
 
-	$ docker run -it gbxyz/rdapper --help
+    $ docker run -it gbxyz/rdapper --help
 
 =head1 SYNOPSIS
 
