@@ -1,13 +1,13 @@
 package App::rdapper;
 use Getopt::Long qw(GetOptionsFromArray :config pass_through);
 use JSON;
-use List::Util qw(min);
+use List::Util qw(min max);
 use List::MoreUtils qw(any);
 use Net::ASN;
 use Net::DNS::Domain;
 use Net::IP;
 use Net::RDAP::EPPStatusMap;
-use Net::RDAP 0.24;
+use Net::RDAP 0.25;
 use Pod::Usage;
 use Term::ANSIColor;
 use Term::Size;
@@ -60,8 +60,44 @@ my %funcs = (
     'help'       => sub { 1 }, # help only contains generic properties
 );
 
-my @role_order = qw(registrant administrative technical billing abuse registrar reseller sponsor proxy notifications noc);
-my %role_display = ('noc' => 'NOC');
+my @ROLE_DISPLAY_NAMES_ORDER = qw(registrant administrative technical billing abuse registrar reseller sponsor proxy notifications noc);
+my %ROLE_DISPLAY_NAMES = ('noc' => 'NOC');
+
+my @EVENTS = (
+    'registration',
+    'reregistration',
+    'last changed',
+    'expiration',
+    'deletion',
+    'reinstantiation',
+    'transfer',
+    'locked',
+    'unlocked',
+    'last update of RDAP database',
+    'registrar expiration',
+    'enum validation expiration',
+);
+
+my %EVENT_DISPLAY_ORDER;
+for (my $i = 0 ; $i < scalar(@EVENTS) ; $i++) {
+    $EVENT_DISPLAY_ORDER{$EVENTS[$i]} = $i;
+}
+
+my @VCARD_DISPLAY_ORDER = qw(fn org adr email tel);
+my %VCARD_NODE_NAMES = (
+    fn      => 'Name',
+    org     => 'Organization',
+    tel     => 'Phone',
+);
+
+my @ADR_DISPLAY_ORDER = (ADR_STREET, ADR_CITY, ADR_SP, ADR_PC, ADR_CC);
+my %ADR_DISPLAY_NAMES = (
+    &ADR_STREET => 'Street',
+    &ADR_CITY   => 'City',
+    &ADR_SP     => 'State/Province',
+    &ADR_PC     => 'Postal Code',
+    &ADR_CC     => 'Country',
+);
 
 my $rdap;
 
@@ -71,12 +107,8 @@ my $err = \*STDERR;
 $out->binmode(':utf8');
 $err->binmode(':utf8');
 
-$Text::Wrap::columns = min(
-    (Term::Size::chars)[0] - 5,
-    75,
-);
-
-$Text::Wrap::huge = 'overflow';
+$Text::Wrap::columns    = max((Term::Size::chars)[0], 75);
+$Text::Wrap::huge       = 'overflow';
 
 sub main {
     my $package = shift;
@@ -144,7 +176,7 @@ sub main {
 
     } elsif ('tld' eq $type) {
         $response = $rdap->fetch(URI->new(IANA_BASE_URL.'domain/'.$object), %args);
-        
+       
     } elsif ('url' eq $type) {
         my $uri = URI->new($object);
 
@@ -167,7 +199,7 @@ sub show_usage {
     my $package = shift;
 
     pod2usage(
-        '-input'    => __FILE__, 
+        '-input'    => __FILE__,
         '-verbose'  => 99,
         '-sections' => [qw(SYNOPSIS OPTIONS)],
     );
@@ -202,6 +234,7 @@ sub display {
             return 1;
 
         } else {
+            $package->warning('No registrar link found, displaying the registry record...');
             return $package->display($object, $indent);
 
         }
@@ -258,6 +291,7 @@ sub display {
         #
         $package->print_events($object, $indent);
         $package->print_status($object, $indent, ('domain' eq $object->class));
+
         $package->print_entities($object, $indent);
 
         #
@@ -370,7 +404,54 @@ sub print_entity {
         $package->print_kv($id->type, $id->identifier, $indent);
     }
 
-    $package->print_vcard($entity->vcard, $indent) if ($entity->vcard);
+    my $vcardArray = $entity->vcardArray;
+    if ($vcardArray) {
+        foreach my $type (@VCARD_DISPLAY_ORDER) {
+            foreach my $node (grep { $_->value } $vcardArray->nodes($type)) {
+                if ('adr' eq $type) {
+                    $package->print_kv('Address', '', $indent);
+
+                    if ($node->param('label')) {
+                        $out->print(wrap(
+                            INDENT x ($indent + 1),
+                            INDENT x ($indent + 1),
+                            $node->param('label'),
+                        )."\n");
+
+                    } else {
+                        foreach my $i (@ADR_DISPLAY_ORDER) {
+                            if ($node->value->[$i]) {
+                                if ('ARRAY' eq ref($node->value->[$i])) {
+                                    foreach my $v (grep { $_ } @{$node->value->[$i]}) {
+                                        $package->print_kv($ADR_DISPLAY_NAMES{$i}, $v, $indent+1);
+                                    }
+
+                                } else {
+                                    $package->print_kv($ADR_DISPLAY_NAMES{$i}, $node->value->[$i], $indent+1);
+
+                                }
+                            }
+                        }
+                    }
+
+                } else {
+                    my $label = $VCARD_NODE_NAMES{$type} || ucfirst($type);
+
+                    if ('tel' eq $type) {
+                        if (any { 'fax' eq $_ } @{$node->param('type')}) {
+                            $label = 'Fax';
+
+                        } else {
+                            $label = 'Phone';
+
+                        }
+                    }
+
+                    $package->print_kv($label, $node->value, $indent);
+                }
+            }
+        }
+    }
 }
 
 sub print_nameserver {
@@ -386,7 +467,7 @@ sub print_nameserver {
 sub print_events {
     my ($package, $object, $indent) = @_;
 
-    foreach my $event ($object->events) {
+    foreach my $event (sort { $EVENT_DISPLAY_ORDER{$a->action} - $EVENT_DISPLAY_ORDER{$b->action} } $object->events) {
         if ($event->actor) {
             $package->print_kv(ucfirst($event->action), sprintf('%s (by %s)', scalar($event->date), $event->actor), $indent);
 
@@ -418,7 +499,7 @@ sub print_entities {
     my @entities = $object->entities;
 
     my %seen;
-    foreach my $role (@role_order) {
+    foreach my $role (@ROLE_DISPLAY_NAMES_ORDER) {
         for (my $i = 0 ; $i < scalar(@entities) ; $i++) {
             next if ($seen{$i});
 
@@ -426,7 +507,7 @@ sub print_entities {
             if (any { $role eq $_ } $entity->roles) {
                 $seen{$i} = 1;
 
-                my $rstring = join(', ', map { sprintf('%s Contact', $role_display{$_} || ucfirst($_)) } $entity->roles);
+                my $rstring = join(', ', map { sprintf('%s Contact', $ROLE_DISPLAY_NAMES{$_} || ucfirst($_)) } $entity->roles);
 
                 if ($entity->handle && 'not applicable' ne $entity->handle && 'HANDLE REDACTED FOR PRIVACY' ne $entity->handle) {
                     $package->print_kv($rstring, $entity->handle, $indent);
@@ -475,52 +556,6 @@ sub print_link {
         u($link->href->as_string),
         $indent,
     );
-}
-
-sub print_vcard {
-    my ($package, $card, $indent) = @_;
-
-    if ($card->full_name || $card->organization) {
-        $package->print_kv('Name', $card->full_name, $indent) if ($card->full_name);
-        $package->print_kv('Organization', $card->organization, $indent) if ($card->organization);
-
-    } else {
-        $package->print_kv('Name/Organization', '(not available)', $indent);
-
-    }
-
-    foreach my $address (map { $_->{'address'} } @{$card->addresses}) {
-        if ('ARRAY' eq ref($address->[ADR_STREET])) {
-            foreach my $street (@{$address->[ADR_STREET]}) {
-                $package->print_kv('Street', $street, $indent) if ($street);
-            }
-
-        } elsif ($address->[ADR_STREET]) {
-            $package->print_kv('Street', $address->[ADR_STREET], $indent);
-
-        }
-
-        $package->print_kv('City',            $address->[ADR_CITY], $indent)  if ($address->[ADR_CITY]);
-        $package->print_kv('State/Province',  $address->[ADR_SP], $indent)    if ($address->[ADR_SP]);
-        $package->print_kv('Postal Code',     $address->[ADR_PC], $indent)    if ($address->[ADR_PC]);
-        $package->print_kv('Country',         $address->[ADR_CC], $indent)    if ($address->[ADR_CC]);
-    }
-
-    foreach my $email (@{$card->email_addresses}) {
-        if ($email->{'type'}) {
-            $package->print_kv('Email', sprintf('%s (%s)', u($email->{'address'}), $email->{'type'}), $indent);
-
-        } else {
-            $package->print_kv('Email', u($email->{'address'}), $indent);
-
-        }
-    }
-
-    foreach my $number (@{$card->phones}) {
-        my @types = ('ARRAY' eq ref($number->{'type'}) ? @{$number->{'type'}} : ($number->{'type'}));
-        my $type = ((any { lc($_) eq 'fax' } @types) ? 'Fax' : 'Phone');
-        $package->print_kv($type, u($number->{'number'}), $indent);
-    }
 }
 
 sub print_kv {
