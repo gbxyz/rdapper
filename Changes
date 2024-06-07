@@ -1,4 +1,7 @@
-1.01 - XXXX-XX-XX:
+1.02 - 2024-06-07:
+  - update to support Net::RDAP 0.25 and display unstructured postal addresses.
+
+1.01 - 2024-05-31:
   - fix pattern matching which treated TLDs like "de" as IPv6 addresses.
   - when an object is identified as an IP address, make sure Net::IP->new returns an object before trying to use it.
   - implemented --version argument.
