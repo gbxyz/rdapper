@@ -404,10 +404,10 @@ sub print_entity {
         $package->print_kv($id->type, $id->identifier, $indent);
     }
 
-    my $vcardArray = $entity->vcardArray;
-    if ($vcardArray) {
+    my $jcard = $entity->jcard;
+    if ($jcard) {
         foreach my $type (@VCARD_DISPLAY_ORDER) {
-            foreach my $node (grep { $_->value } $vcardArray->nodes($type)) {
+            foreach my $node (grep { $_->value } $jcard->nodes($type)) {
                 if ('adr' eq $type) {
                     $package->print_kv('Address', '', $indent);
 
