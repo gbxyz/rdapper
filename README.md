@@ -58,26 +58,24 @@ but you must use the `--type=nameserver` argument to disambiguate
 from domain names. The RDAP server of the parent domain's registry will
 be queried.
 
-# ADDITIONAL ARGUMENTS
-
-- `--registrar` - follow referral to the registrar's RDAP record
-(if any) which will be displayed instead of the registry record.
-- `--reverse` - if you provide an IP address or CIDR prefix, then
-this option causes `rdapper` to display the record of the corresponding
+- `--registrar` - follow referral to the registrar's RDAP record (if any)
+which will be displayed instead of the registry record.
+- `--both` - display both the registry and (if any) registrar RDAP
+records (implies `--registrar`).
+- `--reverse` - if you provide an IP address or CIDR prefix, then this
+option causes `rdapper` to display the record of the corresponding
 `in-addr.arpa` or `ip6.arpa` domain.
-- `--type=TYPE` - explicitly set the object type. `rdapper`
-will guess the type by pattern matching the value of `OBJECT` but
-you can override this by explicitly setting the `--type` argument
-to one of : `ip`, `autnum`, `domain`, `nameserver`, `entity`
-or `url`.
-    - If `--type=url` is used, `rdapper` will directly fetch the
-    specified URL and attempt to process it as an RDAP response. If the URL
-    path ends with `/help` then the response will be treated as a "help"
-    query response (if you want to see the record for the .help TLD, use
-    `--type=tld help`).
-    - If `--type=entity` is used, `OBJECT` must be a a string
-    containing a "tagged" handle, such as `ABC123-EXAMPLE`, as per
-    RFC 8521.
+- `--type=TYPE` - explicitly set the object type. `rdapper` will guess
+the type by pattern matching the value of `OBJECT` but you can override this by
+explicitly setting the `--type` argument to one of : `ip`, `autnum`,
+`domain`, `nameserver`, `entity` or `url`.
+    - If `--type=url` is used, `rdapper` will directly fetch the specified
+    URL and attempt to process it as an RDAP response. If the URL path ends with
+    `/help` then the response will be treated as a "help" query response (if you
+    want to see the record for the .help TLD, use `--type=tld help`).
+    - If `--type=entity` is used, `OBJECT` must be a a string containing a
+    "tagged" handle, such as `ABC123-EXAMPLE`, as per [RFC
+    8521](https://datatracker.ietf.org/doc/html/rfc8521).
 - `--help` - display help message.
 - `--version` - display package and version.
 - `--raw` - print the raw JSON rather than parsing it.
