@@ -26,7 +26,7 @@ use constant {
 use vars qw($VERSION);
 use strict;
 
-$VERSION = '1.02';
+$VERSION = '1.03';
 
 #
 # global arg variables (note: nopager is now ignored)
@@ -87,11 +87,17 @@ for (my $i = 0 ; $i < scalar(@EVENTS) ; $i++) {
     $EVENT_DISPLAY_ORDER{$EVENTS[$i]} = $i;
 }
 
-my @VCARD_DISPLAY_ORDER = qw(fn org adr email tel);
+my @VCARD_DISPLAY_ORDER = qw(SOURCE KIND FN TITLE ROLE ORG ADR GEO EMAIL CONTACT-URI SOCIALPROFILE TEL IMPP URL CATEGORIES NOTE);
 my %VCARD_NODE_NAMES = (
-    fn      => 'Name',
-    org     => 'Organization',
-    tel     => 'Phone',
+    FN              => 'Name',
+    ORG             => 'Organization',
+    TEL             => 'Phone',
+    EMAIL           => 'Email',
+    IMPP            => 'Messaging',
+    URL             => 'Website',
+    SOCIALPROFILE   => 'Profile',
+    'CONTACT-URI'   => 'Contact Link',
+    GEO             => 'Location',
 );
 
 my @ADR_DISPLAY_ORDER = (ADR_STREET, ADR_CITY, ADR_SP, ADR_PC, ADR_CC);
@@ -423,27 +429,27 @@ sub print_entity {
     my $jcard = $entity->jcard;
     if ($jcard) {
         foreach my $type (@VCARD_DISPLAY_ORDER) {
-            foreach my $node (grep { $_->value } $jcard->nodes($type)) {
-                if ('adr' eq $type) {
+            foreach my $property (grep { $_->value } $jcard->properties($type)) {
+                if ('ADR' eq $type) {
                     $package->print_kv('Address', '', $indent);
 
-                    if ($node->param('label')) {
+                    if ($property->param('label')) {
                         $out->print(wrap(
                             INDENT x ($indent + 1),
                             INDENT x ($indent + 1),
-                            $node->param('label'),
+                            $property->param('label'),
                         )."\n");
 
                     } else {
                         foreach my $i (@ADR_DISPLAY_ORDER) {
-                            if ($node->value->[$i]) {
-                                if ('ARRAY' eq ref($node->value->[$i])) {
-                                    foreach my $v (grep { $_ } @{$node->value->[$i]}) {
+                            if ($property->value->[$i]) {
+                                if ('ARRAY' eq ref($property->value->[$i])) {
+                                    foreach my $v (grep { $_ } @{$property->value->[$i]}) {
                                         $package->print_kv($ADR_DISPLAY_NAMES{$i}, $v, $indent+1);
                                     }
 
                                 } else {
-                                    $package->print_kv($ADR_DISPLAY_NAMES{$i}, $node->value->[$i], $indent+1);
+                                    $package->print_kv($ADR_DISPLAY_NAMES{$i}, $property->value->[$i], $indent+1);
 
                                 }
                             }
@@ -451,10 +457,10 @@ sub print_entity {
                     }
 
                 } else {
-                    my $label = $VCARD_NODE_NAMES{$type} || ucfirst($type);
+                    my $label = $VCARD_NODE_NAMES{$type} || ucfirst(lc($type));
 
-                    if ('tel' eq $type) {
-                        if (any { 'fax' eq $_ } @{$node->param('type')}) {
+                    if ('TEL' eq $type) {
+                        if (any { 'fax' eq lc($_) } @{$property->param('type')}) {
                             $label = 'Fax';
 
                         } else {
@@ -463,7 +469,11 @@ sub print_entity {
                         }
                     }
 
-                    $package->print_kv($label, $node->value, $indent);
+                    $package->print_kv(
+                        $label,
+                        'uri' eq $property->value_type ? u($property->value) : $property->value,
+                        $indent
+                    );
                 }
             }
         }

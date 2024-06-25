@@ -1,6 +1,7 @@
-1.03 - 2024-XX-YY:
+1.03 - 2024-06-25:
   - added --both option, and include all options in --help output.
   - simplified implementation of display() using guard clauses
+  - include additional address fields in output, where present.
 
 1.02 - 2024-06-07:
   - update to support Net::RDAP 0.25 and display unstructured postal addresses.
