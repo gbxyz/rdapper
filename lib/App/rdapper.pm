@@ -188,7 +188,7 @@ sub main {
 
     } elsif ('tld' eq $type) {
         $response = $rdap->fetch(URI->new(IANA_BASE_URL.'domain/'.$object), %args);
-       
+
     } elsif ('url' eq $type) {
         my $uri = URI->new($object);
 
@@ -428,52 +428,70 @@ sub print_entity {
 
     my $jcard = $entity->jcard;
     if ($jcard) {
-        foreach my $type (@VCARD_DISPLAY_ORDER) {
-            foreach my $property (grep { $_->value } $jcard->properties($type)) {
-                if ('ADR' eq $type) {
-                    $package->print_kv('Address', '', $indent);
+        $package->print_jcard($jcard, $indent);
+    }
+}
 
-                    if ($property->param('label')) {
-                        $out->print(wrap(
-                            INDENT x ($indent + 1),
-                            INDENT x ($indent + 1),
-                            $property->param('label'),
-                        )."\n");
+sub print_jcard {
+    my ($package, $jcard, $indent) = @_;
 
-                    } else {
-                        foreach my $i (@ADR_DISPLAY_ORDER) {
-                            if ($property->value->[$i]) {
-                                if ('ARRAY' eq ref($property->value->[$i])) {
-                                    foreach my $v (grep { $_ } @{$property->value->[$i]}) {
-                                        $package->print_kv($ADR_DISPLAY_NAMES{$i}, $v, $indent+1);
-                                    }
+    foreach my $ptype (@VCARD_DISPLAY_ORDER) {
+        foreach my $property (grep { $_->value } $jcard->properties($ptype)) {
+            $package->print_jcard_property($property, $indent);
+        }
+    }
+}
 
-                                } else {
-                                    $package->print_kv($ADR_DISPLAY_NAMES{$i}, $property->value->[$i], $indent+1);
+sub print_jcard_property {
+    my ($package, $property, $indent) = @_;
 
-                                }
-                            }
-                        }
+    if ('ADR' eq uc($property->type)) {
+        $package->print_jcard_adr($property, $indent);
+
+    } else {
+        my $label = $VCARD_NODE_NAMES{$property->type} || ucfirst(lc($property->type));
+
+        if ('TEL' eq uc($property->type)) {
+            if (any { 'fax' eq lc($_) } @{$property->param('type')}) {
+                $label = 'Fax';
+
+            } else {
+                $label = 'Phone';
+
+            }
+        }
+
+        $package->print_kv(
+            $label,
+            'uri' eq $property->value_type ? u($property->value) : $property->value,
+            $indent
+        );
+    }
+}
+
+sub print_jcard_adr {
+    my ($package, $property, $indent) = @_;
+
+    $package->print_kv('Address', '', $indent);
+
+    if ($property->param('label')) {
+        $out->print(wrap(
+            INDENT x ($indent + 1),
+            INDENT x ($indent + 1),
+            $property->param('label'),
+        )."\n");
+
+    } else {
+        foreach my $i (@ADR_DISPLAY_ORDER) {
+            if ($property->value->[$i]) {
+                if ('ARRAY' eq ref($property->value->[$i])) {
+                    foreach my $v (grep { $_ } @{$property->value->[$i]}) {
+                        $package->print_kv($ADR_DISPLAY_NAMES{$i}, $v, $indent+1);
                     }
 
                 } else {
-                    my $label = $VCARD_NODE_NAMES{$type} || ucfirst(lc($type));
+                    $package->print_kv($ADR_DISPLAY_NAMES{$i}, $property->value->[$i], $indent+1);
 
-                    if ('TEL' eq $type) {
-                        if (any { 'fax' eq lc($_) } @{$property->param('type')}) {
-                            $label = 'Fax';
-
-                        } else {
-                            $label = 'Phone';
-
-                        }
-                    }
-
-                    $package->print_kv(
-                        $label,
-                        'uri' eq $property->value_type ? u($property->value) : $property->value,
-                        $indent
-                    );
                 }
             }
         }
