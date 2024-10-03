@@ -1,3 +1,6 @@
+1.04 - 2024-10-03:
+  - address security issue due to use of a relative path in `use lib` (thanks Petr Pisar).
+
 1.03 - 2024-06-25:
   - added --both option, and include all options in --help output.
   - simplified implementation of display() using guard clauses
