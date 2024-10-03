@@ -7,7 +7,7 @@ WriteMakefile(
 	'VERSION_FROM'	=> 'lib/App/rdapper.pm',
 	'ABSTRACT_FROM'	=> 'lib/App/rdapper.pm',
 	'AUTHOR'		=> [ 'Gavin Brown <gavin.brown@fastmail.uk>' ],
-	'LICENSE'		=> 'freebsd',
+	'LICENSE'		=> 'perl_5',
 	'EXE_FILES'		=> [ 'rdapper' ],
 	'PREREQ_PM'		=> {
         'Getopt::Long'      => 0,
