@@ -7,3 +7,4 @@ META.*
 MANIFEST
 MANIFEST.old
 .secrets
+.env
