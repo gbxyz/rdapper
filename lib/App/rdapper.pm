@@ -32,7 +32,7 @@ $VERSION = '1.04';
 # global arg variables (note: nopager is now ignored)
 #
 my ($type, $object, $help, $short, $bypass, $auth, $nopager, $raw, $both,
-    $registrar, $nocolor, $reverse, $version);
+    $registrar, $nocolor, $reverse, $version, $search);
 
 #
 # options spec for Getopt::Long
@@ -51,6 +51,7 @@ my %opts = (
     'nocolor'       => \$nocolor,
     'reverse'       => \$reverse,
     'version'       => \$version,
+    'search'        => \$search,
 );
 
 my %funcs = (
@@ -152,6 +153,11 @@ sub main {
     my %args;
     ($args{'user'}, $args{'pass'}) = split(/:/, $auth, 2) if ($auth);
 
+    if ($search) {
+        $package->search($rdap, $object, $type, %args);
+        return;
+    }
+
     my $response;
     if ('ip' eq $type) {
         my $ip = Net::IP->new($object);
@@ -221,6 +227,58 @@ sub show_version {
     my $package = shift;
     printf("%s v%s\n", $package, $VERSION);
     exit;
+}
+
+sub search {
+    my ($package, $rdap, $object, $type, %args) = @_;
+
+    if ('domain' eq $type) {
+        $package->domain_search($rdap, $object, %args);
+
+    } else {
+        $package->error('Current unable to do searches for %s objects.', $type);
+    }
+}
+
+sub domain_search {
+    my ($package, $rdap, $query, %args) = @_;
+
+    my @labels = grep { length > 0 } split(/\./, lc($query), 2);
+
+    my $prefix = shift(@labels);
+    my $suffix = shift(@labels) || '*';
+
+    my $servers = {};
+    my $zones = {};
+
+    foreach my $service (Net::RDAP::Registry->load_registry(Net::RDAP::Registry::DNS_URL)->services) {
+        foreach my $zone ($service->registries) {
+            my $url = Net::RDAP::Registry->get_best_url($service->urls);
+
+            if (!exists($servers->{$url->as_string})) {
+                $servers->{$url->as_string} = Net::RDAP::Service->new($url);
+            }
+
+            $zones->{lc($zone)} = $url->as_string;
+        }
+    }
+
+    my @zones = sort(keys(%{$zones}));
+    @zones = grep { lc($suffix) eq $_ || $suffix =~ /\.$_/i } @zones if ($suffix ne '*');
+
+    foreach my $zone (@zones) {
+        my $server = $servers->{$zones->{$zone}};
+        my $result = $server->domains(name => $prefix);
+
+        if ($result->isa('Net::RDAP::Error')) {
+            $err->print(sprintf("%s.%s: %s %s\n", $prefix, $zone, $result->errorCode, $result->title));
+
+        } elsif ($result->isa('Net::RDAP::SearchResult')) {
+            foreach my $domain ($result->domains) {
+                $out->print(sprintf("%s\n", $domain->name->name));
+            }
+        }
+    }
 }
 
 sub display {
@@ -669,7 +727,21 @@ Alternatively, you can pull the L<image from Docker Hub|https://hub.docker.com/r
 
 =head1 SYNOPSIS
 
+General form:
+
     rdapper [OPTIONS] OBJECT
+
+Examples:
+
+    rdapper example.com
+
+    rdapper --type=tld foo
+
+    rdapper 192.168.0.1
+
+    rdapper https://rdap.org/domain/example.com
+
+    rdapper --search "exampl*.com"
 
 =head1 DESCRIPTION
 
@@ -757,7 +829,25 @@ you aren't expecting them to.
 
 =item * C<--nocolor> - disable ANSI colors in the formatted output.
 
+=item * C<--search> - perform a search.
+
 =back
+
+=head1 RDAP Search
+
+Some RDAP servers support the ability to perform simple substring searches.
+You can use the C<--search> option to enable this functionality.
+
+When the C<--search> option is used, C<OBJECT> will be used as a search term. If
+it contains no dots (e.g. C<exampl*>), then C<rdapper> will send a search query
+for C<exampl*> to I<all> known RDAP servers. If it contains one or more dots
+(e.g. C<exampl*.com>), it will send the search query to the RDAP server for the
+specified TLD (if any).
+
+Any errors observed will be printed to C<STDERR>; any search results will be
+printed to C<STDOUT>.
+
+As of writing, search is only available for domain names.
 
 =head1 COPYRIGHT & LICENSE
 
