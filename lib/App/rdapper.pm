@@ -31,8 +31,10 @@ $VERSION = '1.04';
 #
 # global arg variables (note: nopager is now ignored)
 #
-my ($type, $object, $help, $short, $bypass, $auth, $nopager, $raw, $both,
-    $registrar, $nocolor, $reverse, $version, $search);
+my (
+    $type, $object, $help, $short, $bypass, $auth, $nopager, $raw, $both,
+    $registrar, $nocolor, $reverse, $version, $search
+);
 
 #
 # options spec for Getopt::Long
@@ -225,7 +227,7 @@ sub show_usage {
 
 sub show_version {
     my $package = shift;
-    printf("%s v%s\n", $package, $VERSION);
+    $out->say(sprintf('%s v%s', $package, $VERSION));
     exit;
 }
 
@@ -272,7 +274,7 @@ sub domain_search {
         my $result = $server->domains(name => $prefix);
 
         if ($result->isa('Net::RDAP::Error')) {
-            $err->print(sprintf("%s.%s: %s %s\n", $prefix, $zone, $result->errorCode, $result->title));
+            $package->warning(sprintf('%s.%s: %s %s', $prefix, $zone, $result->errorCode, $result->title));
 
         } elsif ($result->isa('Net::RDAP::SearchResult')) {
             $package->display_domain_search_results($result);
@@ -285,7 +287,7 @@ sub display_domain_search_results {
     my ($package, $result) = @_;
 
     foreach my $domain ($result->domains) {
-        $out->print(sprintf("%s\n", $domain->name->name));
+        $out->say($domain->name->name);
     }
 }
 
@@ -293,7 +295,7 @@ sub display_nameserver_search_results {
     my ($package, $result) = @_;
 
     foreach my $nameserver ($result->nameservers) {
-        $out->print(sprintf("%s\n", $nameserver->name->name));
+        $out->say($nameserver->name->name);
     }
 }
 
@@ -301,7 +303,7 @@ sub display_entity_search_results {
     my ($package, $result) = @_;
 
     foreach my $entity ($result->entities) {
-        $out->print(sprintf("%s\n", $entity->handle));
+        $out->say($entity->handle);
     }
 }
 
@@ -711,13 +713,13 @@ sub print_kv {
 sub warning {
     my ($package, $fmt, @params) = @_;
     my $str = sprintf("Warning: $fmt", @params);
-    $err->print(colourise([qw(yellow)], $str)."\n");
+    $err->say(colourise([qw(yellow)], $str));
 }
 
 sub error {
     my ($package, $fmt, @params) = @_;
     my $str = sprintf("Error: $fmt", @params);
-    $err->print(colourise([qw(red)], $str)."\n");
+    $err->say(colourise([qw(red)], $str));
     exit 1;
 }
 
