@@ -797,12 +797,12 @@ You can pass any internet resource as an argument; this may be:
 
 =item * a top-level domain such as C<com>;
 
-=item * a "reverse" domain name such as C<168.192.in-addr.arpa>;
-
 =item * a IPv4 or IPv6 address or CIDR prefix, such as C<192.168.0.1> or
 C<2001:DB8::/32>;
 
 =item * an Autonymous System Number such as C<AS65536>.
+
+=item * a "reverse" domain name such as C<168.192.in-addr.arpa>;
 
 =item * the URL of an RDAP resource such as
 C<https://example.com/rdap/domain/example.com>.
@@ -818,6 +818,8 @@ ABC123-EXAMPLE>.
 C<rdapper> also implements limited support for in-bailiwick nameservers, but you
 must use the C<--type=nameserver> argument to disambiguate from domain names. The
 RDAP server of the parent domain's registry will be queried.
+
+=head2 ARGUMENTS
 
 =over
 
