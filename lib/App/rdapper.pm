@@ -274,11 +274,42 @@ sub domain_search {
             $err->print(sprintf("%s.%s: %s %s\n", $prefix, $zone, $result->errorCode, $result->title));
 
         } elsif ($result->isa('Net::RDAP::SearchResult')) {
-            foreach my $domain ($result->domains) {
-                $out->print(sprintf("%s\n", $domain->name->name));
-            }
+            $package->display_domain_search_results($result);
+
         }
     }
+}
+
+sub display_domain_search_results {
+    my ($package, $result) = @_;
+
+    foreach my $domain ($result->domains) {
+        $out->print(sprintf("%s\n", $domain->name->name));
+    }
+}
+
+sub display_nameserver_search_results {
+    my ($package, $result) = @_;
+
+    foreach my $nameserver ($result->nameservers) {
+        $out->print(sprintf("%s\n", $nameserver->name->name));
+    }
+}
+
+sub display_entity_search_results {
+    my ($package, $result) = @_;
+
+    foreach my $entity ($result->entities) {
+        $out->print(sprintf("%s\n", $entity->handle));
+    }
+}
+
+sub display_search {
+    my ($package, $result) = @_;
+
+    $package->display_domain_search_results($result)        if (exists($result->{domainSearchResults}));
+    $package->display_nameserver_search_results($result)    if (exists($result->{nameserverSearchResults}));
+    $package->display_entity_search_results($result)        if (exists($result->{entitySearchResults}));
 }
 
 sub display {
@@ -324,6 +355,12 @@ sub display {
 
     if ($raw) {
         $out->print(to_json({%{$object}}));
+
+        return 1;
+    }
+
+    if ($object->isa('Net::RDAP::SearchResult')) {
+        $package->display_search($object);
 
         return 1;
     }
