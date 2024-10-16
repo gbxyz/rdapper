@@ -50,10 +50,10 @@ You can pass any internet resource as an argument; this may be:
 
 - a "forward" domain name such as `example.com`;
 - a top-level domain such as `com`;
-- a "reverse" domain name such as `168.192.in-addr.arpa`;
 - a IPv4 or IPv6 address or CIDR prefix, such as `192.168.0.1` or
 `2001:DB8::/32`;
 - an Autonymous System Number such as `AS65536`.
+- a "reverse" domain name such as `168.192.in-addr.arpa`;
 - the URL of an RDAP resource such as
 `https://example.com/rdap/domain/example.com`.
 - the "tagged" handle of an entity, such as an LIR, registrar, or domain
@@ -65,6 +65,8 @@ ABC123-EXAMPLE`.
 `rdapper` also implements limited support for in-bailiwick nameservers, but you
 must use the `--type=nameserver` argument to disambiguate from domain names. The
 RDAP server of the parent domain's registry will be queried.
+
+## ARGUMENTS
 
 - `--registrar` - follow referral to the registrar's RDAP record (if any)
 which will be displayed instead of the registry record.
