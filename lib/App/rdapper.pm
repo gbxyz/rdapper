@@ -131,13 +131,13 @@ sub main {
         'cache_ttl' => 300,
     );
 
+    $package->show_version if ($version);
+
     $registrar ||= $both;
 
     $object = shift(@_) if (!$object);
 
     $package->show_usage if ($help || length($object) < 1);
-
-    $package->show_version if ($version);
 
     if (!$type) {
         if ($object =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)              { $type = 'ip'      }
@@ -237,6 +237,7 @@ sub search {
 
     } else {
         $package->error('Current unable to do searches for %s objects.', $type);
+
     }
 }
 
