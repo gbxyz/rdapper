@@ -1,8 +1,7 @@
 package App::rdapper;
 use Getopt::Long qw(GetOptionsFromArray :config pass_through);
 use JSON;
-use List::Util qw(min max);
-use List::MoreUtils qw(any);
+use List::Util qw(any min max);
 use Net::ASN;
 use Net::DNS::Domain;
 use Net::IP;
