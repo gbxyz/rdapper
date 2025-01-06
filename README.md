@@ -119,7 +119,7 @@ As of writing, search is only available for domain names.
 
 Copyright (c) 2012-2023 CentralNic Ltd.
 
-Copyright (c) 2023-2024 Gavin Brown.
+Copyright (c) 2023-2025 Gavin Brown.
 
 All rights reserved. This program is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.
