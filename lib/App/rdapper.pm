@@ -112,6 +112,8 @@ my %ADR_DISPLAY_NAMES = (
     &ADR_CC     => 'Country',
 );
 
+my $json = JSON->new->utf8->canonical->pretty->convert_blessed;
+
 my $rdap;
 
 my $out = \*STDOUT;
@@ -326,6 +328,7 @@ sub display {
             $package->error('%03u (%s)', $object->errorCode, $object->title);
 
         }
+
         return undef;
     }
 
@@ -357,7 +360,7 @@ sub display {
     }
 
     if ($raw) {
-        $out->print(to_json({%{$object}}));
+        $out->print($json->encode($object));
 
         return 1;
     }
