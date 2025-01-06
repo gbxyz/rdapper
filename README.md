@@ -29,7 +29,7 @@ Examples:
 
     rdapper example.com
 
-    rdapper --type=tld foo
+    rdapper --tld foo
 
     rdapper 192.168.0.1
 
@@ -63,7 +63,7 @@ that you want to perform an entity query, .e.g `rdapper --type=entity
 ABC123-EXAMPLE`.
 
 `rdapper` also implements limited support for in-bailiwick nameservers, but you
-must use the `--type=nameserver` argument to disambiguate from domain names. The
+must use the `--nameserver` argument to disambiguate from domain names. The
 RDAP server of the parent domain's registry will be queried.
 
 ## ARGUMENTS
@@ -86,6 +86,7 @@ explicitly setting the `--type` argument to one of : `ip`, `autnum`,
     - If `--type=entity` is used, `OBJECT` must be a a string containing a
     "tagged" handle, such as `ABC123-EXAMPLE`, as per [RFC
     8521](https://datatracker.ietf.org/doc/html/rfc8521).
+- `--$TYPE` - alias for `--type=$TYPE`. eg `--domain`, `--autnum`, etc.
 - `--help` - display help message.
 - `--version` - display package and version.
 - `--raw` - print the raw JSON rather than parsing it.
