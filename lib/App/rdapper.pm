@@ -54,6 +54,12 @@ my %opts = (
     'reverse'       => \$reverse,
     'version'       => \$version,
     'search'        => \$search,
+    'autnum'        => sub { $type = 'autnum' },
+    'domain'        => sub { $type = 'domain' },
+    'entity'        => sub { $type = 'entity' },
+    'ip'            => sub { $type = 'ip' },
+    'tld'           => sub { $type = 'tld' },
+    'url'           => sub { $type = 'url' },
 );
 
 my %funcs = (
@@ -778,7 +784,7 @@ Examples:
 
     rdapper example.com
 
-    rdapper --type=tld foo
+    rdapper --tld foo
 
     rdapper 192.168.0.1
 
@@ -822,7 +828,7 @@ ABC123-EXAMPLE>.
 =back
 
 C<rdapper> also implements limited support for in-bailiwick nameservers, but you
-must use the C<--type=nameserver> argument to disambiguate from domain names. The
+must use the C<--nameserver> argument to disambiguate from domain names. The
 RDAP server of the parent domain's registry will be queried.
 
 =head2 ARGUMENTS
@@ -856,6 +862,8 @@ want to see the record for the .help TLD, use C<--type=tld help>).
 8521|https://datatracker.ietf.org/doc/html/rfc8521>.
 
 =back
+
+=item * C<--$TYPE> - alias for C<--type=$TYPE>. eg C<--domain>, C<--autnum>, etc.
 
 =item * C<--help> - display help message.
 
