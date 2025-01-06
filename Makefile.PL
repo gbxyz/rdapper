@@ -12,8 +12,7 @@ WriteMakefile(
 	'PREREQ_PM'		=> {
         'Getopt::Long'      => 0,
         'JSON'              => 0,
-        'List::MoreUtils'   => 0,
-        'List::Util'        => 0,
+        'List::Util'        => '1.33',
         'Net::ASN'          => 0,
         'Net::DNS::Domain'  => 0,
         'Net::IP'           => 0,
