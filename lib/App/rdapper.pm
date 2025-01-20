@@ -556,7 +556,7 @@ sub print_jcard_property {
         $package->print_jcard_adr($property, $indent);
 
     } else {
-        my $label = $VCARD_NODE_NAMES{$property->type} || ucfirst(lc($property->type));
+        my $label = $VCARD_NODE_NAMES{uc($property->type)} || ucfirst(lc($property->type));
 
         if ('TEL' eq uc($property->type)) {
             if (any { 'fax' eq lc($_) } @{$property->param('type')}) {
