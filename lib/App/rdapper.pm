@@ -611,7 +611,7 @@ sub print_nameserver {
     $package->print_kv('Handle', $nameserver->handle, $indent) if ($nameserver->handle);
 
     foreach my $ip ($nameserver->addresses) {
-        $package->print_kv('IP Address', $ip->ip, $indent);
+        $package->print_kv('IP Address', $ip->short, $indent);
     }
 }
 
