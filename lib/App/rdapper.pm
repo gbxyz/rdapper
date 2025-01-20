@@ -488,8 +488,13 @@ sub print_domain {
     $package->print_kv('Handle', $domain->handle, $indent) if ($domain->handle);
 
     foreach my $ns (sort { lc($a->name->name) cmp lc($b->name->name) } $domain->nameservers) {
-        $package->print_kv('Nameserver', uc($ns->name->name), $indent);
-        $package->print_nameserver($ns, 1+$indent);
+        if ($short) {
+            $package->print_kv('Nameserver', uc($ns->name->name) . ' ' . join(' ', map { $_->short } $ns->addresses), $indent);
+
+        } else {
+            $package->print_kv('Nameserver', uc($ns->name->name), $indent);
+            $package->print_nameserver($ns, 1+$indent);
+        }
     }
 
     foreach my $ds ($domain->ds) {
