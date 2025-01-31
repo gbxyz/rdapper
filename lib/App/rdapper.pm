@@ -608,6 +608,10 @@ sub print_jcard_adr {
             }
         }
     }
+
+    if ($property->param('cc')) {
+        $package->print_kv('Country', $property->param('cc'), $indent+1);
+    }
 }
 
 sub print_nameserver {
