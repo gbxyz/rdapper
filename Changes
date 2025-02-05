@@ -1,3 +1,10 @@
+1.06 - 2025-02-05:
+  - Fixed display of JCard property names.
+  - Display CC parameter of JCard ADR properties (if specified).
+  - avoid dependency on List::MoreUtils.
+  - Short output of nameservers when --short is specified.
+  - Display IPv6 addresses using :: compression instead of the expanded representation.
+
 1.05 - 2025-01-06:
   - Documentation updates.
   - Support for searches.
