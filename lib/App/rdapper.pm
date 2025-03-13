@@ -62,14 +62,14 @@ my %opts = (
     'url'           => sub { $type = 'url' },
 );
 
-my %funcs = (
-    'ip network' => sub { App::rdapper->print_ip(@_) },
-    'autnum'     => sub { App::rdapper->print_asn(@_) },
-    'domain'     => sub { App::rdapper->print_domain(@_) },
-    'entity'     => sub { App::rdapper->print_entity(@_) },
-    'nameserver' => sub { App::rdapper->print_nameserver(@_) },
+my $funcs = {
+    'ip network' => sub { __PACKAGE__->print_ip(@_) },
+    'autnum'     => sub { __PACKAGE__->print_asn(@_) },
+    'domain'     => sub { __PACKAGE__->print_domain(@_) },
+    'entity'     => sub { __PACKAGE__->print_entity(@_) },
+    'nameserver' => sub { __PACKAGE__->print_nameserver(@_) },
     'help'       => sub { 1 }, # help only contains generic properties
-);
+};
 
 my @ROLE_DISPLAY_NAMES_ORDER = qw(registrant administrative technical billing
     abuse registrar reseller sponsor proxy notifications noc);
@@ -378,7 +378,7 @@ sub display {
     }
 
     $package->error("JSON response does not include the 'objectClassName' properties") unless ($object->class);
-    $package->error(sprintf("Unknown object type '%s'", $object->class)) unless ($funcs{$object->class});
+    $package->error(sprintf("Unknown object type '%s'", $object->class)) unless ($funcs->{$object->class});
 
     #
     # generic properties
@@ -414,7 +414,7 @@ sub display {
     #
     # object-specific properties
     #
-    &{$funcs{$object->class}}($object, $indent);
+    $funcs->{$object->class}->($object, $indent);
 
     #
     # more generic properties
