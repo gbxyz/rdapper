@@ -369,10 +369,6 @@ sub display {
             $package->display($result, $indent);
 
         } else {
-            if ($link) {
-                $package->info('Registry response includes a referral to the registrar, use --registrar or --both to see it.');
-            }
-
             if ($raw) {
                 $out->print($json->encode($object));
 
