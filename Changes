@@ -1,3 +1,9 @@
+1.09 - 2025-03-13:
+  - update this file to reflect the changes in 1.08.
+
+1.08 - 2025-03-13:
+  - require Net::RDAP v0.34 in Makefile.PL not just in rdapper.pm.
+
 1.07 - 2025-03-13:
   - require Net::RDAP v0.34, which fixes a caching issue.
   - add --debug argument, which doesn't do much at the moment except enable Net::RDAP::UA verbosity.
