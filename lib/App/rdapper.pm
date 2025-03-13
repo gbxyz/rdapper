@@ -33,7 +33,7 @@ $VERSION = '1.05';
 #
 my (
     $type, $object, $help, $short, $bypass, $auth, $nopager, $raw, $both,
-    $registrar, $nocolor, $reverse, $version, $search
+    $registrar, $nocolor, $reverse, $version, $search, $debug
 );
 
 #
@@ -54,6 +54,7 @@ my %opts = (
     'reverse'       => \$reverse,
     'version'       => \$version,
     'search'        => \$search,
+    'debug'         => \$debug,
     'autnum'        => sub { $type = 'autnum' },
     'domain'        => sub { $type = 'domain' },
     'entity'        => sub { $type = 'entity' },
@@ -726,6 +727,20 @@ sub print_kv {
         (INDENT x ($indent + 1)),
         sprintf("%s %s\n", b($name.':'), $value),
     ));
+}
+
+sub debug {
+    my ($package, $fmt, @params) = @_;
+    if ($debug) {
+        my $str = sprintf("Debug: $fmt", @params);
+        $err->say(colourise([qw(magenta)], $str));
+    }
+}
+
+sub info {
+    my ($package, $fmt, @params) = @_;
+    my $str = sprintf("Info: $fmt", @params);
+    $err->say(colourise([qw(cyan)], $str));
 }
 
 sub warning {
