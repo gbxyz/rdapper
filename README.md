@@ -10,10 +10,11 @@ To install, run:
 
 # RUNNING VIA DOCKER
 
-The [git repository](https://github.com/gbxyz/rdapper) contains a `Dockerfile`
-that can be used to build an image on your local system.
+The [git repository](https://github.com/gbxyz/rdapper) contains a
+`Dockerfile` that can be used to build an image on your local system.
 
-Alternatively, you can pull the [image from Docker Hub](https://hub.docker.com/r/gbxyz/rdapper):
+Alternatively, you can pull the [image from Docker
+Hub](https://hub.docker.com/r/gbxyz/rdapper):
 
     $ docker pull gbxyz/rdapper
 
@@ -58,35 +59,39 @@ You can pass any internet resource as an argument; this may be:
 `https://example.com/rdap/domain/example.com`.
 - the "tagged" handle of an entity, such as an LIR, registrar, or domain
 admin/tech contact. Because these handles are difficult to distinguish from
-domain names, you must use the `--type` argument to explicitly tell `rdapper`
-that you want to perform an entity query, .e.g `rdapper --type=entity
-ABC123-EXAMPLE`.
+domain names, you must use the `--type` argument to explicitly tell
+`rdapper` that you want to perform an entity query, .e.g `rdapper
+--type=entity ABC123-EXAMPLE`.
 
-`rdapper` also implements limited support for in-bailiwick nameservers, but you
-must use the `--nameserver` argument to disambiguate from domain names. The
-RDAP server of the parent domain's registry will be queried.
+`rdapper` also implements limited support for in-bailiwick nameservers, but
+you must use the `--nameserver` argument to disambiguate from domain names.
+The RDAP server of the parent domain's registry will be queried.
 
 ## ARGUMENTS
 
-- `--registrar` - follow referral to the registrar's RDAP record (if any)
-which will be displayed instead of the registry record.
+- `--registry` - display the registry record only (the default).
+- `--registrar` - follow referral to the registrar's RDAP record (if
+any) which will be displayed instead of the registry record. Cannot be used with
+`--registry`.
 - `--both` - display both the registry and (if any) registrar RDAP
 records (implies `--registrar`).
 - `--reverse` - if you provide an IP address or CIDR prefix, then this
 option causes `rdapper` to display the record of the corresponding
 `in-addr.arpa` or `ip6.arpa` domain.
-- `--type=TYPE` - explicitly set the object type. `rdapper` will guess
-the type by pattern matching the value of `OBJECT` but you can override this by
-explicitly setting the `--type` argument to one of : `ip`, `autnum`,
-`domain`, `nameserver`, `entity` or `url`.
-    - If `--type=url` is used, `rdapper` will directly fetch the specified
-    URL and attempt to process it as an RDAP response. If the URL path ends with
-    `/help` then the response will be treated as a "help" query response (if you
-    want to see the record for the .help TLD, use `--type=tld help`).
-    - If `--type=entity` is used, `OBJECT` must be a a string containing a
-    "tagged" handle, such as `ABC123-EXAMPLE`, as per [RFC
+- `--type=TYPE` - explicitly set the object type. `rdapper` will
+guess the type by pattern matching the value of `OBJECT` but you can override
+this by explicitly setting the `--type` argument to one of : `ip`,
+`autnum`, `domain`, `nameserver`, `entity` or `url`.
+    - If `--type=url` is used, `rdapper` will directly fetch the
+    specified URL and attempt to process it as an RDAP response. If the URL path
+    ends with `/help` then the response will be treated as a "help" query response
+    (if you want to see the record for the .help TLD, use `--type=tld help`).
+    - If `--type=entity` is used, `OBJECT` must be a a string containing
+    a "tagged" handle, such as `ABC123-EXAMPLE`, as per [RFC
     8521](https://datatracker.ietf.org/doc/html/rfc8521).
-- `--$TYPE` - alias for `--type=$TYPE`. eg `--domain`, `--autnum`, etc.
+- `--$TYPE` - alias for `--type=$TYPE`. eg `--domain`,
+`--autnum`, etc.
+- `--search` - perform a search.
 - `--help` - display help message.
 - `--version` - display package and version.
 - `--raw` - print the raw JSON rather than parsing it.
@@ -97,18 +102,18 @@ when accessing the specified resource. This option **SHOULD NOT** be used unless
 you explicitly specify a URL, otherwise your credentials may be sent to servers
 you aren't expecting them to.
 - `--nocolor` - disable ANSI colors in the formatted output.
-- `--search` - perform a search.
+- `--debug` -run in debugging mode.
 
 # RDAP Search
 
 Some RDAP servers support the ability to perform simple substring searches.
 You can use the `--search` option to enable this functionality.
 
-When the `--search` option is used, `OBJECT` will be used as a search term. If
-it contains no dots (e.g. `exampl*`), then `rdapper` will send a search query
-for `exampl*` to _all_ known RDAP servers. If it contains one or more dots
-(e.g. `exampl*.com`), it will send the search query to the RDAP server for the
-specified TLD (if any).
+When the `--search` option is used, `OBJECT` will be used as a search term.
+If it contains no dots (e.g. `exampl*`), then `rdapper` will send a search
+query for `exampl*` to _all_ known RDAP servers. If it contains one or more
+dots (e.g. `exampl*.com`), it will send the search query to the RDAP server
+for the specified TLD (if any).
 
 Any errors observed will be printed to `STDERR`; any search results will be
 printed to `STDOUT`.
