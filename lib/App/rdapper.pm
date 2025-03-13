@@ -789,10 +789,11 @@ To install, run:
 
 =head1 RUNNING VIA DOCKER
 
-The L<git repository|https://github.com/gbxyz/rdapper> contains a C<Dockerfile>
-that can be used to build an image on your local system.
+The L<git repository|https://github.com/gbxyz/rdapper> contains a
+C<Dockerfile> that can be used to build an image on your local system.
 
-Alternatively, you can pull the L<image from Docker Hub|https://hub.docker.com/r/gbxyz/rdapper>:
+Alternatively, you can pull the L<image from Docker
+Hub|https://hub.docker.com/r/gbxyz/rdapper>:
 
     $ docker pull gbxyz/rdapper
 
@@ -845,22 +846,22 @@ C<https://example.com/rdap/domain/example.com>.
 
 =item * the "tagged" handle of an entity, such as an LIR, registrar, or domain
 admin/tech contact. Because these handles are difficult to distinguish from
-domain names, you must use the C<--type> argument to explicitly tell C<rdapper>
-that you want to perform an entity query, .e.g C<rdapper --type=entity
-ABC123-EXAMPLE>.
+domain names, you must use the C<--type> argument to explicitly tell
+C<rdapper> that you want to perform an entity query, .e.g C<rdapper
+--type=entity ABC123-EXAMPLE>.
 
 =back
 
-C<rdapper> also implements limited support for in-bailiwick nameservers, but you
-must use the C<--nameserver> argument to disambiguate from domain names. The
-RDAP server of the parent domain's registry will be queried.
+C<rdapper> also implements limited support for in-bailiwick nameservers, but
+you must use the C<--nameserver> argument to disambiguate from domain names.
+The RDAP server of the parent domain's registry will be queried.
 
 =head2 ARGUMENTS
 
 =over
 
-=item * C<--registrar> - follow referral to the registrar's RDAP record (if any)
-which will be displayed instead of the registry record.
+=item * C<--registrar> - follow referral to the registrar's RDAP record (if
+any) which will be displayed instead of the registry record.
 
 =item * C<--both> - display both the registry and (if any) registrar RDAP
 records (implies C<--registrar>).
@@ -869,25 +870,28 @@ records (implies C<--registrar>).
 option causes C<rdapper> to display the record of the corresponding
 C<in-addr.arpa> or C<ip6.arpa> domain.
 
-=item * C<--type=TYPE> - explicitly set the object type. C<rdapper> will guess
-the type by pattern matching the value of C<OBJECT> but you can override this by
-explicitly setting the C<--type> argument to one of : C<ip>, C<autnum>,
-C<domain>, C<nameserver>, C<entity> or C<url>.
+=item * C<--type=TYPE> - explicitly set the object type. C<rdapper> will
+guess the type by pattern matching the value of C<OBJECT> but you can override
+this by explicitly setting the C<--type> argument to one of : C<ip>,
+C<autnum>, C<domain>, C<nameserver>, C<entity> or C<url>.
 
 =over
 
-=item * If C<--type=url> is used, C<rdapper> will directly fetch the specified
-URL and attempt to process it as an RDAP response. If the URL path ends with
-C</help> then the response will be treated as a "help" query response (if you
-want to see the record for the .help TLD, use C<--type=tld help>).
+=item * If C<--type=url> is used, C<rdapper> will directly fetch the
+specified URL and attempt to process it as an RDAP response. If the URL path
+ends with C</help> then the response will be treated as a "help" query response
+(if you want to see the record for the .help TLD, use C<--type=tld help>).
 
-=item * If C<--type=entity> is used, C<OBJECT> must be a a string containing a
-"tagged" handle, such as C<ABC123-EXAMPLE>, as per L<RFC
+=item * If C<--type=entity> is used, C<OBJECT> must be a a string containing
+a "tagged" handle, such as C<ABC123-EXAMPLE>, as per L<RFC
 8521|https://datatracker.ietf.org/doc/html/rfc8521>.
 
 =back
 
-=item * C<--$TYPE> - alias for C<--type=$TYPE>. eg C<--domain>, C<--autnum>, etc.
+=item * C<--$TYPE> - alias for C<--type=$TYPE>. eg C<--domain>,
+C<--autnum>, etc.
+
+=item * C<--search> - perform a search.
 
 =item * C<--help> - display help message.
 
@@ -906,7 +910,7 @@ you aren't expecting them to.
 
 =item * C<--nocolor> - disable ANSI colors in the formatted output.
 
-=item * C<--search> - perform a search.
+=item * C<--debug> -run in debugging mode.
 
 =back
 
@@ -915,11 +919,11 @@ you aren't expecting them to.
 Some RDAP servers support the ability to perform simple substring searches.
 You can use the C<--search> option to enable this functionality.
 
-When the C<--search> option is used, C<OBJECT> will be used as a search term. If
-it contains no dots (e.g. C<exampl*>), then C<rdapper> will send a search query
-for C<exampl*> to I<all> known RDAP servers. If it contains one or more dots
-(e.g. C<exampl*.com>), it will send the search query to the RDAP server for the
-specified TLD (if any).
+When the C<--search> option is used, C<OBJECT> will be used as a search term.
+If it contains no dots (e.g. C<exampl*>), then C<rdapper> will send a search
+query for C<exampl*> to I<all> known RDAP servers. If it contains one or more
+dots (e.g. C<exampl*.com>), it will send the search query to the RDAP server
+for the specified TLD (if any).
 
 Any errors observed will be printed to C<STDERR>; any search results will be
 printed to C<STDOUT>.
