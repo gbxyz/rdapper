@@ -166,10 +166,17 @@ sub main {
 
     if ($search) {
         $package->search($rdap, $object, $type, %args);
-        return;
+
+    } else {
+        $package->lookup($rdap, $object, $type, %args);
     }
+}
+
+sub lookup {
+    my ($package, $rdap, $object, $type, %args) = @_;
 
     my $response;
+
     if ('ip' eq $type) {
         my $ip = Net::IP->new($object);
 
@@ -336,47 +343,52 @@ sub display {
 
         }
 
-        return undef;
-    }
-
-    if ($registrar) {
-        # avoid recursing infinitely
-        $registrar = undef;
-
+    } else {
         my $link = (grep { 'related' eq $_->rel && $_->is_rdap } $object->links)[0];
 
-        if (!$link) {
-            $package->warning('No registrar link found, displaying the registry record...');
-            return $package->display($object, $indent);
+        if ($registrar) {
+            # avoid recursing infinitely
+            $registrar = undef;
+
+            if (!$link) {
+                $package->warning('No registrar link found, displaying the registry record...');
+                return $package->display($object, $indent);
+            }
+
+            my $result = $rdap->fetch($link);
+
+            if ($result->isa('Net::RDAP::Error')) {
+                return $package->display($result, $indent, 1);
+
+                $package->warning('Unable to retrieve registrar record, displaying the registry record...');
+                return $package->display($object, $indent);
+            }
+
+            $package->display($object, $indent, 1) if ($both);
+
+            $package->display($result, $indent);
+
+        } else {
+            if ($link) {
+                $package->info('Registry response includes a referral to the registrar, use --registrar or --both to see it.');
+            }
+
+            if ($raw) {
+                $out->print($json->encode($object));
+
+            } elsif ($object->isa('Net::RDAP::SearchResult')) {
+                $package->display_search($object);
+
+            } else {
+                $package->display_object($object, $indent);
+
+            }
         }
-
-        my $result = $rdap->fetch($link);
-
-        if ($result->isa('Net::RDAP::Error')) {
-            return $package->display($result, $indent, 1);
-
-            $package->warning('Unable to retrieve registrar record, displaying the registry record...');
-            return $package->display($object, $indent);
-        }
-
-        if ($both) {
-            $package->display($object, $indent, 1);
-        }
-
-        return $package->display($result, $indent);
     }
+}
 
-    if ($raw) {
-        $out->print($json->encode($object));
-
-        return 1;
-    }
-
-    if ($object->isa('Net::RDAP::SearchResult')) {
-        $package->display_search($object);
-
-        return 1;
-    }
+sub display_object {
+    my ($package, $object, $indent) = @_;
 
     $package->error("JSON response does not include the 'objectClassName' properties") unless ($object->class);
     $package->error(sprintf("Unknown object type '%s'", $object->class)) unless ($funcs->{$object->class});
@@ -455,8 +467,6 @@ sub display {
     }
 
     $out->print("\n") if ($indent < 1);
-
-    return 1;
 }
 
 sub print_ip {
