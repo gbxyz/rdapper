@@ -33,7 +33,7 @@ $VERSION = '1.05';
 #
 my (
     $type, $object, $help, $short, $bypass, $auth, $nopager, $raw, $both,
-    $registrar, $nocolor, $reverse, $version, $search, $debug
+    $registrar, $nocolor, $reverse, $version, $search, $debug, $registry
 );
 
 #
@@ -50,6 +50,7 @@ my %opts = (
     'raw'           => \$raw,
     'both'          => \$both,
     'registrar'     => \$registrar,
+    'registry'      => \$registry,
     'nocolor'       => \$nocolor,
     'reverse'       => \$reverse,
     'version'       => \$version,
@@ -145,6 +146,14 @@ sub main {
     );
 
     $package->show_version if ($version);
+
+    if ($registry && $registrar) {
+        $package->error("Cannot specify both --registry and --registrar, use one or the other.");
+
+    } elsif ($registry && $both) {
+        $package->error("Cannot specify both --registry and --both, use one or the other.");
+
+    }
 
     $registrar ||= $both;
 
@@ -868,8 +877,11 @@ The RDAP server of the parent domain's registry will be queried.
 
 =over
 
+=item * C<--registry> - display the registry record only (the default).
+
 =item * C<--registrar> - follow referral to the registrar's RDAP record (if
-any) which will be displayed instead of the registry record.
+any) which will be displayed instead of the registry record. Cannot be used with
+C<--registry>.
 
 =item * C<--both> - display both the registry and (if any) registrar RDAP
 records (implies C<--registrar>).
