@@ -1,3 +1,9 @@
+1.07 - 2025-03-13:
+  - require Net::RDAP v0.34, which fixes a caching issue.
+  - add --debug argument, which doesn't do much at the moment except enable Net::RDAP::UA verbosity.
+  - add --registry argument, as --registrar or --both may become the default behaviour in a future release.
+  - refactoring of the main display function.
+
 1.06 - 2025-02-05:
   - Fixed display of JCard property names.
   - Display CC parameter of JCard ADR properties (if specified).
