@@ -137,6 +137,8 @@ sub main {
 
     GetOptionsFromArray(\@_, %opts) || $package->show_usage;
 
+    $ENV{NET_RDAP_UA_DEBUG} = 1 if ($debug);
+
     $rdap = Net::RDAP->new(
         'use_cache' => !$bypass,
         'cache_ttl' => 300,
