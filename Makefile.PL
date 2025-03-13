@@ -16,7 +16,7 @@ WriteMakefile(
         'Net::ASN'          => 0,
         'Net::DNS::Domain'  => 0,
         'Net::IP'           => 0,
-        'Net::RDAP'         => '0.34',
+        'Net::RDAP'         => '0.35',
         'Pod::Usage'        => 0,
         'Term::ANSIColor'   => 0,
         'Term::Size'        => 0,

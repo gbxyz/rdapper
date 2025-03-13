@@ -6,7 +6,7 @@ use Net::ASN;
 use Net::DNS::Domain;
 use Net::IP;
 use Net::RDAP::EPPStatusMap;
-use Net::RDAP 0.34;
+use Net::RDAP 0.35;
 use Pod::Usage;
 use Term::ANSIColor;
 use Term::Size;
@@ -592,7 +592,7 @@ sub print_jcard_property {
 
         $package->print_kv(
             $label,
-            'uri' eq $property->value_type ? u($property->value) : $property->value,
+            $property->may_be_uri ? u($property->value) : $property->value,
             $indent
         );
     }
