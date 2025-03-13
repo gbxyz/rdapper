@@ -7,7 +7,7 @@ use Net::ASN;
 use Net::DNS::Domain;
 use Net::IP;
 use Net::RDAP::EPPStatusMap;
-use Net::RDAP 0.26;
+use Net::RDAP 0.34;
 use Pod::Usage;
 use Term::ANSIColor;
 use Term::Size;
