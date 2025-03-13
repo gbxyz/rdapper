@@ -1,8 +1,7 @@
 package App::rdapper;
 use Getopt::Long qw(GetOptionsFromArray :config pass_through);
 use JSON;
-use List::Util qw(min max);
-use List::MoreUtils qw(any);
+use List::Util qw(any min max);
 use Net::ASN;
 use Net::DNS::Domain;
 use Net::IP;
@@ -26,7 +25,7 @@ use constant {
 use vars qw($VERSION);
 use strict;
 
-$VERSION = '1.05';
+$VERSION = '1.06';
 
 #
 # global arg variables (note: nopager is now ignored)
