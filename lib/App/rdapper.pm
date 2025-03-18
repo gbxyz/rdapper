@@ -649,7 +649,7 @@ sub print_events {
             $package->print_kv(ucfirst($event->action), sprintf('%s (by %s)', scalar($event->date), $event->actor), $indent);
 
         } else {
-            $package->print_kv(ucfirst($event->action), scalar($event->date), $indent);
+            $package->print_kv(ucfirst($event->action), scalar($event->date).$event->date_tz, $indent);
 
         }
     }
