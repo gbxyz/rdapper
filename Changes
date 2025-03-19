@@ -1,3 +1,7 @@
+1.10 - 2025-03-19:
+  - use Net::RDAP 0.35, which is much faster.
+  - more consistent underlining of URI-like JCard property values.
+
 1.09 - 2025-03-13:
   - update this file to reflect the changes in 1.08.
 
