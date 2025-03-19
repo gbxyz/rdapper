@@ -25,7 +25,7 @@ use constant {
 use vars qw($VERSION);
 use strict;
 
-$VERSION = '1.09';
+$VERSION = '1.10';
 
 #
 # global arg variables (note: nopager is now ignored)
