@@ -179,6 +179,7 @@ sub main {
 
     } else {
         $package->lookup($rdap, $object, $type, %args);
+
     }
 }
 
@@ -362,21 +363,27 @@ sub display {
 
             if (!$link) {
                 $package->warning('No registrar link found, displaying the registry record...');
-                return $package->display($object, $indent);
+
+                $package->display($object, $indent);
+
+            } else {
+                $link->href->path_segments(q{foo}, $link->href->path_segments);
+
+                my $result = $rdap->fetch($link);
+
+                if ($result->isa('Net::RDAP::Error')) {
+                    $package->display($result, $indent, 1);
+
+                    $package->warning('Unable to retrieve registrar record, displaying the registry record...');
+                    $package->display($object, $indent);
+
+                } else {
+                    $package->display($object, $indent, 1) if ($both);
+
+                    $package->display($result, $indent);
+
+                }
             }
-
-            my $result = $rdap->fetch($link);
-
-            if ($result->isa('Net::RDAP::Error')) {
-                return $package->display($result, $indent, 1);
-
-                $package->warning('Unable to retrieve registrar record, displaying the registry record...');
-                return $package->display($object, $indent);
-            }
-
-            $package->display($object, $indent, 1) if ($both);
-
-            $package->display($result, $indent);
 
         } else {
             if ($raw) {
