@@ -418,7 +418,7 @@ sub display_object {
         if ($name) {
             my $xname;
 
-            if ('Net::DNS::Domain' eq ref($name)) {
+            if ($name->isa('Net::DNS::Domain')) {
                 $xname = $name->xname;
                 $name  = $name->name;
 
