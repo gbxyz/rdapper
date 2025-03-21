@@ -147,10 +147,10 @@ sub main {
     $package->show_version if ($version);
 
     if ($registry && $registrar) {
-        $package->error("Cannot specify both --registry and --registrar, use one or the other.");
+        $package->error("cannot specify both --registry and --registrar, use one or the other.");
 
     } elsif ($registry && $both) {
-        $package->error("Cannot specify both --registry and --both, use one or the other.");
+        $package->error("cannot specify both --registry and --both, use one or the other.");
 
     }
 
@@ -191,7 +191,7 @@ sub lookup {
     if ('ip' eq $type) {
         my $ip = Net::IP->new($object);
 
-        $package->error("Invalid IP address '$object'") unless ($ip);
+        $package->error("invalid IP address '$object'") unless ($ip);
 
         $response = $rdap->ip($ip, %args);
 
@@ -265,7 +265,7 @@ sub search {
         $package->domain_search($rdap, $object, %args);
 
     } else {
-        $package->error('Current unable to do searches for %s objects.', $type);
+        $package->error('current unable to do searches for %s objects.', $type);
 
     }
 }
@@ -403,8 +403,8 @@ sub display {
 sub display_object {
     my ($package, $object, $indent) = @_;
 
-    $package->error("JSON response does not include the 'objectClassName' properties") unless ($object->class);
-    $package->error(sprintf("Unknown object type '%s'", $object->class)) unless ($funcs->{$object->class});
+    $package->error("object does not include the 'objectClassName' properties") unless ($object->class);
+    $package->error(sprintf("unknown object type '%s'", $object->class)) unless ($funcs->{$object->class});
 
     #
     # generic properties
