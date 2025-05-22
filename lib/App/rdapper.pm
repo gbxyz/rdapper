@@ -369,8 +369,6 @@ sub display {
                 $package->display($object, $indent);
 
             } else {
-                $link->href->path_segments(q{foo}, $link->href->path_segments);
-
                 my $result = $rdap->fetch($link);
 
                 if ($result->isa('Net::RDAP::Error')) {
