@@ -25,7 +25,7 @@ use constant {
 use vars qw($VERSION);
 use strict;
 
-$VERSION = '1.09';
+$VERSION = '1.10';
 
 #
 # global arg variables (note: nopager is now ignored)
@@ -656,7 +656,7 @@ sub print_events {
             $package->print_kv(ucfirst($event->action), sprintf('%s (by %s)', scalar($event->date), $event->actor), $indent);
 
         } else {
-            $package->print_kv(ucfirst($event->action), scalar($event->date), $indent);
+            $package->print_kv(ucfirst($event->action), scalar($event->date).$event->date_tz, $indent);
 
         }
     }
