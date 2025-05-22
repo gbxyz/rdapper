@@ -25,7 +25,7 @@ use constant {
 use vars qw($VERSION);
 use strict;
 
-$VERSION = '1.11';
+$VERSION = '1.12';
 
 #
 # global arg variables (note: nopager is now ignored)
@@ -884,12 +884,12 @@ The RDAP server of the parent domain's registry will be queried.
 =over
 
 =item * C<--registry> - display the registry record only. This was the default
-behaviour prior to v1.11.
+behaviour prior to v1.12.
 
 =item * C<--registrar> - follow referral to the registrar's RDAP record (if
 any) which will be displayed instead of the registry record. If no registrar
 link can be found, the registry record will be displayed. This option cannot be
-used with C<--registry>. As of v1.11, this is the default behaviour.
+used with C<--registry>. As of v1.12, this is the default behaviour.
 
 =item * C<--both> - display both the registry and (if any) registrar RDAP
 records.

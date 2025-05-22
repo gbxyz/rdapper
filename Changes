@@ -1,5 +1,8 @@
-1.11 - 2025-05-22:
+1.12 - 2025-05-22:
   - make --registrar the default behaviour.
+
+1.11 - 2025-05-22:
+  - withdrawn!
 
 1.10 - 2025-03-19:
   - use Net::RDAP 0.35, which is much faster.
