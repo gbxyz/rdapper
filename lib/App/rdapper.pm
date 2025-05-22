@@ -25,7 +25,7 @@ use constant {
 use vars qw($VERSION);
 use strict;
 
-$VERSION = '1.10';
+$VERSION = '1.11';
 
 #
 # global arg variables (note: nopager is now ignored)
@@ -155,6 +155,10 @@ sub main {
     }
 
     $registrar ||= $both;
+
+    if (!$registry && !$both) {
+        $registrar = 1;
+    }
 
     $object = shift(@_) if (!$object);
 
@@ -362,8 +366,6 @@ sub display {
             $registrar = undef;
 
             if (!$link) {
-                $package->warning('No registrar link found, displaying the registry record...');
-
                 $package->display($object, $indent);
 
             } else {
@@ -883,14 +885,16 @@ The RDAP server of the parent domain's registry will be queried.
 
 =over
 
-=item * C<--registry> - display the registry record only (the default).
+=item * C<--registry> - display the registry record only. This was the default
+behaviour prior to v1.11.
 
 =item * C<--registrar> - follow referral to the registrar's RDAP record (if
-any) which will be displayed instead of the registry record. Cannot be used with
-C<--registry>.
+any) which will be displayed instead of the registry record. If no registrar
+link can be found, the registry record will be displayed. This option cannot be
+used with C<--registry>. As of v1.11, this is the default behaviour.
 
 =item * C<--both> - display both the registry and (if any) registrar RDAP
-records (implies C<--registrar>).
+records.
 
 =item * C<--reverse> - if you provide an IP address or CIDR prefix, then this
 option causes C<rdapper> to display the record of the corresponding
@@ -942,8 +946,8 @@ you aren't expecting them to.
 
 =head1 RDAP Search
 
-Some RDAP servers support the ability to perform simple substring searches.
-You can use the C<--search> option to enable this functionality.
+Some RDAP servers support the ability to perform simple substring searches. You
+can use the C<--search> option to enable this functionality.
 
 When the C<--search> option is used, C<OBJECT> will be used as a search term.
 If it contains no dots (e.g. C<exampl*>), then C<rdapper> will send a search
