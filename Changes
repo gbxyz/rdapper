@@ -1,3 +1,6 @@
+1.13 - 2025-06-26
+  - better support for internationalized domain names.
+
 1.12 - 2025-05-22:
   - make --registrar the default behaviour.
 
