@@ -414,27 +414,15 @@ sub display_object {
     $package->print_kv('URL', u($object->self->href), $indent) if ($indent < 1 && $object->self);
 
     if ($object->can('name')) {
-        my $name = $object->name;
+        my $name = $object->name->name;
+        my $xname = $object->can('unicodeName') ? $object->unicodeName : $name;
 
-        if ($name) {
-            my $xname;
+        if ($xname ne $name) {
+            $package->print_kv('Name', sprintf('%s (%s)', uc($xname), uc($name)));
 
-            if ($name->isa('Net::DNS::Domain')) {
-                $xname = $name->xname;
-                $name  = $name->name;
+        } else {
+            $package->print_kv('Name', uc($name));
 
-            } else {
-                $xname = $name;
-
-            }
-
-            if ($xname ne $name) {
-                $package->print_kv('Name', sprintf('%s (%s)', uc($xname), uc($name)));
-
-            } else {
-                $package->print_kv('Name', uc($name));
-
-            }
         }
     }
 
