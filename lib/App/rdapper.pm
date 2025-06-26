@@ -4,6 +4,7 @@ use JSON;
 use List::Util qw(any min max);
 use Net::ASN;
 use Net::DNS::Domain;
+use Net::IDN::Encode qw(domain_to_ascii domain_to_unicode);
 use Net::IP;
 use Net::RDAP::EPPStatusMap;
 use Net::RDAP 0.35;
@@ -208,10 +209,10 @@ sub lookup {
         $response = $rdap->autnum(Net::ASN->new($asn), %args);
 
     } elsif ('domain' eq $type) {
-        $response = $rdap->domain(Net::DNS::Domain->new($object), %args);
+        $response = $rdap->domain(Net::DNS::Domain->new(domain_to_ascii($object)), %args);
 
     } elsif ('nameserver' eq $type) {
-        my $url = Net::RDAP::Registry->get_url(Net::DNS::Domain->new($object));
+        my $url = Net::RDAP::Registry->get_url(Net::DNS::Domain->new(domain_to_ascii($object)));
 
         #
         # munge path
@@ -226,7 +227,7 @@ sub lookup {
         $response = $rdap->entity($object, %args);
 
     } elsif ('tld' eq $type) {
-        $response = $rdap->fetch(URI->new(IANA_BASE_URL.'domain/'.$object), %args);
+        $response = $rdap->fetch(URI->new(IANA_BASE_URL.'domain/'.domain_to_ascii($object)), %args);
 
     } elsif ('url' eq $type) {
         my $uri = URI->new($object);
