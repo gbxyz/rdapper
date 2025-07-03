@@ -415,7 +415,7 @@ sub display_object {
 
     if ($object->can('name')) {
         my $name = $object->name->name;
-        my $xname = $object->can('unicodeName') ? $object->unicodeName : $name;
+        my $xname = $object->can('unicodeName') ? $object->unicodeName || $name : $name;
 
         if ($xname ne $name) {
             $package->print_kv('Name', sprintf('%s (%s)', uc($xname), uc($name)));
