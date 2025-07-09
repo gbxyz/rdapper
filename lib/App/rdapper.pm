@@ -78,10 +78,46 @@ my $funcs = {
     'help'       => sub { 1 }, # help only contains generic properties
 };
 
+my $OBJECT_TYPE_DISPLAY_NAMES = {
+    'ip network' => _('IP Network'),
+    'autnum'     => _('Autonomous System'),
+    'domain'     => _('Domain Name'),
+    'entity'     => _('Entity'),
+    'nameserver' => _('Nameserver'),
+    'help'       => _('Help'),
+};
+
 my @ROLE_DISPLAY_NAMES_ORDER = qw(registrant administrative technical billing
     abuse registrar reseller sponsor proxy notifications noc);
 
-my %ROLE_DISPLAY_NAMES = ('noc' => 'NOC');
+my %ROLE_DISPLAY_NAMES = (
+    'registrant'        => _('Registrant'),
+    'technical'         => _('Technical'),
+    'administrative'    => _('Administrative'),
+    'abuse'             => _('Abuse'),
+    'billing'           => _('Billing'),
+    'registrar'         => _('Registrar'),
+    'reseller'          => _('Reseller'),
+    'sponsor'           => _('Sponsor'),
+    'proxy'             => _('Proxy'),
+    'notifications'     => _('Notifications'),
+    'noc'               => _('NOC'),
+);
+
+my %EVENT_DISPLAY_NAMES = (
+    'registration'                  => _('Registration'),
+    'reregistration'                => _('Reregistration'),
+    'last changed'                  => _('Last Changed'),
+    'expiration'                    => _('Expiration'),
+    'deletion'                      => _('Deletion'),
+    'reinstantiation'               => _('Reinstantiation'),
+    'transfer'                      => _('Transfer'),
+    'locked'                        => _('Locked'),
+    'unlocked'                      => _('Unlocked'),
+    'last update of RDAP database'  => _('Last update of RDAP database'),
+    'registrar expiration'          => _('Registrar expiration'),
+    'enum validation expiration'    => _('ENUM validation expiration'),
+);
 
 my @EVENTS = (
     'registration',
@@ -105,24 +141,24 @@ for (my $i = 0 ; $i < scalar(@EVENTS) ; $i++) {
 
 my @VCARD_DISPLAY_ORDER = qw(SOURCE KIND FN TITLE ROLE ORG ADR GEO EMAIL CONTACT-URI SOCIALPROFILE TEL IMPP URL CATEGORIES NOTE);
 my %VCARD_NODE_NAMES = (
-    FN              => 'Name',
-    ORG             => 'Organization',
-    TEL             => 'Phone',
-    EMAIL           => 'Email',
-    IMPP            => 'Messaging',
-    URL             => 'Website',
-    SOCIALPROFILE   => 'Profile',
-    'CONTACT-URI'   => 'Contact Link',
-    GEO             => 'Location',
+    FN              => _('Name'),
+    ORG             => _('Organization'),
+    TEL             => _('Phone'),
+    EMAIL           => _('Email'),
+    IMPP            => _('Messaging'),
+    URL             => _('Website'),
+    SOCIALPROFILE   => _('Profile'),
+    'CONTACT-URI'   => _('Contact Link'),
+    GEO             => _('Location'),
 );
 
 my @ADR_DISPLAY_ORDER = (ADR_STREET, ADR_CITY, ADR_SP, ADR_PC, ADR_CC);
 my %ADR_DISPLAY_NAMES = (
-    &ADR_STREET => 'Street',
-    &ADR_CITY   => 'City',
-    &ADR_SP     => 'State/Province',
-    &ADR_PC     => 'Postal Code',
-    &ADR_CC     => 'Country',
+    &ADR_STREET => _('Street'),
+    &ADR_CITY   => _('City'),
+    &ADR_SP     => _('State/Province'),
+    &ADR_PC     => _('Postal Code'),
+    &ADR_CC     => _('Country'),
 );
 
 my $json = JSON->new->utf8->canonical->pretty->convert_blessed;
@@ -415,7 +451,7 @@ sub display_object {
     #
     # generic properties
     #
-    $package->print_kv(_('Object type'), $object->class, $indent) if ($indent < 1);
+    $package->print_kv(_('Object type'), $OBJECT_TYPE_DISPLAY_NAMES->{$object->class}, $indent) if ($indent < 1);
     $package->print_kv(_('URL'), u($object->self->href), $indent) if ($indent < 1 && $object->self);
 
     if ($object->can('name')) {
