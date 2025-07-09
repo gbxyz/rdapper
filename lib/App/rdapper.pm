@@ -2,7 +2,7 @@ package App::rdapper;
 use App::rdapper::i18n;
 use Getopt::Long qw(GetOptionsFromArray :config pass_through);
 use JSON;
-use List::Util qw(any min max);
+use List::Util qw(any min max uniq);
 use Net::ASN;
 use Net::DNS::Domain;
 use Net::IDN::Encode qw(domain_to_ascii domain_to_unicode);
@@ -879,7 +879,7 @@ sub export_strings {
             }
         }
 
-        foreach my $msg (@msgs) {
+        foreach my $msg (uniq(@msgs)) {
             printf("msgid \"%s\"\nmsgstr \"\"\n\n", $msg);
         }
     };
