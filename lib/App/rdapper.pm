@@ -8,8 +8,9 @@ use Net::DNS::Domain;
 use Net::IDN::Encode qw(domain_to_ascii domain_to_unicode);
 use Net::IP;
 use Net::RDAP::EPPStatusMap;
-use Net::RDAP 0.35;
+use Net::RDAP 0.40;
 use Pod::Usage;
+use POSIX qw(setlocale LC_ALL);
 use Term::ANSIColor;
 use Term::Size;
 use Text::Wrap;
@@ -24,6 +25,7 @@ use constant {
     'INDENT'        => '  ',
     'IANA_BASE_URL' => 'https://rdap.iana.org/',
 };
+use locale;
 use vars qw($VERSION);
 use strict;
 
@@ -189,9 +191,17 @@ sub main {
 
     $ENV{NET_RDAP_UA_DEBUG} = 1 if ($debug);
 
+    #
+    # determine the user's language using setlocale()
+    #
+    my ($lang, undef) = split(/\./, lc(setlocale(LC_ALL)), 2);
+    $lang =~ s/_/-/g;
+    $lang ||= q{en},
+
     $rdap = Net::RDAP->new(
-        'use_cache' => !$bypass,
-        'cache_ttl' => 300,
+        'use_cache'         => !$bypass,
+        'cache_ttl'         => 300,
+        'accept_language'   => $lang,
     );
 
     $package->show_version if ($version);
