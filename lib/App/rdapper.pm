@@ -29,6 +29,10 @@ use strict;
 
 $VERSION = '1.15';
 
+my $LH = App::rdapper::i18n->new;
+$LH->bindtextdomain(__PACKAGE__);
+$LH->textdomain(__PACKAGE__);
+
 #
 # global arg variables (note: nopager is now ignored)
 #
