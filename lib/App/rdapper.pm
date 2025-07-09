@@ -787,6 +787,7 @@ sub colourise {
 
 sub u { colourise([qw(underline)], shift) }
 sub b { colourise([qw(bold)], shift) }
+sub _ { $LH->maketext(@_) }
 
 1;
 
