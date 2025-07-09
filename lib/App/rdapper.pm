@@ -38,7 +38,8 @@ $LH->textdomain(__PACKAGE__);
 #
 my (
     $type, $object, $help, $short, $bypass, $auth, $nopager, $raw, $both,
-    $registrar, $nocolor, $reverse, $version, $search, $debug, $registry
+    $registrar, $nocolor, $reverse, $version, $search, $debug, $registry,
+    $strings
 );
 
 #
@@ -67,6 +68,7 @@ my %opts = (
     'ip'            => sub { $type = 'ip' },
     'tld'           => sub { $type = 'tld' },
     'url'           => sub { $type = 'url' },
+    'strings'       => \$strings,
 );
 
 my $funcs = {
@@ -178,6 +180,12 @@ sub main {
     my $package = shift;
 
     GetOptionsFromArray(\@_, %opts) || $package->show_usage;
+
+    #
+    # this undocumented behaviour is used to export all the translateable
+    # strings in this file.
+    #
+    export_strings() if ($strings);
 
     $ENV{NET_RDAP_UA_DEBUG} = 1 if ($debug);
 
@@ -824,6 +832,50 @@ sub colourise {
 sub u { colourise([qw(underline)], shift) }
 sub b { colourise([qw(bold)], shift) }
 sub _ { $LH->maketext(@_) }
+
+#
+# this function uses PPI to parse this file, extract the messages passed to _()
+# and prints a .po file on STDOUT.
+#
+sub export_strings {
+    eval {
+        use PPI;
+
+        my $doc = PPI::Document->new(__FILE__);
+        $doc->prune(q{PPI::Token::Comment});
+        $doc->prune(q{PPI::Token::Whitespace});
+
+        my @msgs;
+
+        my @nodes = @{$doc->find(sub { 1 })};
+        for (my $i = 0 ; $i < scalar(@nodes) ; $i++) {
+            my $node = $nodes[$i];
+
+            if ($node->isa(q{PPI::Token::Magic}) && q{_} eq $node->content) {
+                my $next = $nodes[$i+1];
+
+                if ($next->isa(q{PPI::Structure::List})) {
+                    my $msg = ($next->tokens)[1];
+
+                    if (!$msg->isa(q{PPI::Token::Quote})) {
+                        die(sprintf(
+                            "%s: first argument to _() must be a string literal",
+                            $msg->content,
+                        ));
+                    }
+
+                    push(@msgs, $msg->string);
+                }
+            }
+        }
+
+        foreach my $msg (@msgs) {
+            printf("msgid \"%s\"\nmsgstr \"\"\n\n", $msg);
+        }
+    };
+
+    exit;
+}
 
 1;
 
