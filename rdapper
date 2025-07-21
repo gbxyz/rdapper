@@ -1,4 +1,4 @@
-#!perl
+#!/usr/bin/env perl
 use App::rdapper;
 use Encode qw(decode);
 use I18N::Langinfo qw(langinfo CODESET);
