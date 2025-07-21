@@ -1,5 +1,6 @@
 package App::rdapper;
 use App::rdapper::l10n;
+use File::ShareDir qw(:ALL);
 use Getopt::Long qw(GetOptionsFromArray :config pass_through);
 use JSON;
 use List::Util qw(any min max uniq);
@@ -32,9 +33,11 @@ use strict;
 
 $VERSION = '1.15';
 
-my $LH = App::rdapper::i18n->new;
-$LH->bindtextdomain(__PACKAGE__);
-$LH->textdomain(__PACKAGE__);
+$LH = App::rdapper::l10n->get_handle;
+
+$LH->die_for_lookup_failures(1);
+$LH->bindtextdomain(GETTEXT_DOMAIN, $ENV{RDAPPER_LOCALE_DIR} || module_dir(__PACKAGE__));
+$LH->textdomain(GETTEXT_DOMAIN);
 
 #
 # global arg variables
