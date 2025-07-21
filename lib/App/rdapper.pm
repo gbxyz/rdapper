@@ -16,6 +16,7 @@ use Term::Size;
 use Text::Wrap;
 use URI;
 use constant {
+    GETTEXT_DOMAIN  => q{rdapper},
     # see RFC 6350, Section 6.3.1.
     'ADR_STREET'    => 2,
     'ADR_CITY'      => 3,
