@@ -4,9 +4,6 @@ use Encode qw(decode);
 use I18N::Langinfo qw(langinfo CODESET);
 use strict;
 
-eval {
-    App::rdapper->main(map { decode(langinfo(CODESET), $_) } @ARGV);
-    exit(0);
-};
+App::rdapper->main(map { decode(langinfo(CODESET) || q{UTF-8}, $_) } @ARGV);
 
-exit(1);
+exit(0);
