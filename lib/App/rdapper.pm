@@ -1,5 +1,5 @@
 package App::rdapper;
-use App::rdapper::i18n;
+use App::rdapper::l10n;
 use Getopt::Long qw(GetOptionsFromArray :config pass_through);
 use JSON;
 use List::Util qw(any min max uniq);
