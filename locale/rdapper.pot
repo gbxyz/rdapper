@@ -1,0 +1,240 @@
+msgid "IP Network"
+msgstr ""
+
+msgid "Autonomous System"
+msgstr ""
+
+msgid "Domain Name"
+msgstr ""
+
+msgid "Entity"
+msgstr ""
+
+msgid "Nameserver"
+msgstr ""
+
+msgid "Help"
+msgstr ""
+
+msgid "Registrant"
+msgstr ""
+
+msgid "Technical"
+msgstr ""
+
+msgid "Administrative"
+msgstr ""
+
+msgid "Abuse"
+msgstr ""
+
+msgid "Billing"
+msgstr ""
+
+msgid "Registrar"
+msgstr ""
+
+msgid "Reseller"
+msgstr ""
+
+msgid "Sponsor"
+msgstr ""
+
+msgid "Proxy"
+msgstr ""
+
+msgid "Notifications"
+msgstr ""
+
+msgid "NOC"
+msgstr ""
+
+msgid "Registration"
+msgstr ""
+
+msgid "Reregistration"
+msgstr ""
+
+msgid "Last Changed"
+msgstr ""
+
+msgid "Expiration"
+msgstr ""
+
+msgid "Deletion"
+msgstr ""
+
+msgid "Reinstantiation"
+msgstr ""
+
+msgid "Transfer"
+msgstr ""
+
+msgid "Locked"
+msgstr ""
+
+msgid "Unlocked"
+msgstr ""
+
+msgid "Last update of RDAP database"
+msgstr ""
+
+msgid "Registrar expiration"
+msgstr ""
+
+msgid "ENUM validation expiration"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Organization"
+msgstr ""
+
+msgid "Phone"
+msgstr ""
+
+msgid "Email"
+msgstr ""
+
+msgid "Messaging"
+msgstr ""
+
+msgid "Website"
+msgstr ""
+
+msgid "Profile"
+msgstr ""
+
+msgid "Contact Link"
+msgstr ""
+
+msgid "Location"
+msgstr ""
+
+msgid "Street"
+msgstr ""
+
+msgid "City"
+msgstr ""
+
+msgid "State/Province"
+msgstr ""
+
+msgid "Postal Code"
+msgstr ""
+
+msgid "Country"
+msgstr ""
+
+msgid "cannot specify both --registry and --registrar, use one or the other."
+msgstr ""
+
+msgid "cannot specify both --registry and --both, use one or the other."
+msgstr ""
+
+msgid "invalid IP address '[_1]'"
+msgstr ""
+
+msgid "Unable to handle type '[_1]'"
+msgstr ""
+
+msgid "current unable to do searches for '[_1]' objects."
+msgstr ""
+
+msgid "Unable to retrieve registrar record, displaying the registry record..."
+msgstr ""
+
+msgid "object does not include the 'objectClassName' properties"
+msgstr ""
+
+msgid "unknown object type '[_1]'"
+msgstr ""
+
+msgid "Object type"
+msgstr ""
+
+msgid "URL"
+msgstr ""
+
+msgid "Redacted Fields"
+msgstr ""
+
+msgid "[_1] (reason: [_2])"
+msgstr ""
+
+msgid "Handle"
+msgstr ""
+
+msgid "Version"
+msgstr ""
+
+msgid "Domain"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Parent"
+msgstr ""
+
+msgid "Range"
+msgstr ""
+
+msgid "CIDR"
+msgstr ""
+
+msgid "DS Record"
+msgstr ""
+
+msgid "DNSKEY Record"
+msgstr ""
+
+msgid "Registration Type"
+msgstr ""
+
+msgid "Art Record"
+msgstr ""
+
+msgid "Platform Nameserver"
+msgstr ""
+
+msgid "Fax"
+msgstr ""
+
+msgid "Address"
+msgstr ""
+
+msgid "IP Address"
+msgstr ""
+
+msgid "[_1] (by [_2])"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "[_1] (EPP: [_2], [_3])"
+msgstr ""
+
+msgid "[_1] Contact"
+msgstr ""
+
+msgid "Notice"
+msgstr ""
+
+msgid "Remark"
+msgstr ""
+
+msgid "Debug: [_1]"
+msgstr ""
+
+msgid "Info: [_1]"
+msgstr ""
+
+msgid "Warning: [_1]"
+msgstr ""
+
+msgid "Error: [_1]"
+msgstr ""
+

@@ -1,0 +1,246 @@
+msgid ""
+msgstr ""
+"Language: fr\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "IP Network"
+msgstr "Réseau IP"
+
+msgid "Autonomous System"
+msgstr "Système autonome"
+
+msgid "Domain Name"
+msgstr "Nom de domaine"
+
+msgid "Entity"
+msgstr "Entité"
+
+msgid "Nameserver"
+msgstr "Serveur de noms"
+
+msgid "Help"
+msgstr "Aide"
+
+msgid "Registrant"
+msgstr "Titulaire"
+
+msgid "Technical"
+msgstr "Technique"
+
+msgid "Administrative"
+msgstr "Administratif"
+
+msgid "Abuse"
+msgstr "Abus"
+
+msgid "Billing"
+msgstr "Facturation"
+
+msgid "Registrar"
+msgstr "Bureau d'enregistrement"
+
+msgid "Reseller"
+msgstr "Revendeur"
+
+msgid "Sponsor"
+msgstr "Parrain"
+
+msgid "Proxy"
+msgstr "Proxy"
+
+msgid "Notifications"
+msgstr "Notifications"
+
+msgid "NOC"
+msgstr "CNO (Centre des opérations réseau)"
+
+msgid "Registration"
+msgstr "Enregistrement"
+
+msgid "Reregistration"
+msgstr "Réenregistrement"
+
+msgid "Last Changed"
+msgstr "Dernière modification"
+
+msgid "Expiration"
+msgstr "Expiration"
+
+msgid "Deletion"
+msgstr "Suppression"
+
+msgid "Reinstantiation"
+msgstr "Rétablissement"
+
+msgid "Transfer"
+msgstr "Transfert"
+
+msgid "Locked"
+msgstr "Verrouillé"
+
+msgid "Unlocked"
+msgstr "Déverrouillé"
+
+msgid "Last update of RDAP database"
+msgstr "Dernière mise à jour de la base RDAP"
+
+msgid "Registrar expiration"
+msgstr "Expiration chez le bureau d'enregistrement"
+
+msgid "ENUM validation expiration"
+msgstr "Expiration de la validation ENUM"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "Organization"
+msgstr "Organisation"
+
+msgid "Phone"
+msgstr "Téléphone"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "Messaging"
+msgstr "Messagerie"
+
+msgid "Website"
+msgstr "Site web"
+
+msgid "Profile"
+msgstr "Profil"
+
+msgid "Contact Link"
+msgstr "Lien de contact"
+
+msgid "Location"
+msgstr "Localisation"
+
+msgid "Street"
+msgstr "Rue"
+
+msgid "City"
+msgstr "Ville"
+
+msgid "State/Province"
+msgstr "État/Province"
+
+msgid "Postal Code"
+msgstr "Code postal"
+
+msgid "Country"
+msgstr "Pays"
+
+msgid "cannot specify both --registry and --registrar, use one or the other."
+msgstr "Impossible de spécifier à la fois --registry et --registrar, utilisez l’un ou l’autre."
+
+msgid "cannot specify both --registry and --both, use one or the other."
+msgstr "Impossible de spécifier à la fois --registry et --both, utilisez l’un ou l’autre."
+
+msgid "invalid IP address '[_1]'"
+msgstr "Adresse IP invalide '[_1]'"
+
+msgid "Unable to handle type '[_1]'"
+msgstr "Impossible de gérer le type '[_1]'"
+
+msgid "current unable to do searches for '[_1]' objects."
+msgstr "Actuellement incapable de rechercher des objets de type '[_1]'."
+
+msgid "Unable to retrieve registrar record, displaying the registry record..."
+msgstr "Impossible de récupérer l’enregistrement du bureau, affichage de l’enregistrement du registre..."
+
+msgid "object does not include the 'objectClassName' properties"
+msgstr "L’objet n’inclut pas les propriétés 'objectClassName'"
+
+msgid "unknown object type '[_1]'"
+msgstr "Type d’objet inconnu '[_1]'"
+
+msgid "Object type"
+msgstr "Type d’objet"
+
+msgid "URL"
+msgstr "URL"
+
+msgid "Redacted Fields"
+msgstr "Champs masqués"
+
+msgid "[_1] (reason: [_2])"
+msgstr "[_1] (raison : [_2])"
+
+msgid "Handle"
+msgstr "Identifiant"
+
+msgid "Version"
+msgstr "Version"
+
+msgid "Domain"
+msgstr "Domaine"
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Parent"
+msgstr "Parent"
+
+msgid "Range"
+msgstr "Plage"
+
+msgid "CIDR"
+msgstr "CIDR"
+
+msgid "DS Record"
+msgstr "Enregistrement DS"
+
+msgid "DNSKEY Record"
+msgstr "Enregistrement DNSKEY"
+
+msgid "Registration Type"
+msgstr "Type d'enregistrement"
+
+msgid "Art Record"
+msgstr "Enregistrement Art"
+
+msgid "Platform Nameserver"
+msgstr "Serveur de noms de la plateforme"
+
+msgid "Fax"
+msgstr "Fax"
+
+msgid "Address"
+msgstr "Adresse"
+
+msgid "IP Address"
+msgstr "Adresse IP"
+
+msgid "[_1] (by [_2])"
+msgstr "[_1] (par [_2])"
+
+msgid "Status"
+msgstr "Statut"
+
+msgid "[_1] (EPP: [_2], [_3])"
+msgstr "[_1] (EPP : [_2], [_3])"
+
+msgid "[_1] Contact"
+msgstr "Contact [_1]"
+
+msgid "Notice"
+msgstr "Avis"
+
+msgid "Remark"
+msgstr "Remarque"
+
+msgid "Debug: [_1]"
+msgstr "Débogage : [_1]"
+
+msgid "Info: [_1]"
+msgstr "Info : [_1]"
+
+msgid "Warning: [_1]"
+msgstr "Avertissement : [_1]"
+
+msgid "Error: [_1]"
+msgstr "Erreur : [_1]"
