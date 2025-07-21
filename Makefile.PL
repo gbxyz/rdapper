@@ -3,7 +3,7 @@ use ExtUtils::MakeMaker;
 use File::ShareDir::Install;
 use strict;
 
-install_share(module => 'App::rdapper', 'locale');
+install_share module => 'App::rdapper' => 'locale';
 
 WriteMakefile(
 	'NAME'			=> 'App::rdapper',
