@@ -202,12 +202,8 @@ sub main {
 
     $ENV{NET_RDAP_UA_DEBUG} = 1 if ($debug);
 
-    #
-    # determine the user's language using setlocale()
-    #
-    my ($lang, undef) = split(/\./, lc(setlocale(LC_ALL)), 2);
+    my $lang = $LH->language_tag || q{en};
     $lang =~ s/_/-/g;
-    $lang ||= q{en},
 
     $rdap = Net::RDAP->new(
         'use_cache'         => !$bypass,
