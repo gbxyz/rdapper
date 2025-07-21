@@ -31,7 +31,7 @@ use locale;
 use vars qw($VERSION $LH);
 use strict;
 
-$VERSION = '1.15';
+$VERSION = '1.16';
 
 $LH = App::rdapper::l10n->get_handle;
 

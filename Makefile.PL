@@ -1,15 +1,21 @@
 #!/usr/bin/env perl
 use ExtUtils::MakeMaker;
+use File::Basename qw(dirname basename);
+use File::ShareDir::Install;
+use constant MODULE => 'App::rdapper';
 use strict;
 
+install_share(module => MODULE, 'locale');
+
 WriteMakefile(
-	'NAME'			=> 'App::rdapper',
+	'NAME'			=> MODULE,
 	'VERSION_FROM'	=> 'lib/App/rdapper.pm',
 	'ABSTRACT_FROM'	=> 'lib/App/rdapper.pm',
 	'AUTHOR'		=> [ 'Gavin Brown <gavin.brown@fastmail.uk>' ],
 	'LICENSE'		=> 'perl_5',
 	'EXE_FILES'		=> [ 'rdapper' ],
 	'PREREQ_PM'		=> {
+        'File::ShareDir'            => 0,
         'Getopt::Long'              => 0,
         'JSON'                      => 0,
         'List::Util'                => '1.33',
@@ -18,7 +24,7 @@ WriteMakefile(
         'Net::DNS::Domain'          => 0,
         'Net::IDN::Encode'          => 0,
         'Net::IP'                   => 0,
-        'Net::RDAP'                 => '0.35',
+        'Net::RDAP'                 => '0.40',
         'Pod::Usage'                => 0,
         'Term::ANSIColor'           => 0,
         'Term::Size'                => 0,
