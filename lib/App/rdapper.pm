@@ -36,7 +36,7 @@ $LH->bindtextdomain(__PACKAGE__);
 $LH->textdomain(__PACKAGE__);
 
 #
-# global arg variables (note: nopager is now ignored)
+# global arg variables
 #
 my (
     $type, $object, $help, $short, $bypass, $auth, $nopager, $raw, $both,
@@ -54,7 +54,7 @@ my %opts = (
     'short'         => \$short,
     'bypass-cache'  => \$bypass,
     'auth:s'        => \$auth,
-    'nopager'       => \$nopager,
+    'nopager'       => \$nopager, # ignored
     'raw'           => \$raw,
     'both'          => \$both,
     'registrar'     => \$registrar,
