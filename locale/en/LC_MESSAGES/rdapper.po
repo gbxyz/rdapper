@@ -244,3 +244,21 @@ msgstr "Warning: [_1]"
 
 msgid "Error: [_1]"
 msgstr "Error: [_1]"
+
+msgid "Categories"
+msgstr "Categories"
+
+msgid "Kind"
+msgstr "Kind"
+
+msgid "Note"
+msgstr "Note"
+
+msgid "Role"
+msgstr "Role"
+
+msgid "Source"
+msgstr "Source"
+
+msgid "Title"
+msgstr "Title"

@@ -85,31 +85,52 @@ msgstr ""
 msgid "ENUM validation expiration"
 msgstr ""
 
-msgid "Name"
+msgid "Address"
 msgstr ""
 
-msgid "Organization"
-msgstr ""
-
-msgid "Phone"
-msgstr ""
-
-msgid "Email"
-msgstr ""
-
-msgid "Messaging"
-msgstr ""
-
-msgid "Website"
-msgstr ""
-
-msgid "Profile"
+msgid "Categories"
 msgstr ""
 
 msgid "Contact Link"
 msgstr ""
 
+msgid "Email"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
 msgid "Location"
+msgstr ""
+
+msgid "Messaging"
+msgstr ""
+
+msgid "Kind"
+msgstr ""
+
+msgid "Note"
+msgstr ""
+
+msgid "Organization"
+msgstr ""
+
+msgid "Role"
+msgstr ""
+
+msgid "Profile"
+msgstr ""
+
+msgid "Source"
+msgstr ""
+
+msgid "Phone"
+msgstr ""
+
+msgid "Title"
+msgstr ""
+
+msgid "Website"
 msgstr ""
 
 msgid "Street"
@@ -200,9 +221,6 @@ msgid "Platform Nameserver"
 msgstr ""
 
 msgid "Fax"
-msgstr ""
-
-msgid "Address"
 msgstr ""
 
 msgid "IP Address"
