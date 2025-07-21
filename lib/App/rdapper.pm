@@ -27,7 +27,7 @@ use constant {
     'IANA_BASE_URL' => 'https://rdap.iana.org/',
 };
 use locale;
-use vars qw($VERSION);
+use vars qw($VERSION $LH);
 use strict;
 
 $VERSION = '1.15';
