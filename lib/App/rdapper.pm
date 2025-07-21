@@ -145,15 +145,22 @@ for (my $i = 0 ; $i < scalar(@EVENTS) ; $i++) {
 
 my @VCARD_DISPLAY_ORDER = qw(SOURCE KIND FN TITLE ROLE ORG ADR GEO EMAIL CONTACT-URI SOCIALPROFILE TEL IMPP URL CATEGORIES NOTE);
 my %VCARD_NODE_NAMES = (
-    FN              => _('Name'),
-    ORG             => _('Organization'),
-    TEL             => _('Phone'),
-    EMAIL           => _('Email'),
-    IMPP            => _('Messaging'),
-    URL             => _('Website'),
-    SOCIALPROFILE   => _('Profile'),
+    ADR             => _('Address'),
+    CATEGORIES      => _('Categories'),
     'CONTACT-URI'   => _('Contact Link'),
+    EMAIL           => _('Email'),
+    FN              => _('Name'),
     GEO             => _('Location'),
+    IMPP            => _('Messaging'),
+    KIND            => _('Kind'),
+    NOTE            => _('Note'),
+    ORG             => _('Organization'),
+    ROLE            => _('Role'),
+    SOCIALPROFILE   => _('Profile'),
+    SOURCE          => _('Source'),
+    TEL             => _('Phone'),
+    TITLE           => _('Title'),
+    URL             => _('Website'),
 );
 
 my @ADR_DISPLAY_ORDER = (ADR_STREET, ADR_CITY, ADR_SP, ADR_PC, ADR_CC);
