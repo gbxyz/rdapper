@@ -1,14 +1,12 @@
 #!/usr/bin/env perl
 use ExtUtils::MakeMaker;
-use File::Basename qw(dirname basename);
 use File::ShareDir::Install;
-use constant MODULE => 'App::rdapper';
 use strict;
 
-install_share(module => MODULE, 'locale');
+install_share(module => 'App::rdapper', 'locale');
 
 WriteMakefile(
-	'NAME'			=> MODULE,
+	'NAME'			=> 'App::rdapper',
 	'VERSION_FROM'	=> 'lib/App/rdapper.pm',
 	'ABSTRACT_FROM'	=> 'lib/App/rdapper.pm',
 	'AUTHOR'		=> [ 'Gavin Brown <gavin.brown@fastmail.uk>' ],
