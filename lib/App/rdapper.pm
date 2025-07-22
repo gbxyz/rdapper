@@ -128,6 +128,45 @@ my %EVENT_DISPLAY_NAMES = (
     'enum validation expiration'    => _('ENUM validation expiration'),
 );
 
+my %STATUS_DISPLAY_NAMES = (
+    'validated'                     => _('validated'),
+    'renew prohibited'              => _('renew prohibited'),
+    'update prohibited'             => _('update prohibited'),
+    'transfer prohibited'           => _('transfer prohibited'),
+    'delete prohibited'             => _('delete prohibited'),
+    'proxy'                         => _('proxy'),
+    'private'                       => _('private'),
+    'removed'                       => _('removed'),
+    'obscured'                      => _('obscured'),
+    'associated'                    => _('associated'),
+    'active'                        => _('active'),
+    'inactive'                      => _('inactive'),
+    'locked'                        => _('locked'),
+    'pending create'                => _('pending create'),
+    'pending renew'                 => _('pending renew'),
+    'pending transfer'              => _('pending transfer'),
+    'pending update'                => _('pending update'),
+    'pending delete'                => _('pending delete'),
+    'add period'                    => _('add period'),
+    'auto renew period'             => _('auto renew period'),
+    'client delete prohibited'      => _('client delete prohibited'),
+    'client hold'                   => _('client hold'),
+    'client renew prohibited'       => _('client renew prohibited'),
+    'client transfer prohibited'    => _('client transfer prohibited'),
+    'client update prohibited'      => _('client update prohibited'),
+    'pending restore'               => _('pending restore'),
+    'redemption period'             => _('redemption period'),
+    'renew period'                  => _('renew period'),
+    'server delete prohibited'      => _('server delete prohibited'),
+    'server renew prohibited'       => _('server renew prohibited'),
+    'server transfer prohibited'    => _('server transfer prohibited'),
+    'server update prohibited'      => _('server update prohibited'),
+    'server hold'                   => _('server hold'),
+    'transfer period'               => _('transfer period'),
+    'administrative'                => _('administrative'),
+    'reserved'                      => _('reserved'),
+);
+
 my @EVENTS = (
     'registration',
     'reregistration',
@@ -147,6 +186,16 @@ my %EVENT_DISPLAY_ORDER;
 for (my $i = 0 ; $i < scalar(@EVENTS) ; $i++) {
     $EVENT_DISPLAY_ORDER{$EVENTS[$i]} = $i;
 }
+
+my %NOTICE_REMARK_TYPE = (
+    'result set truncated due to authorization'         => _('result set truncated due to authorization'),
+    'result set truncated due to excessive load'        => _('result set truncated due to excessive load'),
+    'result set truncated due to unexplainable reasons' => _('result set truncated due to unexplainable reasons'),
+    'object truncated due to authorization'             => _('object truncated due to authorization'),
+    'object truncated due to excessive load'            => _('object truncated due to excessive load'),
+    'object truncated due to unexplainable reasons'     => _('object truncated due to unexplainable reasons'),
+    'object redacted due to authorization'              => _('object redacted due to authorization'),
+);
 
 my @VCARD_DISPLAY_ORDER = qw(SOURCE KIND FN TITLE ROLE ORG ADR GEO EMAIL CONTACT-URI SOCIALPROFILE TEL IMPP URL CATEGORIES NOTE);
 my %VCARD_NODE_NAMES = (
@@ -708,11 +757,13 @@ sub print_events {
     my ($package, $object, $indent) = @_;
 
     foreach my $event (sort { $EVENT_DISPLAY_ORDER{$a->action} - $EVENT_DISPLAY_ORDER{$b->action} } $object->events) {
+        my $action = $EVENT_DISPLAY_NAMES{$event->action} || ucfirst($event->action);
+
         if ($event->actor) {
-            $package->print_kv(ucfirst($event->action), _('[_1] (by [_2])', scalar($event->date), $event->actor), $indent);
+            $package->print_kv($action, _('[_1] (by [_2])', scalar($event->date), $event->actor), $indent);
 
         } else {
-            $package->print_kv(ucfirst($event->action), scalar($event->date).$event->date_tz, $indent);
+            $package->print_kv($action, scalar($event->date).$event->date_tz, $indent);
 
         }
     }
@@ -722,9 +773,17 @@ sub print_status {
     my ($package, $object, $indent, $is_domain) = @_;
 
     foreach my $status ($object->status) {
+
         my $epp = rdap2epp($status);
         if ($epp && $is_domain && !$short) {
-            $package->print_kv(_('Status'), _('[_1] (EPP: [_2], [_3])', $status, $epp, u(sprintf('https://icann.org/epp#%s', $epp))), $indent);
+            my $friendly = $STATUS_DISPLAY_NAMES{$status} || $status;
+            if ($friendly ne $status) {
+                $package->print_kv(_('Status'), _('[_1] ([_2], EPP: [_3], [_4])', $friendly, $status, $epp, u(sprintf('https://icann.org/epp#%s', $epp))), $indent);
+
+            } else {
+                $package->print_kv(_('Status'), _('[_1] (EPP: [_2], [_3])', $status, $epp, u(sprintf('https://icann.org/epp#%s', $epp))), $indent);
+
+            }
 
         } else {
             $package->print_kv(_('Status'), $status, $indent);
@@ -774,7 +833,7 @@ sub print_remark_or_notice {
         $package->print_kv($thing->title || $type, ($thing->description)[0], $indent);
 
     } else {
-        $package->print_kv($thing->title || $type, , '', $indent);
+        $package->print_kv($thing->title || $NOTICE_REMARK_TYPE{$thing->type} || $type, , '', $indent);
 
         $out->print(fill(
             (INDENT x (1+$indent)),
