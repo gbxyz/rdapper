@@ -397,3 +397,25 @@ msgstr "Objet tronqué pour cause inexplicable"
 
 msgid "object redacted due to authorization"
 msgstr "Objet expurgé pour cause d'autorisation"
+
+msgid "IANA Registrar ID"
+msgstr "ID du registraire IANA"
+
+msgid "individual"
+msgstr "Individu"
+
+msgid "group"
+msgstr "Groupe"
+
+msgid "org"
+msgstr "Organisation"
+
+msgid "location"
+msgstr "Lieu"
+
+msgid "application"
+msgstr "Application"
+
+msgid "device"
+msgstr "Appareil"
+

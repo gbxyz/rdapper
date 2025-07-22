@@ -197,6 +197,15 @@ my %NOTICE_REMARK_TYPE = (
     'object redacted due to authorization'              => _('object redacted due to authorization'),
 );
 
+my %VCARD_KIND_DISPLAY_NAME = (
+    'individual'    => _('individual'),
+    'group'         => _('group'),
+    'org'           => _('org'),
+    'location'      => _('location'),
+    'application'   => _('application'),
+    'device'        => _('device'),
+);
+
 my @VCARD_DISPLAY_ORDER = qw(SOURCE KIND FN TITLE ROLE ORG ADR GEO EMAIL CONTACT-URI SOCIALPROFILE TEL IMPP URL CATEGORIES NOTE);
 my %VCARD_NODE_NAMES = (
     ADR             => _('Address'),
@@ -215,6 +224,10 @@ my %VCARD_NODE_NAMES = (
     TEL             => _('Phone'),
     TITLE           => _('Title'),
     URL             => _('Website'),
+);
+
+my %PUBLIC_ID_DISPLAY_NAME = (
+    'IANA Registrar ID' => _('IANA Registrar ID'),
 );
 
 my @ADR_DISPLAY_ORDER = (ADR_STREET, ADR_CITY, ADR_SP, ADR_PC, ADR_CC);
@@ -664,7 +677,7 @@ sub print_entity {
     $package->print_kv(_('Handle'), $entity->handle, $indent) if ($entity->handle && $indent < 1);
 
     foreach my $id ($entity->ids) {
-        $package->print_kv($id->type, $id->identifier, $indent);
+        $package->print_kv($PUBLIC_ID_DISPLAY_NAME{$id->type} || $id->type, $id->identifier, $indent);
     }
 
     my $jcard = $entity->jcard;
@@ -691,8 +704,12 @@ sub print_jcard_property {
 
     } else {
         my $label = $VCARD_NODE_NAMES{uc($property->type)} || ucfirst(lc($property->type));
+        my $value = $property->value;
 
-        if ('TEL' eq uc($property->type)) {
+        if ('KIND' eq uc($property->type)) {
+            $value = $VCARD_KIND_DISPLAY_NAME{$value} || $value;
+
+        } elsif ('TEL' eq uc($property->type)) {
             if (any { 'fax' eq lc($_) } @{$property->param('type')}) {
                 $label = _('Fax');
 
@@ -704,7 +721,7 @@ sub print_jcard_property {
 
         $package->print_kv(
             $label,
-            $property->may_be_uri ? u($property->value) : $property->value,
+            $property->may_be_uri ? u($value) : $value,
             $indent
         );
     }

@@ -416,3 +416,23 @@ msgstr "object truncated due to unexplainable reasons"
 msgid "object redacted due to authorization"
 msgstr "object redacted due to authorization"
 
+msgid "IANA Registrar ID"
+msgstr "IANA Registrar ID"
+
+msgid "individual"
+msgstr "individual"
+
+msgid "group"
+msgstr "group"
+
+msgid "org"
+msgstr "org"
+
+msgid "location"
+msgstr "location"
+
+msgid "application"
+msgstr "application"
+
+msgid "device"
+msgstr "device"

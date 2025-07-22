@@ -2,5 +2,6 @@
 # compile all .po files
 
 find locale -name '*.po' | while read po ; do
-    msgfmt -o "$(dirname "$po")/$(basename "$po" .po).mo" "$po"
+    echo "$po"
+    msgfmt -o "$(dirname "$po")/$(basename "$po" .po).mo" "$po" || exit 1
 done
