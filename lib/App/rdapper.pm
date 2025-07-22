@@ -1,5 +1,6 @@
 package App::rdapper;
 use App::rdapper::l10n;
+use Encode qw(decode);
 use File::ShareDir qw(:ALL);
 use Getopt::Long qw(GetOptionsFromArray :config pass_through);
 use JSON;
@@ -848,7 +849,7 @@ sub colourise {
 
 sub u { colourise([qw(underline)], shift) }
 sub b { colourise([qw(bold)], shift) }
-sub _ { $LH->maketext(@_) }
+sub _ { decode($LH->encoding, $LH->maketext(@_)) }
 
 #
 # this function uses PPI to parse this file, extract the messages passed to _()
