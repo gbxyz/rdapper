@@ -23,12 +23,19 @@ C<rdapper.pot> file in the C<locale> directory.
 This directory contains subdirectories for each supported locale. To create a
 new locale, create a new subdirectory and copy C<rdapper.pot> into it:
 
-    $ mkdir -p ja_JP/LC_MESSAGES
-    $ cp rdapper.pot ja_JP/LC_MESSAGES/rdapper.po
+    $ mkdir -p ja/LC_MESSAGES
+    $ cp rdapper.pot ja/LC_MESSAGES/rdapper.po
 
 Once you have finished editing C<rdapper.po>, run `mkmo.sh` to compile the .po
 files into `.mo` files. These files are installed automatically when rdapper is
 installed.
+
+You will also need to edit the file `l10.pm` to add a new package, which must
+look like this:
+
+    package App::rdapper::l10n::ja;
+    use base qw(Locale::Maketext::Gettext);
+    1;
 
 =head1 CONTRIBUTING TRANSLATIONS
 
@@ -40,12 +47,18 @@ L<submit a pull request|https://github.com/gbxyz/rdapper/compare>.
 
 1;
 
+#
+# if you're adding a new language package, put it **BELOW** this comment!
+#
+
 package App::rdapper::l10n::en;
 use base qw(Locale::Maketext::Gettext);
-
 1;
 
 package App::rdapper::l10n::fr;
 use base qw(Locale::Maketext::Gettext);
-
 1;
+
+#
+# if you're adding a new language package, put it **ABOVE** this comment!
+#

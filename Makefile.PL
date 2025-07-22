@@ -24,6 +24,7 @@ WriteMakefile(
         'Net::IP'                   => 0,
         'Net::RDAP'                 => '0.40',
         'Pod::Usage'                => 0,
+        'PPI'                       => 0,
         'Term::ANSIColor'           => 0,
         'Term::Size'                => 0,
         'Text::Wrap'                => 0,
