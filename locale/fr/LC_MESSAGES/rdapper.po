@@ -244,3 +244,156 @@ msgstr "Avertissement : [_1]"
 
 msgid "Error: [_1]"
 msgstr "Erreur : [_1]"
+
+msgid "Categories"
+msgstr "Catégories"
+
+msgid "Kind"
+msgstr "Type"
+
+msgid "Note"
+msgstr "Note"
+
+msgid "Role"
+msgstr "Rôle"
+
+msgid "Source"
+msgstr "Source"
+
+msgid "Title"
+msgstr "Titre"
+
+msgid "[_1] ([_2], EPP: [_2], [_3])"
+msgstr "[_1] ([_2], EPP: [_2], [_3])"
+
+msgid "[_1] ([_2], EPP: [_3], [_4])"
+msgstr "[_1] ([_2], EPP: [_3], [_4])"
+
+msgid "validated"
+msgstr "Validé"
+
+msgid "renew prohibited"
+msgstr "Renouvellement interdit"
+
+msgid "update prohibited"
+msgstr "Mise à jour interdite"
+
+msgid "transfer prohibited"
+msgstr "Transfert interdit"
+
+msgid "delete prohibited"
+msgstr "Suppression interdite"
+
+msgid "proxy"
+msgstr "Proxy"
+
+msgid "private"
+msgstr "Privé"
+
+msgid "removed"
+msgstr "Supprimé"
+
+msgid "obscured"
+msgstr "Masqué"
+
+msgid "associated"
+msgstr "Associé"
+
+msgid "active"
+msgstr "Actif"
+
+msgid "inactive"
+msgstr "Inactif"
+
+msgid "locked"
+msgstr "Verrouillé"
+
+msgid "pending create"
+msgstr "Création en attente"
+
+msgid "pending renew"
+msgstr "Renouvellement en attente"
+
+msgid "pending transfer"
+msgstr "Transfert en attente"
+
+msgid "pending update"
+msgstr "Mise à jour en attente"
+
+msgid "pending delete"
+msgstr "Suppression en attente"
+
+msgid "add period"
+msgstr "Période d'ajout"
+
+msgid "auto renew period"
+msgstr "Période de renouvellement automatique"
+
+msgid "client delete prohibited"
+msgstr "Suppression client interdite"
+
+msgid "client hold"
+msgstr "Mise en attente client"
+
+msgid "client renew prohibited"
+msgstr "Renouvellement client interdit"
+
+msgid "client transfer prohibited"
+msgstr "Transfert client interdit"
+
+msgid "client update prohibited"
+msgstr "Mise à jour client interdite"
+
+msgid "pending restore"
+msgstr "Restauration en attente"
+
+msgid "redemption period"
+msgstr "Période de rédemption"
+
+msgid "renew period"
+msgstr "Période de renouvellement"
+
+msgid "server delete prohibited"
+msgstr "Suppression serveur interdite"
+
+msgid "server renew prohibited"
+msgstr "Renouvellement serveur interdit"
+
+msgid "server transfer prohibited"
+msgstr "Transfert serveur interdit"
+
+msgid "server update prohibited"
+msgstr "Mise à jour serveur interdite"
+
+msgid "server hold"
+msgstr "Mise en attente serveur"
+
+msgid "transfer period"
+msgstr "Période de transfert"
+
+msgid "administrative"
+msgstr "Administratif"
+
+msgid "reserved"
+msgstr "Réservé"
+
+msgid "result set truncated due to authorization"
+msgstr "Ensemble de résultats tronqué pour cause d'autorisation"
+
+msgid "result set truncated due to excessive load"
+msgstr "Ensemble de résultats tronqué pour cause de surcharge"
+
+msgid "result set truncated due to unexplainable reasons"
+msgstr "Ensemble de résultats tronqué pour cause inexplicable"
+
+msgid "object truncated due to authorization"
+msgstr "Objet tronqué pour cause d'autorisation"
+
+msgid "object truncated due to excessive load"
+msgstr "Objet tronqué pour cause de surcharge"
+
+msgid "object truncated due to unexplainable reasons"
+msgstr "Objet tronqué pour cause inexplicable"
+
+msgid "object redacted due to authorization"
+msgstr "Objet expurgé pour cause d'autorisation"

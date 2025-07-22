@@ -224,6 +224,9 @@ msgstr "Status"
 msgid "[_1] (EPP: [_2], [_3])"
 msgstr "[_1] (EPP: [_2], [_3])"
 
+msgid "[_1] ([_2], EPP: [_3], [_4])"
+msgstr "[_1] ([_2], EPP: [_3], [_4])"
+
 msgid "[_1] Contact"
 msgstr "[_1] Contact"
 
@@ -262,3 +265,154 @@ msgstr "Source"
 
 msgid "Title"
 msgstr "Title"
+
+msgid "validated"
+msgstr "validated"
+
+msgid "renew prohibited"
+msgstr "renew prohibited"
+
+msgid "update prohibited"
+msgstr "update prohibited"
+
+msgid "transfer prohibited"
+msgstr "transfer prohibited"
+
+msgid "delete prohibited"
+msgstr "delete prohibited"
+
+msgid "proxy"
+msgstr "proxy"
+
+msgid "private"
+msgstr "private"
+
+msgid "removed"
+msgstr "removed"
+
+msgid "obscured"
+msgstr "obscured"
+
+msgid "associated"
+msgstr "associated"
+
+msgid "active"
+msgstr "active"
+
+msgid "inactive"
+msgstr "inactive"
+
+msgid "locked"
+msgstr "locked"
+
+msgid "pending create"
+msgstr "pending create"
+
+msgid "pending renew"
+msgstr "pending renew"
+
+msgid "pending transfer"
+msgstr "pending transfer"
+
+msgid "pending update"
+msgstr "pending update"
+
+msgid "pending delete"
+msgstr "pending delete"
+
+msgid "add period"
+msgstr "add period"
+
+msgid "auto renew period"
+msgstr "auto renew period"
+
+msgid "client delete prohibited"
+msgstr "client delete prohibited"
+
+msgid "client hold"
+msgstr "client hold"
+
+msgid "client renew prohibited"
+msgstr "client renew prohibited"
+
+msgid "client transfer prohibited"
+msgstr "client transfer prohibited"
+
+msgid "client update prohibited"
+msgstr "client update prohibited"
+
+msgid "pending restore"
+msgstr "pending restore"
+
+msgid "redemption period"
+msgstr "redemption period"
+
+msgid "renew period"
+msgstr "renew period"
+
+msgid "server delete prohibited"
+msgstr "server delete prohibited"
+
+msgid "server renew prohibited"
+msgstr "server renew prohibited"
+
+msgid "server transfer prohibited"
+msgstr "server transfer prohibited"
+
+msgid "server update prohibited"
+msgstr "server update prohibited"
+
+msgid "server hold"
+msgstr "server hold"
+
+msgid "transfer period"
+msgstr "transfer period"
+
+msgid "administrative"
+msgstr "administrative"
+
+msgid "reserved"
+msgstr "reserved"
+
+msgid "registration"
+msgstr "registration"
+
+msgid "reregistration"
+msgstr "reregistration"
+
+msgid "last changed"
+msgstr "last changed"
+
+msgid "expiration"
+msgstr "expiration"
+
+msgid "deletion"
+msgstr "deletion"
+
+msgid "reinstantiation"
+msgstr "reinstantiation"
+
+msgid "transfer"
+msgstr "transfer"
+
+msgid "result set truncated due to authorization"
+msgstr "result set truncated due to authorization"
+
+msgid "result set truncated due to excessive load"
+msgstr "result set truncated due to excessive load"
+
+msgid "result set truncated due to unexplainable reasons"
+msgstr "result set truncated due to unexplainable reasons"
+
+msgid "object truncated due to authorization"
+msgstr "object truncated due to authorization"
+
+msgid "object truncated due to excessive load"
+msgstr "object truncated due to excessive load"
+
+msgid "object truncated due to unexplainable reasons"
+msgstr "object truncated due to unexplainable reasons"
+
+msgid "object redacted due to authorization"
+msgstr "object redacted due to authorization"
+

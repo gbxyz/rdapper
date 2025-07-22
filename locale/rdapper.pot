@@ -85,6 +85,135 @@ msgstr ""
 msgid "ENUM validation expiration"
 msgstr ""
 
+msgid "validated"
+msgstr ""
+
+msgid "renew prohibited"
+msgstr ""
+
+msgid "update prohibited"
+msgstr ""
+
+msgid "transfer prohibited"
+msgstr ""
+
+msgid "delete prohibited"
+msgstr ""
+
+msgid "proxy"
+msgstr ""
+
+msgid "private"
+msgstr ""
+
+msgid "removed"
+msgstr ""
+
+msgid "obscured"
+msgstr ""
+
+msgid "associated"
+msgstr ""
+
+msgid "active"
+msgstr ""
+
+msgid "inactive"
+msgstr ""
+
+msgid "locked"
+msgstr ""
+
+msgid "pending create"
+msgstr ""
+
+msgid "pending renew"
+msgstr ""
+
+msgid "pending transfer"
+msgstr ""
+
+msgid "pending update"
+msgstr ""
+
+msgid "pending delete"
+msgstr ""
+
+msgid "add period"
+msgstr ""
+
+msgid "auto renew period"
+msgstr ""
+
+msgid "client delete prohibited"
+msgstr ""
+
+msgid "client hold"
+msgstr ""
+
+msgid "client renew prohibited"
+msgstr ""
+
+msgid "client transfer prohibited"
+msgstr ""
+
+msgid "client update prohibited"
+msgstr ""
+
+msgid "pending restore"
+msgstr ""
+
+msgid "redemption period"
+msgstr ""
+
+msgid "renew period"
+msgstr ""
+
+msgid "server delete prohibited"
+msgstr ""
+
+msgid "server renew prohibited"
+msgstr ""
+
+msgid "server transfer prohibited"
+msgstr ""
+
+msgid "server update prohibited"
+msgstr ""
+
+msgid "server hold"
+msgstr ""
+
+msgid "transfer period"
+msgstr ""
+
+msgid "administrative"
+msgstr ""
+
+msgid "reserved"
+msgstr ""
+
+msgid "result set truncated due to authorization"
+msgstr ""
+
+msgid "result set truncated due to excessive load"
+msgstr ""
+
+msgid "result set truncated due to unexplainable reasons"
+msgstr ""
+
+msgid "object truncated due to authorization"
+msgstr ""
+
+msgid "object truncated due to excessive load"
+msgstr ""
+
+msgid "object truncated due to unexplainable reasons"
+msgstr ""
+
+msgid "object redacted due to authorization"
+msgstr ""
+
 msgid "Address"
 msgstr ""
 
@@ -230,6 +359,9 @@ msgid "[_1] (by [_2])"
 msgstr ""
 
 msgid "Status"
+msgstr ""
+
+msgid "[_1] ([_2], EPP: [_3], [_4])"
 msgstr ""
 
 msgid "[_1] (EPP: [_2], [_3])"
