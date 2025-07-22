@@ -10,9 +10,8 @@ C<App::rdapper::l10n> - internationalisation support for L<App::rdapper>
 =head1 DESCRIPTION
 
 The L<rdapper|App::rdapper> RDAP client can generate output that is localized to
-the user's locale, based on the C<$LANG> environment variable. It uses
- L<Locale::Maketext::Gettext> and a dictionary of translated strings stored in
-.po files
+the user's locale. It uses L<Locale::Maketext::Gettext> and a dictionary of
+translated strings stored in .po files.
 
 =head1 TRANSLATING STRINGS
 
@@ -26,11 +25,11 @@ new locale, create a new subdirectory and copy C<rdapper.pot> into it:
     $ mkdir -p ja/LC_MESSAGES
     $ cp rdapper.pot ja/LC_MESSAGES/rdapper.po
 
-Once you have finished editing C<rdapper.po>, run `mkmo.sh` to compile the .po
-files into `.mo` files. These files are installed automatically when rdapper is
-installed.
+Once you have finished editing C<rdapper.po>, run C<mkmo.sh> to compile the
+.po files into .mo files. These files are installed automatically when rdapper
+is installed.
 
-You will also need to edit the file `l10.pm` to add a new package, which must
+You will also need to edit the file C<l10.pm> to add a new package, which must
 look like this:
 
     package App::rdapper::l10n::ja;
