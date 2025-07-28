@@ -1,0 +1,429 @@
+# Portuguese (Portugal) translation for rdapper
+# Copyright (C) 2025 rdapper's COPYRIGHT HOLDER
+# This file is distributed under the same license as the rdapper package.
+# Paulo Jorge <paullojorgge@gmail.com>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: rdapper\n"
+"PO-Revision-Date: 2025-07-28 16:22+0100\n"
+"Last-Translator: Paulo Jorge <paullojorgge@gmail.com>\n"
+"Language: pt_PT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "IP Network"
+msgstr "Rede IP"
+
+msgid "Autonomous System"
+msgstr "Sistema Autónomo"
+
+msgid "Domain Name"
+msgstr "Nome de Domínio"
+
+msgid "Entity"
+msgstr "Entidade"
+
+msgid "Nameserver"
+msgstr "Servidor de Nomes"
+
+msgid "Help"
+msgstr "Ajuda"
+
+msgid "Registrant"
+msgstr "Titular"
+
+msgid "Technical"
+msgstr "Técnico"
+
+msgid "Administrative"
+msgstr "Administrativo"
+
+msgid "Abuse"
+msgstr "Abuso"
+
+msgid "Billing"
+msgstr "Faturação"
+
+msgid "Registrar"
+msgstr "Agente de Registo"
+
+msgid "Reseller"
+msgstr "Revendedor"
+
+msgid "Sponsor"
+msgstr "Patrocinador"
+
+msgid "Proxy"
+msgstr "Proxy"
+
+msgid "Notifications"
+msgstr "Notificações"
+
+msgid "NOC"
+msgstr "CNO (NOC - Centro de Operações de Rede)"
+
+msgid "Registration"
+msgstr "Registo"
+
+msgid "Reregistration"
+msgstr "Novo Registo"
+
+msgid "Last Changed"
+msgstr "Última Alteração"
+
+msgid "Expiration"
+msgstr "Expiração"
+
+msgid "Deletion"
+msgstr "Remoção"
+
+msgid "Reinstantiation"
+msgstr "Restabelecimento"
+
+msgid "Transfer"
+msgstr "Transferência"
+
+msgid "Locked"
+msgstr "Bloqueado"
+
+msgid "Unlocked"
+msgstr "Desbloqueado"
+
+msgid "Last update of RDAP database"
+msgstr "Última atualização da base de dados RDAP"
+
+msgid "Registrar expiration"
+msgstr "Expiração no agente de registo"
+
+msgid "ENUM validation expiration"
+msgstr "Expiração da validação ENUM"
+
+msgid "Name"
+msgstr "Nome"
+
+msgid "Organization"
+msgstr "Organização"
+
+msgid "Phone"
+msgstr "Telefone"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "Messaging"
+msgstr "Mensagens"
+
+msgid "Website"
+msgstr "Website"
+
+msgid "Profile"
+msgstr "Perfil"
+
+msgid "Contact Link"
+msgstr "Link de Contacto"
+
+msgid "Location"
+msgstr "Localização"
+
+msgid "Street"
+msgstr "Rua"
+
+msgid "City"
+msgstr "Cidade"
+
+msgid "State/Province"
+msgstr "Distrito/Província"
+
+msgid "Postal Code"
+msgstr "Código Postal"
+
+msgid "Country"
+msgstr "País"
+
+msgid "cannot specify both --registry and --registrar, use one or the other."
+msgstr "não é possível especificar --registry e --registrar em simultâneo, utilize um ou outro."
+
+msgid "cannot specify both --registry and --both, use one or the other."
+msgstr "não é possível especificar --registry e --both em simultâneo, utilize um ou outro."
+
+msgid "invalid IP address '[_1]'"
+msgstr "endereço IP inválido '[_1]'"
+
+msgid "Unable to handle type '[_1]'"
+msgstr "Não é possível processar o tipo '[_1]'"
+
+msgid "current unable to do searches for '[_1]' objects."
+msgstr "de momento, não é possível fazer pesquisas por objetos do tipo '[_1]'."
+
+msgid "Unable to retrieve registrar record, displaying the registry record..."
+msgstr "Não foi possível obter o registo do Agente de Registo, a exibir o registo da Entidade Gestora..."
+
+msgid "object does not include the 'objectClassName' properties"
+msgstr "o objeto não inclui as propriedades 'objectClassName'"
+
+msgid "unknown object type '[_1]'"
+msgstr "tipo de objeto desconhecido '[_1]'"
+
+msgid "Object type"
+msgstr "Tipo de Objeto"
+
+msgid "URL"
+msgstr "URL"
+
+msgid "Redacted Fields"
+msgstr "Campos Omitidos"
+
+msgid "[_1] (reason: [_2])"
+msgstr "[_1] (motivo: [_2])"
+
+msgid "Handle"
+msgstr "Identificador"
+
+msgid "Version"
+msgstr "Versão"
+
+msgid "Domain"
+msgstr "Domínio"
+
+msgid "Type"
+msgstr "Tipo"
+
+msgid "Parent"
+msgstr "Parente"
+
+msgid "Range"
+msgstr "Intervalo"
+
+msgid "CIDR"
+msgstr "CIDR"
+
+msgid "DS Record"
+msgstr "Registo DS"
+
+msgid "DNSKEY Record"
+msgstr "Registo DNSKEY"
+
+msgid "Registration Type"
+msgstr "Tipo de Registo"
+
+msgid "Art Record"
+msgstr "Registo Art"
+
+msgid "Platform Nameserver"
+msgstr "Servidor de Nomes da Plataforma"
+
+msgid "Fax"
+msgstr "Fax"
+
+msgid "Address"
+msgstr "Endereço"
+
+msgid "IP Address"
+msgstr "Endereço IP"
+
+msgid "[_1] (by [_2])"
+msgstr "[_1] (por [_2])"
+
+msgid "Status"
+msgstr "Estado"
+
+msgid "[_1] (EPP: [_2], [_3])"
+msgstr "[_1] (EPP: [_2], [_3])"
+
+msgid "[_1] Contact"
+msgstr "Contacto [_1]"
+
+msgid "Notice"
+msgstr "Aviso"
+
+msgid "Remark"
+msgstr "Observação"
+
+msgid "Debug: [_1]"
+msgstr "Depuração: [_1]"
+
+msgid "Info: [_1]"
+msgstr "Info: [_1]"
+
+msgid "Warning: [_1]"
+msgstr "Aviso: [_1]"
+
+msgid "Error: [_1]"
+msgstr "Erro: [_1]"
+
+msgid "Categories"
+msgstr "Categorias"
+
+msgid "Kind"
+msgstr "Género"
+
+msgid "Note"
+msgstr "Nota"
+
+msgid "Role"
+msgstr "Função"
+
+msgid "Source"
+msgstr "Fonte"
+
+msgid "Title"
+msgstr "Título"
+
+msgid "[_1] ([_2], EPP: [_2], [_3])"
+msgstr "[_1] ([_2], EPP: [_2], [_3])"
+
+msgid "[_1] ([_2], EPP: [_3], [_4])"
+msgstr "[_1] ([_2], EPP: [_3], [_4])"
+
+msgid "validated"
+msgstr "validado"
+
+msgid "renew prohibited"
+msgstr "renovação proibida"
+
+msgid "update prohibited"
+msgstr "atualização proibida"
+
+msgid "transfer prohibited"
+msgstr "transferência proibida"
+
+msgid "delete prohibited"
+msgstr "remoção proibida"
+
+msgid "proxy"
+msgstr "proxy"
+
+msgid "private"
+msgstr "privado"
+
+msgid "removed"
+msgstr "removido"
+
+msgid "obscured"
+msgstr "ocultado"
+
+msgid "associated"
+msgstr "associado"
+
+msgid "active"
+msgstr "ativo"
+
+msgid "inactive"
+msgstr "inativo"
+
+msgid "locked"
+msgstr "bloqueado"
+
+msgid "pending create"
+msgstr "criação pendente"
+
+msgid "pending renew"
+msgstr "renovação pendente"
+
+msgid "pending transfer"
+msgstr "transferência pendente"
+
+msgid "pending update"
+msgstr "atualização pendente"
+
+msgid "pending delete"
+msgstr "remoção pendente"
+
+msgid "add period"
+msgstr "período de adição"
+
+msgid "auto renew period"
+msgstr "período de renovação automática"
+
+msgid "client delete prohibited"
+msgstr "remoção proibida pelo cliente"
+
+msgid "client hold"
+msgstr "retido pelo cliente"
+
+msgid "client renew prohibited"
+msgstr "renovação proibida pelo cliente"
+
+msgid "client transfer prohibited"
+msgstr "transferência proibida pelo cliente"
+
+msgid "client update prohibited"
+msgstr "atualização proibida pelo cliente"
+
+msgid "pending restore"
+msgstr "restauro pendente"
+
+msgid "redemption period"
+msgstr "período de redenção"
+
+msgid "renew period"
+msgstr "período de renovação"
+
+msgid "server delete prohibited"
+msgstr "remoção proibida pelo servidor"
+
+msgid "server renew prohibited"
+msgstr "renovação proibida pelo servidor"
+
+msgid "server transfer prohibited"
+msgstr "transferência proibida pelo servidor"
+
+msgid "server update prohibited"
+msgstr "atualização proibida pelo servidor"
+
+msgid "server hold"
+msgstr "retido pelo servidor"
+
+msgid "transfer period"
+msgstr "período de transferência"
+
+msgid "administrative"
+msgstr "administrativo"
+
+msgid "reserved"
+msgstr "reservado"
+
+msgid "result set truncated due to authorization"
+msgstr "conjunto de resultados truncado por motivos de autorização"
+
+msgid "result set truncated due to excessive load"
+msgstr "conjunto de resultados truncado devido a carga excessiva"
+
+msgid "result set truncated due to unexplainable reasons"
+msgstr "conjunto de resultados truncado por motivos inexplicáveis"
+
+msgid "object truncated due to authorization"
+msgstr "objeto truncado por motivos de autorização"
+
+msgid "object truncated due to excessive load"
+msgstr "objeto truncado devido a carga excessiva"
+
+msgid "object truncated due to unexplainable reasons"
+msgstr "objeto truncado por motivos inexplicáveis"
+
+msgid "object redacted due to authorization"
+msgstr "objeto omitido por motivos de autorização"
+
+msgid "IANA Registrar ID"
+msgstr "ID IANA do Agente de Registo"
+
+msgid "individual"
+msgstr "individual"
+
+msgid "group"
+msgstr "grupo"
+
+msgid "org"
+msgstr "organização"
+
+msgid "location"
+msgstr "local"
+
+msgid "application"
+msgstr "aplicação"
+
+msgid "device"
+msgstr "dispositivo"
