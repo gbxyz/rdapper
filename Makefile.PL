@@ -14,6 +14,7 @@ WriteMakefile(
 	'EXE_FILES'		=> [ 'rdapper' ],
 	'PREREQ_PM'		=> {
         'File::ShareDir'            => 0,
+        'File::ShareDir::Install'   => 0,
         'Getopt::Long'              => 0,
         'JSON'                      => 0,
         'List::Util'                => '1.33',
