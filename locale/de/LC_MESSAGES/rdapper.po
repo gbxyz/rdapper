@@ -1,0 +1,405 @@
+msgid ""
+msgstr ""
+"Language: de\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "IP Network"
+msgstr "IP-Netzwerk"
+
+msgid "Autonomous System"
+msgstr "Autonomes System"
+
+msgid "Domain Name"
+msgstr "Domainname"
+
+msgid "Entity"
+msgstr "Entity"
+
+msgid "Nameserver"
+msgstr "Nameserver"
+
+msgid "Help"
+msgstr "Hilfe"
+
+msgid "Registrant"
+msgstr "Domaininhaber"
+
+msgid "Technical"
+msgstr "Technisch"  # depends on context, if it is "Technical Contact", then it should be "Technischer Kontakt" (if you even want to translate that)
+
+msgid "Administrative"
+msgstr "Administrativ"  # depends on context, if it is "Administrative Contact", then it should be "Administrativer Kontakt" (if you even want to translate that)
+
+msgid "Abuse"
+msgstr "Missbrauch"  # depends on context, if it is "Abuse Contact", then it should be "Missbrauchskontakt" (if you even want to translate that)
+
+msgid "Billing"
+msgstr "Abrechnung"  # depends on context, if it is "Billing Contact", then it should be "Abrechnungskontakt" (if you even want to translate that)
+
+msgid "Registrar"
+msgstr "Registrar"
+
+msgid "Reseller"
+msgstr "Wiederverkäufer"
+
+msgid "Sponsor"
+msgstr "Sponsor"
+
+msgid "Proxy"
+msgstr "Proxy"
+
+msgid "Notifications"
+msgstr "Benachrichtigungen"
+
+msgid "NOC"
+msgstr "NOC"
+
+msgid "Registration"
+msgstr "Registrierung"
+
+msgid "Reregistration"
+msgstr "Neuregistrierung"
+
+msgid "Last Changed"
+msgstr "Letzte Änderung"
+
+msgid "Expiration"
+msgstr "Ablaufdatum"
+
+msgid "Deletion"
+msgstr "Löschung"
+
+msgid "Reinstantiation"
+msgstr "Wiederherstellung"
+
+msgid "Transfer"
+msgstr "Transfer"
+
+msgid "Locked"
+msgstr "Gesperrt"
+
+msgid "Unlocked"
+msgstr "Entsperrt"
+
+msgid "Last update of RDAP database"
+msgstr "Letzte Aktualisierung der RDAP-Datenbank"
+
+msgid "Registrar expiration"
+msgstr "Ablaufdatum beim Registrar"
+
+msgid "ENUM validation expiration"
+msgstr "Ablauf der ENUM-Validierung"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Organization"
+msgstr "Organisation"
+
+msgid "Phone"
+msgstr "Telefon"
+
+msgid "Email"
+msgstr "E-Mail"
+
+msgid "Messaging"
+msgstr "Messaging"
+
+msgid "Website"
+msgstr "Webseite"
+
+msgid "Profile"
+msgstr "Profil"
+
+msgid "Contact Link"
+msgstr "Kontaktlink"
+
+msgid "Location"
+msgstr "Standort"
+
+msgid "Street"
+msgstr "Straße"
+
+msgid "City"
+msgstr "Stadt"
+
+msgid "State/Province"
+msgstr "Bundesland/Provinz"
+
+msgid "Postal Code"
+msgstr "Postleitzahl"
+
+msgid "Country"
+msgstr "Land"
+
+msgid "cannot specify both --registry and --registrar, use one or the other."
+msgstr "Es kann nicht sowohl --registry als auch --registrar angegeben werden. Verwende nur eines davon."
+
+msgid "cannot specify both --registry and --both, use one or the other."
+msgstr "Es kann nicht sowohl --registry als auch --both angegeben werden. Verwende nur eines davon."
+
+msgid "invalid IP address '[_1]'"
+msgstr "Ungültige IP-Adresse '[_1]'"
+
+msgid "Unable to handle type '[_1]'"
+msgstr "Typ '[_1]' kann nicht verarbeitet werden"
+
+msgid "current unable to do searches for '[_1]' objects."
+msgstr "Suche nach Objekten vom Typ '[_1]' derzeit nicht möglich."
+
+msgid "Unable to retrieve registrar record, displaying the registry record..."
+msgstr "Registrar-Datensatz konnte nicht abgerufen werden, zeige Registry-Datensatz..."
+
+msgid "object does not include the 'objectClassName' properties"
+msgstr "Objekt enthält keine 'objectClassName'-Eigenschaft"
+
+msgid "unknown object type '[_1]'"
+msgstr "Unbekannter Objekttyp '[_1]'"
+
+msgid "Object type"
+msgstr "Objekttyp"
+
+msgid "URL"
+msgstr "URL"
+
+msgid "Redacted Fields"
+msgstr "Unkenntlich gemachte Felder"
+
+msgid "[_1] (reason: [_2])"
+msgstr "[_1] (Grund: [_2])"
+
+msgid "Handle"
+msgstr "Handle"
+
+msgid "Version"
+msgstr "Version"
+
+msgid "Domain"
+msgstr "Domain"
+
+msgid "Type"
+msgstr "Typ"
+
+msgid "Parent"
+msgstr "Übergeordnet"  # depends on the context, you don't need to translate it
+
+msgid "Range"
+msgstr "Bereich"
+
+msgid "CIDR"
+msgstr "CIDR"
+
+msgid "DS Record"
+msgstr "DS-Eintrag"
+
+msgid "DNSKEY Record"
+msgstr "DNSKEY-Eintrag"
+
+msgid "Registration Type"
+msgstr "Registrierungsart"
+
+msgid "Art Record"
+msgstr "Art-Eintrag"
+
+msgid "Platform Nameserver"
+msgstr "Plattform-Nameserver"
+
+msgid "Fax"
+msgstr "Fax"
+
+msgid "Address"
+msgstr "Adresse"
+
+msgid "IP Address"
+msgstr "IP-Adresse"
+
+msgid "[_1] (by [_2])"
+msgstr "[_1] (durch [_2])"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "[_1] (EPP: [_2], [_3])"
+msgstr "[_1] (EPP: [_2], [_3])"
+
+msgid "[_1] ([_2], EPP: [_3], [_4])"
+msgstr "[_1] ([_2], EPP: [_3], [_4])"
+
+msgid "[_1] Contact"
+msgstr "[_1] Kontakt"
+
+msgid "Notice"
+msgstr "Hinweis"
+
+msgid "Remark"
+msgstr "Anmerkung"
+
+msgid "Debug: [_1]"
+msgstr "Debug: [_1]"
+
+msgid "Info: [_1]"
+msgstr "Info: [_1]"
+
+msgid "Warning: [_1]"
+msgstr "Warnung: [_1]"
+
+msgid "Error: [_1]"
+msgstr "Fehler: [_1]"
+
+msgid "Categories"
+msgstr "Kategorien"
+
+msgid "Kind"
+msgstr "Kind"
+
+msgid "Note"
+msgstr "Notiz"
+
+msgid "Role"
+msgstr "Rolle"
+
+msgid "Source"
+msgstr "Quelle"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "validated"
+msgstr "validiert"
+
+msgid "renew prohibited"
+msgstr "Verlängerung untersagt"
+
+msgid "update prohibited"
+msgstr "Aktualisierung untersagt"
+
+msgid "transfer prohibited"
+msgstr "Transfer untersagt"
+
+msgid "delete prohibited"
+msgstr "Löschung untersagt"
+
+msgid "private"
+msgstr "privat"
+
+msgid "removed"
+msgstr "entfernt"
+
+msgid "obscured"
+msgstr "unkenntlich"
+
+msgid "associated"
+msgstr "zugeordnet"
+
+msgid "active"
+msgstr "aktiv"
+
+msgid "inactive"
+msgstr "inaktiv"
+
+msgid "pending create"
+msgstr "ausstehende Erstellung"
+
+msgid "pending renew"
+msgstr "ausstehende Verlängerung"
+
+msgid "pending transfer"
+msgstr "ausstehender Transfer"
+
+msgid "pending update"
+msgstr "ausstehende Aktualisierung"
+
+msgid "pending delete"
+msgstr "ausstehende Löschung"
+
+msgid "add period"
+msgstr "Add-Periode"
+
+msgid "auto renew period"
+msgstr "Auto-Renew-Periode"
+
+msgid "client delete prohibited"
+msgstr "Löschung durch den Client untersagt"
+
+msgid "client hold"
+msgstr "Domain durch den Client gesperrt"
+
+msgid "client renew prohibited"
+msgstr "Verlängerung durch den Client untersagt"
+
+msgid "client transfer prohibited"
+msgstr "Transfer durch den Client untersagt"
+
+msgid "client update prohibited"
+msgstr "Aktualisierung durch den Client untersagt"
+
+msgid "pending restore"
+msgstr "ausstehende Wiederherstellung"
+
+msgid "redemption period"
+msgstr "Wiederherstellungsfrist"
+
+msgid "renew period"
+msgstr "Verlängerungszeitraum"
+
+msgid "server delete prohibited"
+msgstr "Löschung durch den Server untersagt"
+
+msgid "server renew prohibited"
+msgstr "Verlängerung durch den Server untersagt"
+
+msgid "server transfer prohibited"
+msgstr "Transfer durch den Server untersagt"
+
+msgid "server update prohibited"
+msgstr "Aktualisierung durch den Server untersagt"
+
+msgid "server hold"
+msgstr "Domain durch den Server gesperrt"
+
+msgid "transfer period"
+msgstr "Transferzeitraum"
+
+msgid "reserved"
+msgstr "reserviert"
+
+msgid "result set truncated due to authorization"
+msgstr "Ergebnis aufgrund fehlender Berechtigung gekürzt"
+
+msgid "result set truncated due to excessive load"
+msgstr "Ergebnis aufgrund hoher Last gekürzt"
+
+msgid "result set truncated due to unexplainable reasons"
+msgstr "Ergebnis aus unbekannten Gründen gekürzt"
+
+msgid "object truncated due to authorization"
+msgstr "Objekt aufgrund fehlender Berechtigung gekürzt"
+
+msgid "object truncated due to excessive load"
+msgstr "Objekt aufgrund hoher Last gekürzt"
+
+msgid "object truncated due to unexplainable reasons"
+msgstr "Objekt aus unbekannten Gründen gekürzt"
+
+msgid "object redacted due to authorization"
+msgstr "Objekt aufgrund fehlender Berechtigung geschwärzt"
+
+msgid "IANA Registrar ID"
+msgstr "IANA Registrar ID"
+
+msgid "individual"
+msgstr "Einzelperson"
+
+msgid "group"
+msgstr "Gruppe"
+
+msgid "org"
+msgstr "Organisation"
+
+msgid "application"
+msgstr "Applikation"
+
+msgid "device"
+msgstr "Gerät"
