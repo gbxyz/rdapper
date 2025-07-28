@@ -321,19 +321,19 @@ msgid "auto renew period"
 msgstr "Auto-Renew-Periode"
 
 msgid "client delete prohibited"
-msgstr "Löschung durch den Client untersagt"
+msgstr "Löschung durch den Registrar untersagt"
 
 msgid "client hold"
-msgstr "Domain durch den Client gesperrt"
+msgstr "Domain durch den Registrar gesperrt"
 
 msgid "client renew prohibited"
-msgstr "Verlängerung durch den Client untersagt"
+msgstr "Verlängerung durch den Registrar untersagt"
 
 msgid "client transfer prohibited"
-msgstr "Transfer durch den Client untersagt"
+msgstr "Transfer durch den Registrar untersagt"
 
 msgid "client update prohibited"
-msgstr "Aktualisierung durch den Client untersagt"
+msgstr "Aktualisierung durch den Registrar untersagt"
 
 msgid "pending restore"
 msgstr "ausstehende Wiederherstellung"
@@ -345,19 +345,19 @@ msgid "renew period"
 msgstr "Verlängerungszeitraum"
 
 msgid "server delete prohibited"
-msgstr "Löschung durch den Server untersagt"
+msgstr "Löschung durch die Vergabestelle untersagt"
 
 msgid "server renew prohibited"
-msgstr "Verlängerung durch den Server untersagt"
+msgstr "Verlängerung durch die Vergabestelle untersagt"
 
 msgid "server transfer prohibited"
-msgstr "Transfer durch den Server untersagt"
+msgstr "Transfer durch die Vergabestelle untersagt"
 
 msgid "server update prohibited"
-msgstr "Aktualisierung durch den Server untersagt"
+msgstr "Aktualisierung durch die Vergabestelle untersagt"
 
 msgid "server hold"
-msgstr "Domain durch den Server gesperrt"
+msgstr "Domain durch die Vergabestelle gesperrt"
 
 msgid "transfer period"
 msgstr "Transferzeitraum"
