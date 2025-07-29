@@ -543,7 +543,9 @@ sub display_object {
     $package->print_kv(_('URL'), u($object->self->href), $indent) if ($indent < 1 && $object->self);
 
     if ($object->can('name')) {
-        my $name = $object->name->name;
+        my $name = $object->name;
+        $name = $name->name if ($name->can('name'));
+
         my $xname = $object->can('unicodeName') ? $object->unicodeName || $name : $name;
 
         if ($xname ne $name) {
