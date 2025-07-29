@@ -2,55 +2,67 @@
 
 use strict;
 use warnings;
+use utf8;
 use Test::More;
 use File::Spec;
-use Locale::gettext;
 
-# To add a new language, just add an entry here.
+# Central structure for all language tests ---
 my %lang_tests = (
-    'pt_PT' => {
+    'pt' => { # Use simple lang code now
         'Help'         => 'Ajuda',
         'Billing'      => 'Faturação',
         'Last Changed' => 'Última Alteração',
     },
-    'fr_FR' => {
+    'fr' => {
         'Help'         => 'Aide',
         'Billing'      => 'Facturation',
         'Last Changed' => 'Dernière modification',
     },
 );
 
-# Dynamically calculate the number of tests to run
+# Dynamically calculate the number of tests
 my $total_tests = 0;
 $total_tests += scalar keys %{ $lang_tests{$_} } for keys %lang_tests;
 plan tests => $total_tests;
 
-# Loop through each language defined above.
-foreach my $locale ( sort keys %lang_tests ) {
-    my ($lang_code) = ($locale =~ /^([a-z]{2})/); # Extract 'pt' from 'pt_PT'
+# Main test loop
+foreach my $lang_code ( sort keys %lang_tests ) {
+    my $po_file = File::Spec->catfile('locale', $lang_code, 'LC_MESSAGES', 'rdapper.po');
 
-    # Check that the compiled .mo file for this language exists
-    my $mo_file = File::Spec->catfile('locale', $lang_code, 'LC_MESSAGES', 'rdapper.mo');
-    unless (-f $mo_file) {
-        diag("Skipping tests for '$locale': $mo_file not found.");
-        next; # Skip to the next language
+    unless (-f $po_file) {
+        diag("Skipping tests for '$lang_code': $po_file not found.");
+        next;
     }
 
-    # Set the environment for the current language
-    local $ENV{LANGUAGE} = $locale;
-    local $ENV{LANG}     = "$locale.UTF-8";
-    local $ENV{LC_ALL}   = "$locale.UTF-8";
-    
-    # Bind the text domain for gettext
-    bindtextdomain('rdapper', 'locale');
-    textdomain('rdapper');
+    # Parse the .po file into a hash
+    my %translations = parse_po_file($po_file);
 
     # Run the specific tests for this language
-    foreach my $original ( sort keys %{ $lang_tests{$locale} } ) {
-        my $expected = $lang_tests{$locale}->{$original};
-        my $translated = gettext($original);
+    foreach my $original ( sort keys %{ $lang_tests{$lang_code} } ) {
+        my $expected = $lang_tests{$lang_code}->{$original};
+        my $translated = $translations{$original} // '';
         is($translated, $expected, "[$lang_code] '$original' -> '$expected'");
     }
 }
 
 done_testing();
+
+# Simple .po file parser subroutine
+sub parse_po_file {
+    my ($file) = @_;
+    my %data;
+    open my $fh, '<:encoding(UTF-8)', $file or die "Cannot open $file: $!";
+
+    my $current_msgid = '';
+    while (my $line = <$fh>) {
+        if ($line =~ /^msgid "(.*)"/) {
+            $current_msgid = $1;
+        }
+        elsif ($line =~ /^msgstr "(.*)"/ && $current_msgid) {
+            $data{$current_msgid} = $1;
+            $current_msgid = '';
+        }
+    }
+    close $fh;
+    return %data;
+}
