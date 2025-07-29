@@ -18,6 +18,11 @@ my %lang_tests = (
         'Billing'      => 'Facturation',
         'Last Changed' => 'Dernière modification',
     },
+    'de' => {
+        'Help'         => 'Hilfe',
+        'Billing'      => 'Abrechnung',
+        'Last Changed' => 'Letzte Änderung',
+    },
 );
 
 # Dynamically calculate the number of tests
@@ -58,7 +63,7 @@ sub parse_po_file {
         if ($line =~ /^msgid "(.*)"/) {
             $current_msgid = $1;
         }
-        elsif ($line =~ /^msgstr "(.*)"/ && $current_msgid) {
+        elsif ($line =~ /^msgstr "(.*?)"/ && $current_msgid) {
             $data{$current_msgid} = $1;
             $current_msgid = '';
         }
