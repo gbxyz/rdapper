@@ -935,7 +935,7 @@ sub _ { decode($LH->encoding, $LH->maketext(@_)) }
 #
 sub export_strings {
     eval {
-        use PPI;
+        require PPI;
 
         my $doc = PPI::Document->new(__FILE__);
         $doc->prune(q{PPI::Token::Comment});
