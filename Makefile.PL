@@ -30,6 +30,9 @@ WriteMakefile(
         'Text::Wrap'                => 0,
         'URI'                       => 0,
 	},
+    'TEST_REQUIRES' => {
+        'Test::More'      => 0,
+    },
 	'META_MERGE' 	=> {
         'meta-spec' => { 'version' => 2 },
          'resources' => {
