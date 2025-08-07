@@ -1137,6 +1137,16 @@ printed to C<STDOUT>.
 
 As of writing, search is only available for domain names.
 
+=head1 INTERNATIONALIZATION & LOCALIZATION
+
+C<rdapper> is internationalized. When performing RDAP queries, it will provide
+the user's preferred language in the `Accept-Language` header, however very few
+RDAP servers currently provide localized responses. Its output will also be
+translated (where translations are available).
+
+If you would like rdapper to support your preferred language, please see the
+advice on contributing translations in L<App::rdapper:l10n>
+
 =head1 COPYRIGHT & LICENSE
 
 Copyright (c) 2012-2023 CentralNic Ltd.

@@ -69,12 +69,14 @@ The RDAP server of the parent domain's registry will be queried.
 
 ## ARGUMENTS
 
-- `--registry` - display the registry record only (the default).
+- `--registry` - display the registry record only. This was the default
+behaviour prior to v1.12.
 - `--registrar` - follow referral to the registrar's RDAP record (if
-any) which will be displayed instead of the registry record. Cannot be used with
-`--registry`.
+any) which will be displayed instead of the registry record. If no registrar
+link can be found, the registry record will be displayed. This option cannot be
+used with `--registry`. As of v1.12, this is the default behaviour.
 - `--both` - display both the registry and (if any) registrar RDAP
-records (implies `--registrar`).
+records.
 - `--reverse` - if you provide an IP address or CIDR prefix, then this
 option causes `rdapper` to display the record of the corresponding
 `in-addr.arpa` or `ip6.arpa` domain.
@@ -106,8 +108,8 @@ you aren't expecting them to.
 
 # RDAP Search
 
-Some RDAP servers support the ability to perform simple substring searches.
-You can use the `--search` option to enable this functionality.
+Some RDAP servers support the ability to perform simple substring searches. You
+can use the `--search` option to enable this functionality.
 
 When the `--search` option is used, `OBJECT` will be used as a search term.
 If it contains no dots (e.g. `exampl*`), then `rdapper` will send a search
@@ -119,6 +121,16 @@ Any errors observed will be printed to `STDERR`; any search results will be
 printed to `STDOUT`.
 
 As of writing, search is only available for domain names.
+
+# INTERNATIONALIZATION & LOCALIZATION
+
+`rdapper` is internationalized. When performing RDAP queries, it will provide
+the user's preferred language in the \`Accept-Language\` header, however very few
+RDAP servers currently provide localized responses. Its output will also be
+translated (where translations are available).
+
+If you would like rdapper to support your preferred language, please see the
+advice on contributing translations in [App::rdapper:l10n](https://metacpan.org/pod/App%3A%3Ardapper%3Al10n)
 
 # COPYRIGHT & LICENSE
 
