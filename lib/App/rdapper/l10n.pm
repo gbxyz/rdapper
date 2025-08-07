@@ -58,6 +58,14 @@ package App::rdapper::l10n::fr;
 use base qw(Locale::Maketext::Gettext);
 1;
 
+package App::rdapper::l10n::de;
+use base qw(Locale::Maketext::Gettext);
+1;
+
+package App::rdapper::l10n::pt;
+use base qw(Locale::Maketext::Gettext);
+1;
+
 #
 # if you're adding a new language package, put it **ABOVE** this comment!
 #
