@@ -255,6 +255,12 @@ $Text::Wrap::huge       = 'overflow';
 sub main {
     my $package = shift;
 
+    my $rcfile = sprintf(q{%s/.rdapper}, $ENV{HOME});
+    if (-e $rcfile && open(my $fh, $rcfile)) {
+        push(@_, map { chomp ; $_ } $fh->getlines);
+        $fh->close;
+    }
+
     GetOptionsFromArray(\@_, %opts) || $package->show_usage;
 
     #
