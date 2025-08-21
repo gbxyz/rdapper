@@ -1,10 +1,8 @@
 #!/usr/bin/env perl
-
-use strict;
-use warnings;
-use utf8;
 use Test::More;
 use File::Spec;
+use utf8;
+use common::sense;
 
 # Central structure for all language tests ---
 my %lang_tests = (
@@ -22,6 +20,11 @@ my %lang_tests = (
         'Help'         => 'Hilfe',
         'Billing'      => 'Abrechnung',
         'Last Changed' => 'Letzte Änderung',
+    },
+    'es' => {
+        'Help'         => 'Ayuda',
+        'Billing'      => 'Facturación',
+        'Last Changed' => 'Último cambio',
     },
 );
 
