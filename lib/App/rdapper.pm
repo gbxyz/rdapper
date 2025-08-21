@@ -32,7 +32,7 @@ use locale;
 use vars qw($VERSION $LH);
 use strict;
 
-$VERSION = '1.17';
+$VERSION = '1.18';
 
 $LH = App::rdapper::l10n->get_handle;
 
@@ -254,6 +254,12 @@ $Text::Wrap::huge       = 'overflow';
 
 sub main {
     my $package = shift;
+
+    my $rcfile = sprintf(q{%s/.rdapper}, $ENV{HOME});
+    if (-e $rcfile && open(my $fh, $rcfile)) {
+        push(@_, map { chomp ; $_ } $fh->getlines);
+        $fh->close;
+    }
 
     GetOptionsFromArray(\@_, %opts) || $package->show_usage;
 
@@ -935,7 +941,7 @@ sub _ { decode($LH->encoding, $LH->maketext(@_)) }
 #
 sub export_strings {
     eval {
-        use PPI;
+        require PPI;
 
         my $doc = PPI::Document->new(__FILE__);
         $doc->prune(q{PPI::Token::Comment});
@@ -1136,6 +1142,16 @@ Any errors observed will be printed to C<STDERR>; any search results will be
 printed to C<STDOUT>.
 
 As of writing, search is only available for domain names.
+
+=head1 INTERNATIONALIZATION & LOCALIZATION
+
+C<rdapper> is internationalized. When performing RDAP queries, it will provide
+the user's preferred language in the `Accept-Language` header, however very few
+RDAP servers currently provide localized responses. Its output will also be
+translated (where translations are available).
+
+If you would like rdapper to support your preferred language, please see the
+advice on contributing translations in L<App::rdapper:l10n>
 
 =head1 COPYRIGHT & LICENSE
 

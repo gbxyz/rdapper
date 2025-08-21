@@ -1,0 +1,390 @@
+msgid "IP Network"
+msgstr "Red IP"
+
+msgid "Autonomous System"
+msgstr "Sistema Autónomo"
+
+msgid "Domain Name"
+msgstr "Nombre de Dominio"
+
+msgid "Entity"
+msgstr "Entidad"
+
+msgid "Nameserver"
+msgstr "Servidor de Nombre"
+
+msgid "Help"
+msgstr "Ayuda"
+
+msgid "Registrant"
+msgstr "Registrante"
+
+msgid "Technical"
+msgstr "Técnico"
+
+msgid "Administrative"
+msgstr "Administrativo"
+
+msgid "Abuse"
+msgstr "Abuso"
+
+msgid "Billing"
+msgstr "Facturación"
+
+msgid "Registrar"
+msgstr "Registrador"
+
+msgid "Reseller"
+msgstr "Revendedor"
+
+msgid "Sponsor"
+msgstr "Patrocinador"
+
+msgid "Proxy"
+msgstr "Proxy"
+
+msgid "Notifications"
+msgstr "Notificaciones"
+
+msgid "NOC"
+msgstr "NOC"
+
+msgid "Registration"
+msgstr "Registro"
+
+msgid "Reregistration"
+msgstr "Re-registro"
+
+msgid "Last Changed"
+msgstr "Último cambio"
+
+msgid "Expiration"
+msgstr "Expiración"
+
+msgid "Deletion"
+msgstr "Eliminación"
+
+msgid "Reinstantiation"
+msgstr "Reinstalación"
+
+msgid "Transfer"
+msgstr "Transferencia"
+
+msgid "Locked"
+msgstr "Bloqueado"
+
+msgid "Unlocked"
+msgstr "Desbloqueado"
+
+msgid "Last update of RDAP database"
+msgstr "Última actualización de la base de datos RDAP"
+
+msgid "Registrar expiration"
+msgstr "Expiración Registrador"
+
+msgid "ENUM validation expiration"
+msgstr "Expiración de la validación ENUM"
+
+msgid "validated"
+msgstr "validado"
+
+msgid "renew prohibited"
+msgstr "renovación prohibida"
+
+msgid "update prohibited"
+msgstr "actualización prohibida"
+
+msgid "transfer prohibited"
+msgstr "transferencia prohibida"
+
+msgid "delete prohibited"
+msgstr "borrado prohibido"
+
+msgid "proxy"
+msgstr "proxy"
+
+msgid "private"
+msgstr "privado"
+
+msgid "removed"
+msgstr "eliminado"
+
+msgid "obscured"
+msgstr "oculto"
+
+msgid "associated"
+msgstr "asociado"
+
+msgid "active"
+msgstr "activo"
+
+msgid "inactive"
+msgstr "inactivo"
+
+msgid "locked"
+msgstr "bloqueado"
+
+msgid "pending create"
+msgstr "creación pendiente"
+
+msgid "pending renew"
+msgstr "renovación pendiente"
+
+msgid "pending transfer"
+msgstr "transferencia pendiente"
+
+msgid "pending update"
+msgstr "actualización pendiente"
+
+msgid "pending delete"
+msgstr "borrado pendiente"
+
+msgid "add period"
+msgstr "período de agregado"
+
+msgid "auto renew period"
+msgstr "período de auto renovación"
+
+msgid "client delete prohibited"
+msgstr "prohibido el borrado de cliente"
+
+msgid "client hold"
+msgstr "retención de cliente"
+
+msgid "client renew prohibited"
+msgstr "prohibida la renovación de cliente"
+
+msgid "client transfer prohibited"
+msgstr "prohibida la transferencia de cliente"
+
+msgid "client update prohibited"
+msgstr "prohibida la actualización de cliente"
+
+msgid "pending restore"
+msgstr "recuperación pendiente"
+
+msgid "redemption period"
+msgstr "período de redención"
+
+msgid "renew period"
+msgstr "período de renovación"
+
+msgid "server delete prohibited"
+msgstr "prohibido el borrado del servidor"
+
+msgid "server renew prohibited"
+msgstr "prohibida la renovación del servidor"
+
+msgid "server transfer prohibited"
+msgstr "prohibida la transferencia del servidor"
+
+msgid "server update prohibited"
+msgstr "prohibida la actualización del servidor"
+
+msgid "server hold"
+msgstr "retención del servidor"
+
+msgid "transfer period"
+msgstr "período de transferencia"
+
+msgid "administrative"
+msgstr "administrativo"
+
+msgid "reserved"
+msgstr "reservado"
+
+msgid "result set truncated due to authorization"
+msgstr "datos incompletos debido a autorización"
+
+msgid "result set truncated due to excessive load"
+msgstr "datos incompletos debido a carga excesiva"
+
+msgid "result set truncated due to unexplainable reasons"
+msgstr "datos incompletos debido a razones inexplicables"
+
+msgid "object truncated due to authorization"
+msgstr "objeto incompleto debido a autorización"
+
+msgid "object truncated due to excessive load"
+msgstr "objeto incompleto debido a carga excesiva"
+
+msgid "object truncated due to unexplainable reasons"
+msgstr "objeto incompleto debido a razones inexplicables"
+
+msgid "object redacted due to authorization"
+msgstr "objeto censurado debido a autorización"
+
+msgid "Address"
+msgstr "Dirección"
+
+msgid "Categories"
+msgstr "Categorías"
+
+msgid "Contact Link"
+msgstr "Enlace de Contacto"
+
+msgid "Email"
+msgstr "Correo electrónico"
+
+msgid "Name"
+msgstr "Nombre"
+
+msgid "Location"
+msgstr "Ubicación"
+
+msgid "Messaging"
+msgstr "Mensajería"
+
+msgid "Kind"
+msgstr "Tipo"
+
+msgid "Note"
+msgstr "Nota"
+
+msgid "Organization"
+msgstr "Organización"
+
+msgid "Role"
+msgstr "Rol"
+
+msgid "Profile"
+msgstr "Perfil"
+
+msgid "Source"
+msgstr "Fuente"
+
+msgid "Phone"
+msgstr "Teléfono"
+
+msgid "Title"
+msgstr "Título"
+
+msgid "Website"
+msgstr "Sitio web"
+
+msgid "Street"
+msgstr "Calle"
+
+msgid "City"
+msgstr "Ciudad"
+
+msgid "State/Province"
+msgstr "Estado/Provincia"
+
+msgid "Postal Code"
+msgstr "Código Postal"
+
+msgid "Country"
+msgstr "País"
+
+msgid "cannot specify both --registry and --registrar, use one or the other."
+msgstr "no puede indicar ambos --registry y --registrar, debe escoger una u otra."
+
+msgid "cannot specify both --registry and --both, use one or the other."
+msgstr "no puede indicar ambos --registry y --both, debe escoger una u otra."
+
+msgid "invalid IP address '[_1]'"
+msgstr "dirección IP inválida '[_1]'"
+
+msgid "Unable to handle type '[_1]'"
+msgstr "Incapaz de manejar el tipo '[_1]'"
+
+msgid "current unable to do searches for '[_1]' objects."
+msgstr "actualmente incapaz de hacer búsquedas de objetos '[_1]'"
+
+msgid "Unable to retrieve registrar record, displaying the registry record..."
+msgstr "Incapaz de obtener el dato del registrador, mostrando el dato del registro..."
+
+msgid "object does not include the 'objectClassName' properties"
+msgstr "el objeto no incluye la propiedad 'objectClassName'"
+
+msgid "unknown object type '[_1]'"
+msgstr "tipo de objeto desconocido '[_1]'"
+
+msgid "Object type"
+msgstr "Tipo de objeto"
+
+msgid "URL"
+msgstr "URL"
+
+msgid "Redacted Fields"
+msgstr "Campos Censurados"
+
+msgid "[_1] (reason: [_2])"
+msgstr "[_1] (razón: [_2])"
+
+msgid "Handle"
+msgstr "Alias"
+
+msgid "Version"
+msgstr "Versión"
+
+msgid "Domain"
+msgstr "Dominio"
+
+msgid "Type"
+msgstr "Tipo"
+
+msgid "Parent"
+msgstr "Padre"
+
+msgid "Range"
+msgstr "Rango"
+
+msgid "CIDR"
+msgstr "CIDR"
+
+msgid "DS Record"
+msgstr "Registro DS"
+
+msgid "DNSKEY Record"
+msgstr "Registro DNSKEY"
+
+msgid "Registration Type"
+msgstr "Tipo de Registro"
+
+msgid "Art Record"
+msgstr "Registro de Arte"
+
+msgid "Platform Nameserver"
+msgstr "Servidor de nombre de Plataforma"
+
+msgid "Fax"
+msgstr "Fax"
+
+msgid "IP Address"
+msgstr "Dirección IP"
+
+msgid "[_1] (by [_2])"
+msgstr "[_1] (por [_2])"
+
+msgid "Status"
+msgstr "Estado"
+
+msgid "[_1] ([_2], EPP: [_3], [_4])"
+msgstr "[_1] ([_2], EPP: [_3], [_4])"
+
+msgid "[_1] (EPP: [_2], [_3])"
+msgstr "[_1] (EPP: [_2], [_3])"
+
+msgid "[_1] Contact"
+msgstr "[_1] Contacto"
+
+msgid "Notice"
+msgstr "Aviso"
+
+msgid "Remark"
+msgstr "Observación"
+
+msgid "Debug: [_1]"
+msgstr "Debug: [_1]"
+
+msgid "Info: [_1]"
+msgstr "Información: [_1]"
+
+msgid "Warning: [_1]"
+msgstr "Advertencia: [_1]"
+
+msgid "Error: [_1]"
+msgstr "Error: [_1]"
+

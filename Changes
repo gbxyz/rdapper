@@ -1,3 +1,6 @@
+1.18 - 2025-07-29
+  - fix crash when querying ASNs.
+
 1.17 - 2025-07-22
   - internationalisation support.
 

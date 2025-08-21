@@ -54,7 +54,19 @@ package App::rdapper::l10n::en;
 use base qw(Locale::Maketext::Gettext);
 1;
 
+package App::rdapper::l10n::es;
+use base qw(Locale::Maketext::Gettext);
+1;
+
 package App::rdapper::l10n::fr;
+use base qw(Locale::Maketext::Gettext);
+1;
+
+package App::rdapper::l10n::de;
+use base qw(Locale::Maketext::Gettext);
+1;
+
+package App::rdapper::l10n::pt;
 use base qw(Locale::Maketext::Gettext);
 1;
 
