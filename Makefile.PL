@@ -12,6 +12,12 @@ WriteMakefile(
 	'AUTHOR'		=> [ 'Gavin Brown <gavin.brown@fastmail.uk>' ],
 	'LICENSE'		=> 'perl_5',
 	'EXE_FILES'		=> [ 'rdapper' ],
+
+    'CONFIGURE_REQUIRES' => {
+        'ExtUtils::MakeMaker'       => 0,
+        'File::ShareDir::Install'   => 0,
+    },
+
 	'PREREQ_PM'		=> {
         'File::ShareDir'            => 0,
         'File::ShareDir::Install'   => 0,
@@ -30,6 +36,7 @@ WriteMakefile(
         'Text::Wrap'                => 0,
         'URI'                       => 0,
 	},
+
 	'META_MERGE' 	=> {
         'meta-spec' => { 'version' => 2 },
          'resources' => {
