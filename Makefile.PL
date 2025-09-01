@@ -18,6 +18,10 @@ WriteMakefile(
         'File::ShareDir::Install'   => 0,
     },
 
+    'TEST_REQUIRES' => {
+        'Test::More'      => 0,
+    },
+
 	'PREREQ_PM'		=> {
         'File::ShareDir'            => 0,
         'File::ShareDir::Install'   => 0,
@@ -36,10 +40,6 @@ WriteMakefile(
         'Text::Wrap'                => 0,
         'URI'                       => 0,
 	},
-
-    'TEST_REQUIRES' => {
-        'Test::More'      => 0,
-    },
 
 	'META_MERGE' 	=> {
         'meta-spec' => { 'version' => 2 },
