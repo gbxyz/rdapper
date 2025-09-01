@@ -132,6 +132,16 @@ translated (where translations are available).
 If you would like rdapper to support your preferred language, please see the
 advice on contributing translations in [App::rdapper:l10n](https://metacpan.org/pod/App%3A%3Ardapper%3Al10n)
 
+# CONFIGURATION FILE
+
+If `~/.rdapper` exists, then its contents will be appended to the list of
+arguments the program runs with. So if it contained
+
+    --short
+    --bypass-cache
+
+Then running `rdapper EXAMPLE.COM` will behave like `rdapper EXAMPLE.COM --short --bypass-cache`.
+
 # COPYRIGHT & LICENSE
 
 Copyright (c) 2012-2023 CentralNic Ltd.

@@ -1153,6 +1153,16 @@ translated (where translations are available).
 If you would like rdapper to support your preferred language, please see the
 advice on contributing translations in L<App::rdapper:l10n>
 
+=head1 CONFIGURATION FILE
+
+If C<~/.rdapper> exists, then its contents will be appended to the list of
+arguments the program runs with. So if it contained
+
+    --short
+    --bypass-cache
+
+Then running C<rdapper EXAMPLE.COM> will behave like C<rdapper EXAMPLE.COM --short --bypass-cache>.
+
 =head1 COPYRIGHT & LICENSE
 
 Copyright (c) 2012-2023 CentralNic Ltd.
