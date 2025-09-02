@@ -37,19 +37,19 @@ plan tests => $total_tests;
 foreach my $lang_code ( sort keys %lang_tests ) {
     my $po_file = File::Spec->catfile('locale', $lang_code, 'LC_MESSAGES', 'rdapper.po');
 
-    unless (-f $po_file) {
-        diag("Skipping tests for '$lang_code': $po_file not found.");
-        next;
-    }
+    SKIP: {
+        skip("Skipping tests for '$lang_code': $po_file not found.",
+            scalar keys %{ $lang_tests{$lang_code} }) unless -f $po_file;
 
-    # Parse the .po file into a hash
-    my %translations = parse_po_file($po_file);
+        # Parse the .po file into a hash
+        my %translations = parse_po_file($po_file);
 
-    # Run the specific tests for this language
-    foreach my $original ( sort keys %{ $lang_tests{$lang_code} } ) {
-        my $expected = $lang_tests{$lang_code}->{$original};
-        my $translated = $translations{$original} // '';
-        is($translated, $expected, "[$lang_code] '$original' -> '$expected'");
+        # Run the specific tests for this language
+        foreach my $original ( sort keys %{ $lang_tests{$lang_code} } ) {
+            my $expected = $lang_tests{$lang_code}->{$original};
+            my $translated = $translations{$original} // '';
+            is($translated, $expected, "[$lang_code] '$original' -> '$expected'");
+        }
     }
 }
 
