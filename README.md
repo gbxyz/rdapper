@@ -2,24 +2,6 @@
 
 App::rdapper - a simple console-based [RDAP](https://about.rdap.org) client.
 
-# INSTALLATION
-
-To install, run:
-
-    cpanm --sudo App::rdapper
-
-# RUNNING VIA DOCKER
-
-The [git repository](https://github.com/gbxyz/rdapper) contains a
-`Dockerfile` that can be used to build an image on your local system.
-
-Alternatively, you can pull the [image from Docker
-Hub](https://hub.docker.com/r/gbxyz/rdapper):
-
-    $ docker pull gbxyz/rdapper
-
-    $ docker run -it gbxyz/rdapper --help
-
 # SYNOPSIS
 
 General form:
@@ -141,6 +123,24 @@ arguments the program runs with. So if it contained
     --bypass-cache
 
 Then running `rdapper EXAMPLE.COM` will behave like `rdapper EXAMPLE.COM --short --bypass-cache`.
+
+# INSTALLATION
+
+To install, run:
+
+    cpanm --sudo App::rdapper
+
+# RUNNING VIA DOCKER
+
+The [git repository](https://github.com/gbxyz/rdapper) contains a
+`Dockerfile` that can be used to build an image on your local system.
+
+Alternatively, you can pull the [image from Docker
+Hub](https://hub.docker.com/r/gbxyz/rdapper):
+
+    $ docker pull gbxyz/rdapper
+
+    $ docker run -it gbxyz/rdapper --help
 
 # COPYRIGHT & LICENSE
 

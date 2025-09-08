@@ -989,24 +989,6 @@ __END__
 
 App::rdapper - a simple console-based L<RDAP|https://about.rdap.org> client.
 
-=head1 INSTALLATION
-
-To install, run:
-
-    cpanm --sudo App::rdapper
-
-=head1 RUNNING VIA DOCKER
-
-The L<git repository|https://github.com/gbxyz/rdapper> contains a
-C<Dockerfile> that can be used to build an image on your local system.
-
-Alternatively, you can pull the L<image from Docker
-Hub|https://hub.docker.com/r/gbxyz/rdapper>:
-
-    $ docker pull gbxyz/rdapper
-
-    $ docker run -it gbxyz/rdapper --help
-
 =head1 SYNOPSIS
 
 General form:
@@ -1162,6 +1144,24 @@ arguments the program runs with. So if it contained
     --bypass-cache
 
 Then running C<rdapper EXAMPLE.COM> will behave like C<rdapper EXAMPLE.COM --short --bypass-cache>.
+
+=head1 INSTALLATION
+
+To install, run:
+
+    cpanm --sudo App::rdapper
+
+=head1 RUNNING VIA DOCKER
+
+The L<git repository|https://github.com/gbxyz/rdapper> contains a
+C<Dockerfile> that can be used to build an image on your local system.
+
+Alternatively, you can pull the L<image from Docker
+Hub|https://hub.docker.com/r/gbxyz/rdapper>:
+
+    $ docker pull gbxyz/rdapper
+
+    $ docker run -it gbxyz/rdapper --help
 
 =head1 COPYRIGHT & LICENSE
 
