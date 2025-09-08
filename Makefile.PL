@@ -6,12 +6,12 @@ use strict;
 install_share module => 'App::rdapper' => 'locale';
 
 WriteMakefile(
-	'NAME'			=> 'App::rdapper',
-	'VERSION_FROM'	=> 'lib/App/rdapper.pm',
-	'ABSTRACT_FROM'	=> 'lib/App/rdapper.pm',
-	'AUTHOR'		=> [ 'Gavin Brown <gavin.brown@fastmail.uk>' ],
-	'LICENSE'		=> 'perl_5',
-	'EXE_FILES'		=> [ 'rdapper' ],
+    'NAME'          => 'App::rdapper',
+    'VERSION_FROM'  => 'lib/App/rdapper.pm',
+    'ABSTRACT_FROM' => 'lib/App/rdapper.pm',
+    'AUTHOR'        => [ 'Gavin Brown <gavin.brown@fastmail.uk>' ],
+    'LICENSE'       => 'perl_5',
+    'EXE_FILES'     => [ 'rdapper' ],
 
     'CONFIGURE_REQUIRES' => {
         'ExtUtils::MakeMaker'       => 0,
@@ -19,10 +19,10 @@ WriteMakefile(
     },
 
     'TEST_REQUIRES' => {
-        'Test::More'      => 0,
+        'Test::More' => 0,
     },
 
-	'PREREQ_PM'		=> {
+    'PREREQ_PM' => {
         'File::ShareDir'            => 0,
         'File::ShareDir::Install'   => 0,
         'Getopt::Long'              => 0,
@@ -39,9 +39,10 @@ WriteMakefile(
         'Term::Size'                => 0,
         'Text::Wrap'                => 0,
         'URI'                       => 0,
-	},
+        'common::sense'             => 0,
+    },
 
-	'META_MERGE' 	=> {
+    'META_MERGE' => {
         'meta-spec' => { 'version' => 2 },
          'resources' => {
              'repository' => {
