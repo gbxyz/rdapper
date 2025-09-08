@@ -19,7 +19,8 @@ WriteMakefile(
     },
 
     'TEST_REQUIRES' => {
-        'Test::More' => 0,
+        'Test::More'    => 0,
+        'common::sense' => 0,
     },
 
     'PREREQ_PM' => {
@@ -39,7 +40,6 @@ WriteMakefile(
         'Term::Size'                => 0,
         'Text::Wrap'                => 0,
         'URI'                       => 0,
-        'common::sense'             => 0,
     },
 
     'META_MERGE' => {
