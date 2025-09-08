@@ -987,7 +987,7 @@ __END__
 
 =head1 NAME
 
-App::rdapper - a console-based L<RDAP|https://about.rdap.org> client.
+App::rdapper - a command-line L<RDAP|https://about.rdap.org> client.
 
 =head1 SYNOPSIS
 
