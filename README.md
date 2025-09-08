@@ -22,10 +22,8 @@ Examples:
 
 # DESCRIPTION
 
-`rdapper` is a simple RDAP client. It uses [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP) to retrieve data about
-internet resources (domain names, IP addresses, and autonymous systems) and
-outputs the information in a human-readable format. If you want to consume this
-data in your own program you should use [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP) directly.
+`rdapper` retrieves data about internet resources (domain names, IP addresses,
+and autonymous systems) and outputs the information in a human-readable format.
 
 # OPTIONS
 
@@ -122,7 +120,8 @@ arguments the program runs with. So if it contained
     --short
     --bypass-cache
 
-Then running `rdapper EXAMPLE.COM` will behave like `rdapper EXAMPLE.COM --short --bypass-cache`.
+Then running `rdapper EXAMPLE.COM` will behave like
+`rdapper EXAMPLE.COM --short --bypass-cache`.
 
 # INSTALLATION
 

@@ -1009,10 +1009,8 @@ Examples:
 
 =head1 DESCRIPTION
 
-C<rdapper> is a simple RDAP client. It uses L<Net::RDAP> to retrieve data about
-internet resources (domain names, IP addresses, and autonymous systems) and
-outputs the information in a human-readable format. If you want to consume this
-data in your own program you should use L<Net::RDAP> directly.
+C<rdapper> retrieves data about internet resources (domain names, IP addresses,
+and autonymous systems) and outputs the information in a human-readable format.
 
 =head1 OPTIONS
 
@@ -1143,7 +1141,8 @@ arguments the program runs with. So if it contained
     --short
     --bypass-cache
 
-Then running C<rdapper EXAMPLE.COM> will behave like C<rdapper EXAMPLE.COM --short --bypass-cache>.
+Then running C<rdapper EXAMPLE.COM> will behave like
+C<rdapper EXAMPLE.COM --short --bypass-cache>.
 
 =head1 INSTALLATION
 
