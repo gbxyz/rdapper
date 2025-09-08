@@ -1,6 +1,6 @@
 # NAME
 
-App::rdapper - a simple console-based [RDAP](https://about.rdap.org) client.
+App::rdapper - a console-based [RDAP](https://about.rdap.org) client.
 
 # SYNOPSIS
 
