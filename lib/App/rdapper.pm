@@ -7,7 +7,7 @@ use JSON;
 use List::Util qw(any min max uniq);
 use Net::ASN;
 use Net::DNS::Domain;
-use Net::IDN::Encode qw(domain_to_ascii domain_to_unicode);
+use Net::IDN::Encode qw(domain_to_ascii);
 use Net::IP;
 use Net::RDAP::EPPStatusMap;
 use Net::RDAP 0.40;
