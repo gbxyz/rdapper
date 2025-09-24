@@ -345,10 +345,10 @@ sub lookup {
         $response = $rdap->autnum(Net::ASN->new($asn), %args);
 
     } elsif ('domain' eq $type) {
-        $response = $rdap->domain(Net::DNS::Domain->new(domain_to_ascii($object)), %args);
+        $response = $rdap->domain(Net::DNS::Domain->new($package->encode_idn($object)), %args);
 
     } elsif ('nameserver' eq $type) {
-        my $url = Net::RDAP::Registry->get_url(Net::DNS::Domain->new(domain_to_ascii($object)));
+        my $url = Net::RDAP::Registry->get_url(Net::DNS::Domain->new($package->encode_idn($object)));
 
         #
         # munge path
@@ -363,7 +363,7 @@ sub lookup {
         $response = $rdap->entity($object, %args);
 
     } elsif ('tld' eq $type) {
-        $response = $rdap->fetch(URI->new(IANA_BASE_URL.'domain/'.domain_to_ascii($object)), %args);
+        $response = $rdap->fetch(URI->new(IANA_BASE_URL.'domain/'.$package->encode_idn($object)), %args);
 
     } elsif ('url' eq $type) {
         my $uri = URI->new($object);
