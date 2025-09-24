@@ -71,6 +71,7 @@ my %opts = (
     'debug'         => \$debug,
     'autnum'        => sub { $type = 'autnum' },
     'domain'        => sub { $type = 'domain' },
+    'nameserver'    => sub { $type = 'nameserver' },
     'entity'        => sub { $type = 'entity' },
     'ip'            => sub { $type = 'ip' },
     'tld'           => sub { $type = 'tld' },
