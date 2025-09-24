@@ -980,6 +980,11 @@ sub export_strings {
     exit;
 }
 
+sub encode_idn {
+    my ($package, $name) = @_;
+    return domain_to_ascii($name);
+}
+
 1;
 
 __END__
