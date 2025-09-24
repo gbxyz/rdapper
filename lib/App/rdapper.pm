@@ -7,7 +7,7 @@ use JSON;
 use List::Util qw(any min max uniq);
 use Net::ASN;
 use Net::DNS::Domain;
-use Net::IDN::Encode qw(domain_to_ascii);
+use Net::IDN::Encode;
 use Net::IP;
 use Net::RDAP::EPPStatusMap;
 use Net::RDAP 0.40;
@@ -982,7 +982,7 @@ sub export_strings {
 
 sub encode_idn {
     my ($package, $name) = @_;
-    return domain_to_ascii($name);
+    return Net::IDN::Encode::domain_to_ascii($name);
 }
 
 1;
