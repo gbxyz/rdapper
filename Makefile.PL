@@ -32,7 +32,7 @@ WriteMakefile(
         'Locale::Maketext::Gettext' => 0,
         'Net::ASN'                  => 0,
         'Net::DNS::Domain'          => 0,
-        'Net::IDN::Encode'          => 0,
+        'Net::IDN::PP'              => 0,
         'Net::IP'                   => 0,
         'Net::RDAP'                 => '0.40',
         'Pod::Usage'                => 0,
