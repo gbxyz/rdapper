@@ -1,0 +1,38 @@
+name: release
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    container: perl:latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: install node.js
+        run: apt -qqq update ; apt -qqq install nodejs
+
+      - name: install deps
+        run: sh -c "cpanm -n File::ShareDir::Install ; cpanm -n --installdeps ."
+
+      - name: build
+        run: sh -c "perl Makefile.PL ; make manifest dist"
+
+      - name: get release
+        id: get_release
+        uses: joutvhu/get-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          files: App-rdapper-*.tar.gz
