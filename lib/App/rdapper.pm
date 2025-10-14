@@ -32,7 +32,7 @@ use locale;
 use vars qw($VERSION $LH);
 use strict;
 
-$VERSION = '1.19';
+$VERSION = '1.20';
 
 $LH = App::rdapper::l10n->get_handle;
 
