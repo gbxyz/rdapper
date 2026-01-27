@@ -883,6 +883,20 @@ sub print_link {
     );
 }
 
+sub display_ttl_values {
+    my ($package, $object, $indent) = @_;
+
+    $package->print_kv(_('DNS TTL Values'), '', $indent);
+
+    foreach my $type ($object->dns_ttl_types) {
+        $package->print_kv($type, _('[_1]s', $object->dns_ttl($type)), 1+$indent);
+    }
+
+    foreach my $remark ($object->dns_ttl_remarks) {
+        $package->print_remark_or_notice($remark, 1+$indent);
+    }
+}
+
 sub print_kv {
     my ($package, $name, $value, $indent) = @_;
 
