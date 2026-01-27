@@ -10,7 +10,7 @@ use Net::DNS::Domain;
 use Net::IDN::PP;
 use Net::IP;
 use Net::RDAP::EPPStatusMap;
-use Net::RDAP 0.40;
+use Net::RDAP 0.41;
 use Pod::Usage;
 use POSIX qw(setlocale LC_ALL);
 use Term::ANSIColor;
