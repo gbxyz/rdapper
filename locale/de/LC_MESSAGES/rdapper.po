@@ -403,3 +403,9 @@ msgstr "Applikation"
 
 msgid "device"
 msgstr "Gerät"
+
+msgid "DNS TTL Values"
+msgstr "DNS TTL Values"
+
+msgid "[_1]s"
+msgstr "[_1]s"

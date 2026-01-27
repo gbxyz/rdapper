@@ -660,6 +660,9 @@ sub print_domain {
     $package->display_platform_nameservers($domain->{'platformNS_nameservers'}, $indent) if ($domain->{'platformNS_nameservers'});
 
     $package->print_kv(_('Registration Type'), $domain->{'regType_regType'}) if ($domain->{'regType_regType'});
+
+    my @types = $domain->dns_ttl_types;
+    $package->display_ttl_values($domain, $indent) if (scalar(@types) > 0);
 }
 
 sub display_artRecord {
@@ -777,6 +780,9 @@ sub print_nameserver {
     foreach my $ip ($nameserver->addresses) {
         $package->print_kv(_('IP Address'), $ip->short, $indent);
     }
+
+    my @types = $nameserver->dns_ttl_values;
+    $package->display_ttl_values($nameserver, $indent) if (scalar(@types) > 0);
 }
 
 sub print_events {
