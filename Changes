@@ -1,3 +1,6 @@
+1.20 - 2026-01-27
+  - added support for the ttl0 extension.
+
 1.19 - 2025-09-01
   - updated Makefile.PL to list dependencies for building and testing.
   - removed dependency on PPI.
