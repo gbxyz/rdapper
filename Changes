@@ -1,5 +1,10 @@
-1.20 - 2026-01-27
+1.21 - 2026-01-27
   - added support for the ttl0 extension.
+
+1.20 - 2025-10-14
+  - fix missing build dependencies and tests
+  - switch from Net::IDN::Encode to Net::IDN::PP to avoid build problems on
+    certain platforms (OS + architecture)
 
 1.19 - 2025-09-01
   - updated Makefile.PL to list dependencies for building and testing.

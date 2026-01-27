@@ -24,6 +24,7 @@ WriteMakefile(
     },
 
     'PREREQ_PM' => {
+        'File::Slurp'               => 0,
         'File::ShareDir'            => 0,
         'File::ShareDir::Install'   => 0,
         'Getopt::Long'              => 0,
