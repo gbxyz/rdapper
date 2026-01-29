@@ -35,7 +35,7 @@ WriteMakefile(
         'Net::DNS::Domain'          => 0,
         'Net::IDN::PP'              => 0,
         'Net::IP'                   => 0,
-        'Net::RDAP'                 => '0.40',
+        'Net::RDAP'                 => '0.41',
         'Pod::Usage'                => 0,
         'Term::ANSIColor'           => 0,
         'Term::Size'                => 0,

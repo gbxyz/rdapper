@@ -1,3 +1,6 @@
+1.22 - 2026-01-29
+  - require Net::RDAP >= 0.41.
+
 1.21 - 2026-01-27
   - added support for the ttl0 extension.
 
