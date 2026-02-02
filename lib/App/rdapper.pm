@@ -781,7 +781,7 @@ sub print_nameserver {
         $package->print_kv(_('IP Address'), $ip->short, $indent);
     }
 
-    my @types = $nameserver->dns_ttl_values;
+    my @types = $nameserver->dns_ttl_types;
     $package->display_ttl_values($nameserver, $indent) if (scalar(@types) > 0);
 }
 
