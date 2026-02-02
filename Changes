@@ -1,3 +1,6 @@
+1.23 - 2026-02-02
+  - fix broken method call.
+
 1.22 - 2026-01-29
   - require Net::RDAP >= 0.41.
 
