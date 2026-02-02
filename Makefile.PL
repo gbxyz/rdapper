@@ -21,6 +21,7 @@ WriteMakefile(
     'TEST_REQUIRES' => {
         'Test::More'    => 0,
         'common::sense' => 0,
+        'LWP::Online'   => 0,
     },
 
     'PREREQ_PM' => {

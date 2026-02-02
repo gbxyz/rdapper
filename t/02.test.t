@@ -1,5 +1,6 @@
 #!/usr/bin/env perl
 use Test::More;
+use LWP::Online qw(:skip_all);
 use common::sense;
 use constant PACKAGE => q{App::rdapper};
 
