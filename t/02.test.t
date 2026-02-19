@@ -19,8 +19,6 @@ my @tests = (
 );
 
 foreach my $args (@tests) {
-    say STDERR q{testing command: }.join(q{ }, @{$args});
-
     eval {
         PACKAGE->main(@{$args});
     };
