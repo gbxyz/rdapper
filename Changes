@@ -1,3 +1,6 @@
+1.25 - 2026-05-07
+  - require Net::RDAP >= 0.42.
+
 1.24 - 2026-02-19
   - fix handling of phone/fax types for some entity objects.
 
