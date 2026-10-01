@@ -394,3 +394,24 @@ msgstr "Advertencia: [_1]"
 
 msgid "Error: [_1]"
 msgstr "Error: [_1]"
+
+msgid "individual"
+msgstr "individual"
+
+msgid "group"
+msgstr "grupo"
+
+msgid "org"
+msgstr "organización"
+
+msgid "location"
+msgstr "ubicación"
+
+msgid "application"
+msgstr "aplicación"
+
+msgid "device"
+msgstr "dispositivo"
+
+msgid "IANA Registrar ID"
+msgstr "ID de registrador de la IANA"
