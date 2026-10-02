@@ -409,3 +409,15 @@ msgstr "DNS TTL Values"
 
 msgid "[_1]s"
 msgstr "[_1]s"
+
+msgid "proxy"
+msgstr "Proxy"
+
+msgid "locked"
+msgstr "verschlossen"
+
+msgid "administrative"
+msgstr "administrativ"
+
+msgid "location"
+msgstr "Standort"
