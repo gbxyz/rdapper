@@ -1,3 +1,6 @@
+1.26 - 2026-10-02
+  - add missing Spanisha and German translations.
+
 1.25 - 2026-05-07
   - require Net::RDAP >= 0.42.
 
